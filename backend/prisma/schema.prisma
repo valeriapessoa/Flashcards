@@ -1,0 +1,52 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  image     String?
+  flashcards Flashcard[]
+  studySessions StudySession[]
+}
+
+model Flashcard {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  imageUrl    String?
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  categories  Category[]
+  studyResults StudyResult[]
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String
+  flashcards  Flashcard[]
+}
+
+model StudySession {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  studyResults StudyResult[]
+  createdAt   DateTime @default(now())
+}
+
+model StudyResult {
+  id            Int      @id @default(autoincrement())
+  flashcardId   Int
+  flashcard     Flashcard @relation(fields: [flashcardId], references: [id])
+  studySessionId Int
+  studySession  StudySession @relation(fields: [studySessionId], references: [id])
+  correct       Boolean
+  createdAt     DateTime @default(now())
+}
