@@ -110,7 +110,7 @@ const CreateFlashcard: React.FC = () => {
 
               <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
                 <Button
-                  onClick={() => router.push("/dashboard")}
+                  onClick={() => router.push("./")}
                   variant="outlined"
                   color="secondary"
                 >
