@@ -1,0 +1,1 @@
+// Este arquivo é necessário para que o TypeScript reconheça os arquivos de definição de tipo no diretório src

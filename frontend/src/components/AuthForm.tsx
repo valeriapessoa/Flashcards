@@ -5,6 +5,7 @@ import { TextField, Button, Typography, Container, Box } from '@mui/material';
 
 const AuthForm = () => {
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
@@ -51,6 +52,15 @@ const AuthForm = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            fullWidth
+            margin="normal"
+            required
+          />
+          <TextField
+            label="Nome"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             fullWidth
             margin="normal"
             required

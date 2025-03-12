@@ -1,0 +1,20 @@
+.correct-answers-card {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.correct-answers-card h2 {
+  margin: 0 0 10px;
+  font-size: 1.5em;
+  color: #333;
+}
+
+.correct-answers-card p {
+  margin: 0;
+  font-size: 1.2em;
+  color: #555;
+}

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Typography, Card, CardContent, Grid } from '@mui/material';
 import axios from 'axios';
 import UserStatsCard from '../../components/UserStatsCard';
+import ScoreCard from '../../components/ScoreCard';
 
 interface UserStats {
   score: number;
@@ -44,6 +45,7 @@ const Dashboard: React.FC = () => {
         Dashboard
       </Typography>
       <UserStatsCard stats={stats} />
+      <ScoreCard score={stats.score} />
     </Container>
   );
 };

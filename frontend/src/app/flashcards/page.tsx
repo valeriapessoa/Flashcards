@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from 'react';
 import { Button, Container, Typography, Card, CardContent, CardActions, Grid } from '@mui/material';
 import axios from 'axios';

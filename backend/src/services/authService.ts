@@ -1,20 +1,17 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { PrismaClient } from "@prisma/client";
-import apiRoute from './routes/api';
+import authRoutes from "./routes/authRoutes";
 
 dotenv.config();
-
-const prisma = new PrismaClient();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api', apiRoute);
-
 const PORT = process.env.PORT || 5000;
+
+app.use("/auth", authRoutes);
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);

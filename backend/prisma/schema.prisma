@@ -1,6 +1,7 @@
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 generator client {
@@ -8,45 +9,54 @@ generator client {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  image     String?
-  flashcards Flashcard[]
-  studySessions StudySession[]
+  id             Int            @id @default(autoincrement())
+  email          String         @unique @db.VarChar(255)
+  password       String         @db.VarChar(255)
+  name           String?        @db.VarChar(100)
+  image          String?        @db.Text
+  flashcards     Flashcard[]
+  studySessions  StudySession[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 }
 
 model Flashcard {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  imageUrl    String?
-  userId      Int
-  user        User     @relation(fields: [userId], references: [id])
-  categories  Category[]
-  studyResults StudyResult[]
+  id            Int            @id @default(autoincrement())
+  title         String         @db.VarChar(255)
+  description   String         @db.Text
+  imageUrl      String?        @db.Text
+  userId        Int
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categories    Category[]     @relation(name: "FlashcardCategories")
+  studyResults  StudyResult[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }
 
 model Category {
-  id          Int      @id @default(autoincrement())
-  name        String
-  flashcards  Flashcard[]
+  id           Int          @id @default(autoincrement())
+  name         String       @unique @db.VarChar(100)
+  flashcards   Flashcard[]  @relation(name: "FlashcardCategories")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 }
 
 model StudySession {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  user        User     @relation(fields: [userId], references: [id])
+  id           Int          @id @default(autoincrement())
+  userId       Int
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   studyResults StudyResult[]
-  createdAt   DateTime @default(now())
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 }
 
 model StudyResult {
-  id            Int      @id @default(autoincrement())
-  flashcardId   Int
-  flashcard     Flashcard @relation(fields: [flashcardId], references: [id])
+  id             Int           @id @default(autoincrement())
+  flashcardId    Int
+  flashcard      Flashcard     @relation(fields: [flashcardId], references: [id], onDelete: Cascade)
   studySessionId Int
-  studySession  StudySession @relation(fields: [studySessionId], references: [id])
-  correct       Boolean
-  createdAt     DateTime @default(now())
+  studySession   StudySession  @relation(fields: [studySessionId], references: [id], onDelete: Cascade)
+  correct        Boolean
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 }

@@ -1,6 +1,6 @@
 import React from 'react';
-import ScoreCard from './ScoreCard';
-import CorrectAnswersCard from './CorrectAnswersCard';
+import ScoreCard from '@/components/ScoreCard';
+import CorrectAnswersCard from '@/components/CorrectAnswersCard';
 
 interface UserStatsCardProps {
   stats: {

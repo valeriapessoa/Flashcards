@@ -1,30 +1,32 @@
-import React, { useState } from 'react';
-import { useRouter } from 'next/router';
-import { Button, TextField, Container, Typography, Box } from '@mui/material';
-import axios from 'axios';
+"use client";
+
+import React, { useState } from "react";
+import { useRouter } from "next/navigation"; // Corrigido para App Router
+import { Button, TextField, Container, Typography, Box } from "@mui/material";
+import axios from "axios";
 
 const CreateFlashcard: React.FC = () => {
   const router = useRouter();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
   const [image, setImage] = useState<File | null>(null);
-  const [tags, setTags] = useState('');
+  const [tags, setTags] = useState<string>("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('title', title);
-    formData.append('description', description);
+    formData.append("title", title);
+    formData.append("description", description);
     if (image) {
-      formData.append('image', image);
+      formData.append("image", image);
     }
-    formData.append('tags', tags);
+    formData.append("tags", tags);
 
     try {
-      await axios.post('/api/flashcards', formData);
-      router.push('/dashboard');
+      await axios.post("/api/flashcards", formData);
+      router.push("/dashboard");
     } catch (error) {
-      console.error('Error creating flashcard:', error);
+      console.error("Error creating flashcard:", error);
     }
   };
 
@@ -33,7 +35,7 @@ const CreateFlashcard: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         Create Flashcard
       </Typography>
-      <Box component="form" onSubmit={handleSubmit} noValidate>
+      <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
         <TextField
           fullWidth
           label="Title"
@@ -59,13 +61,14 @@ const CreateFlashcard: React.FC = () => {
           onChange={(e) => setTags(e.target.value)}
           margin="normal"
         />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setImage(e.target.files?.[0] || null)}
-          style={{ marginTop: '16px' }}
-        />
-        <Button type="submit" variant="contained" color="primary" style={{ marginTop: '16px' }}>
+        <Box sx={{ mt: 2 }}>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImage(e.target.files?.[0] || null)}
+          />
+        </Box>
+        <Button type="submit" variant="contained" color="primary" sx={{ mt: 3 }}>
           Create
         </Button>
       </Box>
