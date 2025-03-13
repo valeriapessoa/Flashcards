@@ -5,7 +5,7 @@ import Image from "next/image";
 export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-6">
-      {/* Cabeçalho */}
+
       <div className="text-center mb-8">
         <Typography variant="h3" fontWeight="bold" className="text-gray-800">
           📚 Flashcards Inteligentes
@@ -15,7 +15,6 @@ export default function Home() {
         </Typography>
       </div>
 
-      {/* Ilustração */}
       <div className="relative w-full max-w-md h-64 sm:h-72 md:h-80 lg:h-96 mb-12">
         <Image
           src="/flashcards.webp"
@@ -25,7 +24,6 @@ export default function Home() {
         />
       </div>
 
-      {/* Botões de ação */}
       <div className="flex flex-col sm:flex-row items-center w-full max-w-lg gap-6">
         <Link href="/criar-flashcard" passHref>
           <Button
@@ -34,13 +32,13 @@ export default function Home() {
             size="large"
             fullWidth
             sx={{
-              height: 56, // Mantém todos os botões com a mesma altura
-              minWidth: 180, // Define uma largura mínima
+              height: 56,
+              minWidth: 180,
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              whiteSpace: "nowrap", // Evita quebra de texto
-              textTransform: "none", // Mantém o texto natural
+              whiteSpace: "nowrap",
+              textTransform: "none",
             }}
           >
             ✏️ Criar Flashcard

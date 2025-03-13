@@ -16,7 +16,7 @@ const UserStatsCard: React.FC<UserStatsCardProps> = ({ stats }) => {
   return (
     <div className="user-stats-card">
       <ScoreCard score={score} />
-      <CorrectAnswersCard correctAnswers={correctAnswers} />
+      <CorrectAnswersCard correctAnswers={correctAnswers} totalQuestions={correctAnswers + incorrectAnswers} />
     </div>
   );
 };

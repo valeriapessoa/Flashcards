@@ -6,6 +6,7 @@ import { TextField, Button, Typography, Container, Box } from '@mui/material';
 const AuthForm = () => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
+  const [isLogin, setIsLogin] = useState(true);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
@@ -97,3 +98,19 @@ const AuthForm = () => {
 };
 
 export default AuthForm;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
