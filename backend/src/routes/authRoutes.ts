@@ -42,7 +42,10 @@ router.post("/register", registerValidationRules, async (req: Request, res: Resp
       } as UserCreateInputWithPassword,
     });
     res.status(201).json({ message: "Usuário criado!", user });
-  } catch (error) {
+  } catch (error: any) {
+    if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
+      return res.status(400).json({ message: "Email já está em uso." });
+    }
     res.status(500).json({ error: "Erro ao criar usuário" });
   }
 });

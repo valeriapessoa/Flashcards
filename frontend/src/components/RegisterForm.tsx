@@ -1,5 +1,6 @@
 "use client";
 import { useState } from 'react';
+import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { TextField, Button, Typography, Box } from '@mui/material';
 
@@ -66,7 +67,7 @@ const RegisterForm = () => {
         return;
       }
 
-      router.push('/auth'); // Redirecionar para a página de login após o registro
+      router.push('/auth');
     } catch (error) {
       setError('Erro ao registrar usuário');
     }

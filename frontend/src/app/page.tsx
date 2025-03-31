@@ -1,11 +1,80 @@
+"use client";
+
 import { Button, Typography } from "@mui/material";
 import Link from "next/link";
 import Image from "next/image";
+import { useSession, signOut } from "next-auth/react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (session) {
+      router.push("/");
+    } else {
+      router.push("/login");
+    }
+  }, [session, router]);
+
+  if (!session || !session.user) {
+    return null;
+  }
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-6">
-
+      {session && (
+        <Button
+          variant="contained"
+          color="error"
+          size="large"
+          onClick={() => signOut()}
+          sx={{
+            position: 'absolute',
+            top: 16,
+            right: 16,
+            height: 40,
+            minWidth: 100,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            whiteSpace: "nowrap",
+            textTransform: "none",
+          }}
+        >
+          Sair
+        </Button>
+      )}
+      {session ? (
+        <div>
+          <Typography variant="h6" className="text-green-600 mb-4">
+            Bem-vindo, {session.user.name}!
+          </Typography>
+          <br />
+        </div>
+      ) : (
+        <Link href="/login" passHref>
+          <Button
+            variant="outlined"
+            color="primary"
+            size="large"
+            fullWidth
+            sx={{
+              height: 56,
+              minWidth: 180,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              whiteSpace: "nowrap",
+              textTransform: "none",
+            }}
+          >
+            Login
+          </Button>
+        </Link>
+      )}
       <div className="text-center mb-8">
         <Typography variant="h3" fontWeight="bold" className="text-gray-800">
           📚 Flashcards Inteligentes
@@ -86,3 +155,4 @@ export default function Home() {
     </div>
   );
 }
+

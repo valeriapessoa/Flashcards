@@ -71,7 +71,7 @@ const CreateFlashcard: React.FC = () => {
 
     try {
       setLoading(true);
-      await axios.post("http://localhost:5000/api/flashcards", {
+      await axios.post("http://localhost:5000/flashcards", {
         title,
         description,
         imageUrl: cloudinaryUrl,

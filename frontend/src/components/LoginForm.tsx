@@ -2,9 +2,13 @@
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { TextField, Button, Typography, Box } from '@mui/material';
+import { TextField, Button, Typography, Box, IconButton } from '@mui/material';
+import GoogleIcon from '@mui/icons-material/Google';
+import FacebookIcon from '@mui/icons-material/Facebook';
 
 const LoginForm = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [welcomeMessage, setWelcomeMessage] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -44,7 +48,9 @@ const LoginForm = () => {
     if (res?.error) {
       setError(res.error);
     } else {
-      router.push('/dashboard');
+      setIsLoggedIn(true);
+      setWelcomeMessage('Bem-vindo!');
+      router.push('/');
     }
   };
 
@@ -80,6 +86,19 @@ const LoginForm = () => {
           {error}
         </Typography>
       )}
+       <Box mt={2} textAlign="center">
+         <Typography variant="body2">
+           Não tem uma conta? <Button color="secondary" onClick={() => router.push('/register')}>Cadastre-se</Button>
+         </Typography>
+       </Box>
+       <Box mt={2} display="flex" justifyContent="center" gap={2}>
+         <IconButton onClick={() => signIn('google')} color="primary">
+           <GoogleIcon />
+         </IconButton>
+         <IconButton onClick={() => signIn('facebook')} color="primary">
+           <FacebookIcon />
+         </IconButton>
+       </Box>
     </form>
   );
 };
