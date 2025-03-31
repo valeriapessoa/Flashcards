@@ -22,7 +22,11 @@ router.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, functio
     try {
         const hashedPassword = yield bcrypt_1.default.hash(password, 10);
         const user = yield prisma.user.create({
-            data: { name, email },
+            data: {
+                name,
+                email,
+                password: hashedPassword,
+            },
         });
         res.status(201).json({ message: "Usuário criado!", user });
     }

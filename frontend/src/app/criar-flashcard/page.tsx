@@ -45,7 +45,7 @@ const CreateFlashcard: React.FC = () => {
     formData.append("tags", tags);
 
     try {
-      await axios.post("/api/flashcards", formData);
+      await axios.post("http://localhost:5000/api/flashcards", formData);
       router.push("/dashboard");
     } catch (error) {
       setError("Erro ao criar o flashcard. Tente novamente.");
