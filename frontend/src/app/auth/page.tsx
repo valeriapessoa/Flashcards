@@ -1,30 +1,16 @@
-import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
-import AuthForm from '../../components/AuthForm';
+import { redirect } from 'next/navigation';
 
-const AuthPage = () => {
-  return (
-    <div>
-      <AuthForm />
-    </div>
-  );
-};
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getSession(context);
+const AuthPage = async () => {
+  const session = await getSession();
 
   if (session) {
-    return {
-      redirect: {
-        destination: '/dashboard',
-        permanent: false,
-      },
-    };
+    redirect('/dashboard');
+  } else {
+    redirect('/login');
   }
 
-  return {
-    props: {},
-  };
+  return null; // Página AuthPage não renderiza nada visualmente
 };
 
 export default AuthPage;

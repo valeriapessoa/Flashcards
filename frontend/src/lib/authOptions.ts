@@ -36,8 +36,22 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        // Adicione a lógica de autorização aqui
-        const user = { id: "1", name: "John Doe", email: "john@example.com" };
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: credentials.email, password: credentials.password }),
+        });
+
+        if (!res.ok) {
+          return null;
+        }
+
+        const user = await res.json();
+
         return user;
       },
     }),

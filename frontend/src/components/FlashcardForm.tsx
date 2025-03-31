@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
-import { fetchFlashcard, updateFlashcard } from '../lib/api';
+import { fetchFlashcard, updateFlashcard, createFlashcard } from '../lib/api';
 import { Flashcard } from '../types';
 
 interface FlashcardFormProps {
@@ -11,22 +11,38 @@ interface FlashcardFormProps {
 const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit }) => {
   const [title, setTitle] = useState(flashcard?.title || '');
   const [description, setDescription] = useState(flashcard?.description || '');
-  const [image, setImage] = useState(flashcard?.image || '');
+  const [image, setImage] = useState(flashcard?.imageUrl || ''); // Usar imageUrl no estado inicial, mas manter o estado como 'image'
   const [tags, setTags] = useState(flashcard?.tags || []);
 
   const queryClient = useQueryClient();
 
   const createMutation = useMutation(createFlashcard, {
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries('flashcards');
+      onSubmit(data); // Chamar onSubmit com os dados retornados (incluindo id)
     },
   });
 
   const updateMutation = useMutation(updateFlashcard, {
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries('flashcards');
+      onSubmit(data); // Chamar onSubmit com os dados retornados (incluindo id)
     },
   });
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setImage(base64String); // Define o estado 'image' com a string Base64
+      };
+
+      reader.readAsDataURL(file); // Lê o arquivo como URL de dados (Base64)
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +50,7 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit }) =>
       id: flashcard?.id,
       title,
       description,
-      image,
+      image: image, // Usar 'image' aqui
       tags,
     };
     if (flashcard?.id) {
@@ -42,7 +58,6 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit }) =>
     } else {
       createMutation.mutate(newFlashcard);
     }
-    onSubmit(newFlashcard);
   };
 
   return (
@@ -67,9 +82,8 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit }) =>
       <div>
         <label>Imagem</label>
         <input
-          type="text"
-          value={image}
-          onChange={(e) => setImage(e.target.value)}
+          type="file"
+          onChange={handleImageChange}
         />
       </div>
       <div>

@@ -1,15 +1,18 @@
 "use client";
 import { useState } from 'react';
-import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { TextField, Button, Typography, Box } from '@mui/material';
 
-const LoginForm = () => {
+const RegisterForm = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [nameError, setNameError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const router = useRouter();
 
   const validateEmail = (email: string) => {
@@ -19,10 +22,16 @@ const LoginForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setNameError('');
     setEmailError('');
     setPasswordError('');
+    setConfirmPasswordError('');
     setError('');
 
+    if (!name) {
+      setNameError('Nome é obrigatório');
+      return;
+    }
     if (!email) {
       setEmailError('Email é obrigatório');
       return;
@@ -39,17 +48,43 @@ const LoginForm = () => {
       setPasswordError('Senha deve ter pelo menos 6 caracteres');
       return;
     }
+    if (password !== confirmPassword) {
+      setConfirmPasswordError('Senhas não conferem');
+      return;
+    }
 
-    const res = await signIn('credentials', { redirect: false, email, password });
-    if (res?.error) {
-      setError(res.error);
-    } else {
-      router.push('/dashboard');
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        setError(errorData.message || 'Erro ao registrar usuário');
+        return;
+      }
+
+      router.push('/auth'); // Redirecionar para a página de login após o registro
+    } catch (error) {
+      setError('Erro ao registrar usuário');
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
+       <TextField
+        label="Nome"
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        fullWidth
+        margin="normal"
+        required
+        error={!!nameError}
+        helperText={nameError}
+      />
       <TextField
         label="Email"
         type="email"
@@ -72,8 +107,19 @@ const LoginForm = () => {
         error={!!passwordError}
         helperText={passwordError}
       />
+       <TextField
+        label="Confirmar Senha"
+        type="password"
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+        fullWidth
+        margin="normal"
+        required
+        error={!!confirmPasswordError}
+        helperText={confirmPasswordError}
+      />
       <Button type="submit" variant="contained" color="primary" fullWidth>
-        Login
+        Registrar
       </Button>
       {error && (
         <Typography color="error" mt={2}>
@@ -84,4 +130,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default RegisterForm;

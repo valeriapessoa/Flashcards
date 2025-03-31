@@ -5,9 +5,9 @@ const router = express.Router(); // Use diretamente express.Router, sem `Router`
 const prisma = new PrismaClient();
 
 // Criar um flashcard vinculado a um usuário
-router.post("/", async (req: express.Request, res: express.Response) => {
+router.post("/flashcards", async (req: express.Request, res: express.Response) => {
   try {
-    const { title, description, imageUrl, userId, categories } = req.body;
+    const { title, description, imageUrl, userId, tags } = req.body;
 
     if (!title || !description || !userId) {
       return res.status(400).json({ message: "Título, descrição e userId são obrigatórios!" });
@@ -18,6 +18,16 @@ router.post("/", async (req: express.Request, res: express.Response) => {
       return res.status(404).json({ message: "Usuário não encontrado!" });
     }
 
+    // Criar ou conectar categorias baseadas nas tags
+    const categoryConnectOrCreate = await Promise.all(
+      (tags || []).map(async (tagName: string) => {
+        return {
+          where: { name: tagName },
+          create: { name: tagName },
+        };
+      })
+    );
+
     const newFlashcard = await prisma.flashcard.create({
       data: {
         title,
@@ -25,7 +35,7 @@ router.post("/", async (req: express.Request, res: express.Response) => {
         imageUrl,
         userId,
         categories: {
-          connect: categories?.map((categoryId: number) => ({ id: categoryId })) || [],
+          connectOrCreate: categoryConnectOrCreate,
         },
       },
       include: { categories: true },

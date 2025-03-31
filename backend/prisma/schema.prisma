@@ -9,7 +9,7 @@ generator client {
 }
 
 model User {
-  id             Int            @id @default(autoincrement())
+  id             String         @id @default(cuid())
   email          String         @unique @db.VarChar(255)
   password       String         @db.VarChar(255)
   name           String?        @db.VarChar(100)
@@ -25,7 +25,7 @@ model Flashcard {
   title         String         @db.VarChar(255)
   description   String         @db.Text
   imageUrl      String?        @db.Text
-  userId        Int
+  userId        String
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   categories    Category[]     @relation(name: "FlashcardCategories")
   studyResults  StudyResult[]
@@ -43,7 +43,7 @@ model Category {
 
 model StudySession {
   id           Int          @id @default(autoincrement())
-  userId       Int
+  userId       String
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   studyResults StudyResult[]
   createdAt    DateTime     @default(now())
