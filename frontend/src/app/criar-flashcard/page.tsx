@@ -18,24 +18,19 @@ import {
 } from "@mui/material";
 import { PhotoCamera } from '@mui/icons-material';
 import axios from "axios";
-import { CloudinaryContext, Cloudinary } from 'cloudinary-react';
 
-const cloudinaryCloudName = 'flashcardsprojeto'; // Use seu Cloud Name aqui
-
-
-
-const CreateFlashcard: React.FC = () => {
+const CreateFlashcard: React.FC<{}> = () => {
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const router = useRouter();
   const { data: session } = useSession();
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [image, setImage] = useState<File | null>(null);
   const [tags, setTags] = useState<string>("");
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -46,70 +41,37 @@ const CreateFlashcard: React.FC = () => {
       return;
     }
 
-
     if (!title.trim() || !description.trim()) {
       setError("Preencha todos os campos obrigatórios.");
       setLoading(false);
       return;
     }
 
-    let cloudinaryUrl = null;
-    if (image) {
-      setLoading(true);
-      try {
-        cloudinaryUrl = await uploadImageToCloudinary(image);
-        setImageUrl(cloudinaryUrl);
-      } catch (uploadError) {
-        setError("Erro ao fazer upload da imagem. Tente novamente.");
-        console.error("Erro no upload da imagem:", uploadError);
-        setLoading(false);
-        return;
-      } finally {
-        setLoading(false);
-      }
-    }
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('tags', tags);
+    formData.append('userId', session.user.id);
 
     try {
-      setLoading(true);
-      await axios.post("http://localhost:5000/flashcards", {
-        title,
-        description,
-        imageUrl: cloudinaryUrl,
-        tags: tags.split(",").map((tag: string) => tag.trim()),
-        userId: session.user.id, // Usar o userId da sessão
+      await axios.post("/api/flashcards", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
-      router.push("/dashboard");
     } catch (error) {
       setError("Erro ao criar o flashcard. Tente novamente.");
       console.error("Error creating flashcard:", error);
-       if (axios.isAxiosError(error) && error.response) {
-         console.error("Response status:", error.response.status);
-         console.error("Response data:", error.response.data);
-       } else {
-         console.error("Request error:", error);
-       }
+      if (axios.isAxiosError(error) && error.response) {
+        console.error("Response status:", error.response.status);
+        console.error("Response data:", error.response.data);
+      } else {
+        console.error("Request error:", error);
+      }
     } finally {
       setLoading(false);
     }
-  };
-
-  const uploadImageToCloudinary = useCallback(async (imageFile: File) => {
-    const formData = new FormData();
-    formData.append('file', imageFile);
-    formData.append('upload_preset', 'flashcards_preset'); // Substitua pelo seu upload preset do Cloudinary
-
-    try {
-      const response = await axios.post(
-        `https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/image/upload`,
-        formData
-      );
-      return response.data.secure_url;
-    } catch (error) {
-      console.error("Erro ao fazer upload para o Cloudinary:", error);
-      throw error; // Rejeitar a promise para que o erro seja capturado no handleSubmit
-    }
-  }, []);
-
+  }, [session, title, description, tags]);
 
   return (
     <Container maxWidth="sm">
@@ -157,11 +119,11 @@ const CreateFlashcard: React.FC = () => {
                     onChange={(e) => {
                       const file = e.target.files?.[0] || null;
                       setImage(file);
-                      setImageUrl(null); // Limpar a URL anterior ao selecionar nova imagem
+                      setImageUrl(null);
                     }}
                   />
                 </IconButton>
-                {image && !imageUrl && ( // Mostrar nome do arquivo apenas se a URL do Cloudinary ainda não estiver disponível
+                {image && (
                   <Typography variant="body2" sx={{ mt: 1, color: "gray" }}>
                     {image.name}
                   </Typography>

@@ -5,7 +5,7 @@ const router = express.Router(); // Use diretamente express.Router, sem `Router`
 const prisma = new PrismaClient();
 
 // Criar um flashcard vinculado a um usuário
-router.post("/flashcards", async (req: express.Request, res: express.Response) => {
+router.post("/create", async (req: express.Request, res: express.Response) => {
   try {
     const { title, description, imageUrl, userId, tags } = req.body;
 
