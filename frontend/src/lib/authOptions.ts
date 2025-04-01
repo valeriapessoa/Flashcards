@@ -13,6 +13,14 @@ declare module 'next-auth' {
       email: string;
       image?: string;
     };
+    accessToken?: string; // Adiciona o token à sessão
+  }
+}
+
+declare module 'next-auth/jwt' {
+  interface JWT {
+    id: string;
+    accessToken?: string; // Adiciona o token ao JWT
   }
 }
 
@@ -30,11 +38,18 @@ export const authOptions: NextAuthOptions = {
       authorize: async (credentials) => {
         if (!credentials?.email || !credentials?.password) {
           console.error("Credenciais inválidas: falta email ou senha");
-          return null;
+          throw new Error("Credenciais inválidas."); // Lança erro para NextAuth exibir
         }
 
         try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/login`, {
+          // Garante que a URL base da API está definida
+          const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+          if (!apiBaseUrl) {
+            console.error("Variável de ambiente NEXT_PUBLIC_API_BASE_URL não definida.");
+            throw new Error("Erro de configuração do servidor.");
+          }
+
+          const res = await fetch(`${apiBaseUrl}/api/auth/login`, { // Usa a variável
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -44,21 +59,29 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (!res.ok) {
-            console.error(`Erro na autenticação: ${res.status}`, await res.text());
-            return null;
+            const errorData = await res.json(); // Tenta pegar a mensagem de erro do backend
+            console.error(`Erro na autenticação (${res.status}):`, errorData.message || 'Erro desconhecido');
+            throw new Error(errorData.message || "Credenciais inválidas."); // Lança erro com mensagem do backend
           }
 
-          const user = await res.json();
+          const data = await res.json(); // Espera { token, user }
 
-          if (!user || !user.id) {
-            console.error("Erro ao obter dados do usuário.");
-            return null;
+          // Verifica se a resposta contém o token e o usuário
+          if (!data || !data.token || !data.user || !data.user.id) {
+            console.error("Resposta inválida da API de login:", data);
+            throw new Error("Erro ao processar login.");
           }
 
-          return user;
-        } catch (error) {
+          // Retorna o objeto user enriquecido com o token para o callback jwt
+          return {
+            ...data.user, // id, name, email, etc.
+            accessToken: data.token, // Adiciona o token aqui
+          };
+
+        } catch (error: any) {
           console.error("Erro durante a autorização:", error);
-          return null;
+          // Garante que a mensagem de erro seja propagada para o NextAuth
+          throw new Error(error.message || "Erro durante a autenticação.");
         }
       },
     }),
@@ -66,15 +89,19 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: 'jwt' },
   pages: { signIn: '/login' },
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user?: User | AdapterUser | null }) {
+    async jwt({ token, user }: { token: JWT; user?: (User | AdapterUser) & { accessToken?: string } | null }) {
+      // Na primeira vez (login), o objeto 'user' vindo do 'authorize' estará disponível
       if (user) {
         token.id = user.id;
+        token.accessToken = user.accessToken; // Armazena o token no JWT
       }
       return token;
     },
     async session({ session, token }: { session: Session; token: JWT }) {
-      if (token && session.user) {
-        session.user.id = token.id as string;
+      // Adiciona o id e o accessToken do token JWT para o objeto session
+      if (token) {
+        session.user.id = token.id;
+        session.accessToken = token.accessToken; // Disponibiliza o token na sessão
       }
       return session;
     },

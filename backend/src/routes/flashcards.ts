@@ -1,39 +1,37 @@
 import express, { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 
-const router = express.Router(); // Use diretamente express.Router, sem `Router` importado separadamente
+const router = express.Router();
 const prisma = new PrismaClient();
 
-// Criar um flashcard vinculado a um usuário
-router.post("/create", async (req: express.Request, res: express.Response) => {
-  try {
-    const { title, description, imageUrl, userId, tags } = req.body;
 
-    if (!title || !description || !userId) {
-      return res.status(400).json({ message: "Título, descrição e userId são obrigatórios!" });
+// Criar um flashcard vinculado a um usuário
+router.post("/flashcards/create", async (req: Request, res: Response) => {
+  try {
+    const { title, description, imageUrl, email, tags } = req.body;
+
+    if (!title || !description || !email) {
+      return res.status(400).json({ message: "Título, descrição e email do usuário são obrigatórios!" });
     }
 
-    const userExists = await prisma.user.findUnique({ where: { id: userId } });
-    if (!userExists) {
-      return res.status(404).json({ message: "Usuário não encontrado!" });
+    // Buscar usuário pelo email
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ message: "Usuário não encontrado! Primeiro, crie um usuário." });
     }
 
     // Criar ou conectar categorias baseadas nas tags
-    const categoryConnectOrCreate = await Promise.all(
-      (tags || []).map(async (tagName: string) => {
-        return {
-          where: { name: tagName },
-          create: { name: tagName },
-        };
-      })
-    );
+    const categoryConnectOrCreate = tags?.map((tagName: string) => ({
+      where: { name: tagName },
+      create: { name: tagName },
+    })) || [];
 
     const newFlashcard = await prisma.flashcard.create({
       data: {
         title,
         description,
         imageUrl,
-        userId,
+        userId: user.id,
         categories: {
           connectOrCreate: categoryConnectOrCreate,
         },
@@ -49,7 +47,7 @@ router.post("/create", async (req: express.Request, res: express.Response) => {
 });
 
 // Buscar todos os flashcards
-router.get("/", async (req: Request, res: Response) => {
+router.get("/flashcards", async (req: Request, res: Response) => {
   try {
     const flashcards = await prisma.flashcard.findMany({
       include: { user: true, categories: true },

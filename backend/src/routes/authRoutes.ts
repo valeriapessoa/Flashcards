@@ -1,8 +1,12 @@
-import express, { Request, Response } from "express";
-import bcrypt from "bcrypt";
+import express, { Request, Response, NextFunction } from "express"; // Adiciona NextFunction
+import bcrypt from "bcryptjs"; // Garante que está usando bcryptjs
+import passport from 'passport'; // Importa o passport
+import jwt from 'jsonwebtoken'; // Importa jsonwebtoken
 import { PrismaClient, User } from "@prisma/client";
 import { body, validationResult } from 'express-validator';
 
+// TODO: Mover para variáveis de ambiente (.env)
+const JWT_SECRET = process.env.JWT_SECRET || 'YOUR_SECRET_KEY'; // Chave secreta para assinar o JWT
 type UserCreateInputWithPassword = {
   name: string;
   email: string;
@@ -50,34 +54,50 @@ router.post("/register", registerValidationRules, async (req: Request, res: Resp
   }
 });
 
-router.post("/login", loginValidationRules, async (req: Request, res: Response) => {
+// Modifica a rota de login para usar Passport
+router.post("/login", loginValidationRules, (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { email, password } = req.body;
-
-  try {
-    const user = await prisma.user.findUnique({ where: { email } });
-
+  // Usa passport.authenticate com a estratégia 'local'
+  // { session: false } indica que não usaremos sessões do lado do servidor
+  passport.authenticate('local', { session: false }, (err: Error | null, user: User | false, info: { message: string } | undefined) => {
+    if (err) {
+      console.error("Erro na autenticação:", err);
+      return res.status(500).json({ message: "Erro interno no servidor durante a autenticação." });
+    }
+    // Se o usuário não for encontrado ou a senha estiver incorreta (retornado como 'false' pela estratégia)
     if (!user) {
-      return res.status(401).json({ error: "Credenciais inválidas" });
+      // Usa a mensagem de erro fornecida pela estratégia (se houver)
+      return res.status(401).json({ message: info?.message || "Credenciais inválidas." });
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    // Se a autenticação for bem-sucedida, gera o token JWT
+    req.login(user, { session: false }, (loginErr) => {
+      if (loginErr) {
+        console.error("Erro no req.login:", loginErr);
+        return res.status(500).json({ message: "Erro ao processar login." });
+      }
 
-    if (!passwordMatch) {
-      return res.status(401).json({ error: "Credenciais inválidas" });
-    }
+      // Payload do token: geralmente inclui informações para identificar o usuário (como ID e email)
+      const payload = {
+        id: user.id,
+        email: user.email,
+        name: user.name // Pode incluir outros dados úteis
+      };
 
-    // Remover o password antes de enviar para o frontend por segurança
-    const { password: removedPassword, ...userWithoutPassword } = user;
+      // Assina o token com a chave secreta e define um tempo de expiração (ex: 1 hora)
+      const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
 
-    res.status(200).json(userWithoutPassword);
-  } catch (error) {
-    res.status(500).json({ error: "Erro ao fazer login" });
-  }
+      // Remove a senha do objeto usuário antes de retornar
+      const { password: removedPassword, ...userWithoutPassword } = user;
+
+      // Retorna o token e os dados do usuário (sem a senha)
+      return res.json({ token, user: userWithoutPassword });
+    });
+  })(req, res, next); // Chama o middleware do passport
 });
 
 export default router;

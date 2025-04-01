@@ -1,21 +1,68 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import authRoutes from "../routes/authRoutes";
-import flashcardRoutes from "../routes/flashcards";
+import passport from 'passport';
+import { Strategy as LocalStrategy } from 'passport-local';
+import { VerifyFunction } from 'passport-local'; // Importar VerifyFunction pode ajudar na tipagem
+import bcrypt from 'bcryptjs';
+import { PrismaClient, User } from '@prisma/client'; // Importa User também
 
-dotenv.config();
+const prisma = new PrismaClient();
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+// Configuração da Estratégia Local
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: 'email',
+      passwordField: 'password',
+    },
+    // Usar a assinatura correta para a função verify
+    async (email, password, done) => {
+      try {
+        const user = await prisma.user.findUnique({
+          where: { email },
+        });
 
-const PORT = process.env.PORT || 5000;
+        if (!user) {
+          // Passa a mensagem como terceiro argumento (options)
+          return done(null, false, { message: 'Usuário não encontrado.' });
+        }
 
-app.use("/auth", authRoutes);
+        const isMatch = await bcrypt.compare(password, user.password);
 
-app.use("/api/flashcards", flashcardRoutes);
+        if (!isMatch) {
+          // Passa a mensagem como terceiro argumento (options)
+          return done(null, false, { message: 'Senha incorreta.' });
+        }
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+        // Autenticação bem-sucedida
+        return done(null, user);
+      } catch (error) {
+        // Erro durante a execução
+        return done(error);
+      }
+    }
+  )
+);
+
+// Serializa o usuário para armazenar na sessão/token (usaremos o ID)
+// A tipagem de 'user' em serialize/deserialize pode precisar de ajuste
+// dependendo da configuração global de Express.User
+passport.serializeUser((user: any, done) => {
+  // Aqui 'user' é o objeto retornado pela estratégia local
+  done(null, user.id);
 });
+
+// Desserializa o usuário a partir do ID armazenado
+passport.deserializeUser(async (id: string, done: (err: any, user?: Express.User | false | null) => void) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: id },
+    });
+    // O segundo argumento de done deve ser o usuário ou false/null
+    done(null, user);
+  } catch (error) {
+    done(error, false); // Passa false em caso de erro ao buscar usuário
+  }
+});
+
+// Exporta o passport configurado (opcional, mas pode ser útil)
+// export default passport;
+// Nota: A importação em server.ts ("./services/authService") já executa este código.

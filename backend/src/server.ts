@@ -3,6 +3,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import apiRoute from "./routes/api";
+import passport from "passport"; // Importa o Passport
+import "./services/authService"; // Importa a configuração da estratégia (será criada/ajustada)
 
 dotenv.config(); // Carrega variáveis de ambiente do arquivo .env
 
@@ -13,6 +15,7 @@ const app = express();
 // Configuração de middlewares
 app.use(cors()); // Permite requisições de diferentes origens
 app.use(express.json()); // Permite o uso de JSON no body das requisições
+app.use(passport.initialize()); // Inicializa o Passport
 
 // Middleware global para capturar erros de execução
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
