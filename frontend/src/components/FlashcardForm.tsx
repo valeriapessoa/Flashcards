@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
+import { useSession } from 'next-auth/react'; // Importar useSession
 import { fetchFlashcard, updateFlashcard, createFlashcard } from '../lib/api';
 import { Flashcard } from '../types';
 
@@ -14,6 +15,7 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit }) =>
   const [image, setImage] = useState(flashcard?.imageUrl || ''); // Usar imageUrl no estado inicial, mas manter o estado como 'image'
   const [tags, setTags] = useState(flashcard?.tags || []);
 
+  const { data: session } = useSession(); // Obter dados da sessão
   const queryClient = useQueryClient();
 
   const createMutation = useMutation(createFlashcard, {
@@ -46,17 +48,30 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit }) =>
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newFlashcard = {
-      id: flashcard?.id,
+    // Verificar se a sessão e o ID do usuário existem
+    if (!session?.user?.id) {
+      console.error("Usuário não autenticado ou ID do usuário não encontrado na sessão.");
+      // TODO: Adicionar tratamento de erro para o usuário (ex: exibir mensagem)
+      return;
+    }
+
+    const flashcardData = {
       title,
       description,
-      image: image, // Usar 'image' aqui
+      imageUrl: image, // A API espera imageUrl, não image
       tags,
+      userId: session.user.id, // Incluir o userId da sessão
     };
+
+    const mutationData = flashcard?.id
+      ? { ...flashcardData, id: flashcard.id } // Para update, incluir o id do flashcard
+      : flashcardData; // Para create, apenas os dados novos
     if (flashcard?.id) {
-      updateMutation.mutate(newFlashcard);
+      // @ts-ignore // Temporário para lidar com a diferença de tipo entre create e update
+      updateMutation.mutate(mutationData);
     } else {
-      createMutation.mutate(newFlashcard);
+      // @ts-ignore // Temporário para lidar com a diferença de tipo entre create e update
+      createMutation.mutate(mutationData);
     }
   };
 

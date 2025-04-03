@@ -6,19 +6,23 @@ const prisma = new PrismaClient();
 
 
 // Criar um flashcard vinculado a um usuário
-router.post("/flashcards/create", async (req: Request, res: Response) => {
+router.post("/create", async (req: Request, res: Response) => {
   try {
-    const { title, description, imageUrl, email, tags } = req.body;
+    // Modificado para receber userId em vez de email
+    const { title, description, imageUrl, userId, tags } = req.body;
 
-    if (!title || !description || !email) {
-      return res.status(400).json({ message: "Título, descrição e email do usuário são obrigatórios!" });
+    // Modificado para validar userId
+    if (!title || !description || !userId) {
+      return res.status(400).json({ message: "Título, descrição e ID do usuário são obrigatórios!" });
     }
 
-    // Buscar usuário pelo email
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
-      return res.status(404).json({ message: "Usuário não encontrado! Primeiro, crie um usuário." });
-    }
+    // Remover busca de usuário por email, pois já temos o userId
+    // Opcional: Verificar se o userId existe no banco para maior segurança,
+    // mas a chave estrangeira no Prisma já deve garantir isso na criação.
+    // const userExists = await prisma.user.findUnique({ where: { id: userId } });
+    // if (!userExists) {
+    //   return res.status(404).json({ message: "Usuário com o ID fornecido não encontrado!" });
+    // }
 
     // Criar ou conectar categorias baseadas nas tags
     const categoryConnectOrCreate = tags?.map((tagName: string) => ({
@@ -31,7 +35,7 @@ router.post("/flashcards/create", async (req: Request, res: Response) => {
         title,
         description,
         imageUrl,
-        userId: user.id,
+        userId: userId, // Usar o userId recebido diretamente
         categories: {
           connectOrCreate: categoryConnectOrCreate,
         },

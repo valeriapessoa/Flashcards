@@ -55,7 +55,7 @@ const RegisterForm = () => {
     }
 
     try {
-      const res = await fetch('http://localhost:5000/users/create', {
+      const res = await fetch('http://localhost:5000/api/users/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password }),
@@ -68,7 +68,7 @@ const RegisterForm = () => {
       }
 
       const userData = await res.json();
-      if (userData.userId) {
+      if (userData.id) { 
         router.push('/auth');
       } else {
         setError('Erro ao registrar usuário');
