@@ -46,7 +46,15 @@ const LoginForm = () => {
 
     const res = await signIn('credentials', { redirect: false, email, password });
     if (res?.error) {
-      setError(res.error);
+      // Mapeia o erro padrão "CredentialsSignin" para uma mensagem mais amigável
+      if (res.error === "CredentialsSignin") {
+        setError("Email ou senha inválidos. Verifique suas credenciais.");
+      } else {
+        setError(res.error); // Exibe outros erros que possam ocorrer (menos comuns aqui)
+      }
+    } else if (!res?.ok) {
+        // Fallback para caso de falha sem erro específico (pouco provável com Credentials)
+        setError("Falha no login. Tente novamente mais tarde.");
     } else {
       setIsLoggedIn(true);
       setWelcomeMessage('Bem-vindo!');

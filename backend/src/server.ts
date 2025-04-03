@@ -13,7 +13,11 @@ const prisma = new PrismaClient(); // Instância do Prisma Client para interagir
 const app = express();
 
 // Configuração de middlewares
-app.use(cors()); // Permite requisições de diferentes origens
+// Configuração explícita do CORS
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000', // Permite a origem do frontend
+  credentials: true // Permite o envio de cookies/credenciais
+}));
 app.use(express.json()); // Permite o uso de JSON no body das requisições
 app.use(passport.initialize()); // Inicializa o Passport
 
