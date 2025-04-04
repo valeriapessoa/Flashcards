@@ -1,30 +1,54 @@
 import express, { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+import { v2 as cloudinary } from "cloudinary";
+import dotenv from "dotenv";
+import streamifier from "streamifier";
+import uploadMiddleware from "../middleware/uploadMiddleware";
+import { protect } from "../middleware/authMiddleware";
+
+dotenv.config();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
+});
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
-
-// Criar um flashcard vinculado a um usuário
-router.post("/create", async (req: Request, res: Response) => {
+router.post("/create", protect, uploadMiddleware.single("image"), async (req: Request, res: Response) => {
   try {
-    // Modificado para receber userId em vez de email
-    const { title, description, imageUrl, userId, tags } = req.body;
+    const { title, description, userId, tags } = req.body;
 
-    // Modificado para validar userId
     if (!title || !description || !userId) {
       return res.status(400).json({ message: "Título, descrição e ID do usuário são obrigatórios!" });
     }
 
-    // Remover busca de usuário por email, pois já temos o userId
-    // Opcional: Verificar se o userId existe no banco para maior segurança,
-    // mas a chave estrangeira no Prisma já deve garantir isso na criação.
-    // const userExists = await prisma.user.findUnique({ where: { id: userId } });
-    // if (!userExists) {
-    //   return res.status(404).json({ message: "Usuário com o ID fornecido não encontrado!" });
-    // }
+    if (!req.file) {
+      return res.status(400).json({ message: "Imagem obrigatória para criar um flashcard." });
+    }
 
-    // Criar ou conectar categorias baseadas nas tags
+    // Função que faz o upload para o Cloudinary usando Promise
+    const uploadImageToCloudinary = (fileBuffer: Buffer): Promise<string> => {
+      return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: "flashcards" },
+          (error, result) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(result?.secure_url || "");
+            }
+          }
+        );
+        streamifier.createReadStream(fileBuffer).pipe(uploadStream);
+      });
+    };
+
+    const imageUrl = await uploadImageToCloudinary(req.file.buffer);
+
     const categoryConnectOrCreate = tags?.map((tagName: string) => ({
       where: { name: tagName },
       create: { name: tagName },
@@ -35,7 +59,7 @@ router.post("/create", async (req: Request, res: Response) => {
         title,
         description,
         imageUrl,
-        userId: userId, // Usar o userId recebido diretamente
+        userId,
         categories: {
           connectOrCreate: categoryConnectOrCreate,
         },
@@ -46,19 +70,7 @@ router.post("/create", async (req: Request, res: Response) => {
     return res.status(201).json(newFlashcard);
   } catch (error) {
     console.error("Erro ao criar flashcard:", error);
-    return res.status(500).json({ message: "Erro ao criar flashcard", error });
-  }
-});
-
-// Buscar todos os flashcards
-router.get("/flashcards", async (req: Request, res: Response) => {
-  try {
-    const flashcards = await prisma.flashcard.findMany({
-      include: { user: true, categories: true },
-    });
-    return res.status(200).json(flashcards);
-  } catch (error) {
-    return res.status(500).json({ message: "Erro ao buscar flashcards", error });
+    return res.status(500).json({ message: "Erro ao criar flashcard" });
   }
 });
 

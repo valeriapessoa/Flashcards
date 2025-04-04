@@ -1,62 +1,62 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
-model User {  
-  id             String         @id @default(cuid())
-  email          String         @unique @db.VarChar(255)
-  password       String         @db.VarChar(255)
-  name           String?        @db.VarChar(100)
-  image          String?        @db.Text
-  flashcards     Flashcard[]
-  studySessions  StudySession[]
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique @db.VarChar(255)
+  password      String         @db.VarChar(255)
+  name          String?        @db.VarChar(100)
+  image         String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  flashcards    Flashcard[]
+  studySessions StudySession[]
 }
 
 model Flashcard {
-  id            Int            @id @default(autoincrement())
-  title         String         @db.VarChar(255)
-  description   String         @db.Text
-  imageUrl      String?        @db.Text
-  userId        String
-  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  categories    Category[]     @relation(name: "FlashcardCategories")
-  studyResults  StudyResult[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id           Int           @id @default(autoincrement())
+  title        String        @db.VarChar(255)
+  description  String
+  imageUrl     String?
+  userId       String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  studyResults StudyResult[]
+  categories   Category[]    @relation("FlashcardCategories")
 }
 
 model Category {
-  id           Int          @id @default(autoincrement())
-  name         String       @unique @db.VarChar(100)
-  flashcards   Flashcard[]  @relation(name: "FlashcardCategories")
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  id         Int         @id @default(autoincrement())
+  name       String      @unique @db.VarChar(100)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  flashcards Flashcard[] @relation("FlashcardCategories")
 }
 
 model StudySession {
-  id           Int          @id @default(autoincrement())
+  id           Int           @id @default(autoincrement())
   userId       String
-  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   studyResults StudyResult[]
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model StudyResult {
-  id             Int           @id @default(autoincrement())
+  id             Int          @id @default(autoincrement())
   flashcardId    Int
-  flashcard      Flashcard     @relation(fields: [flashcardId], references: [id], onDelete: Cascade)
   studySessionId Int
-  studySession   StudySession  @relation(fields: [studySessionId], references: [id], onDelete: Cascade)
   correct        Boolean
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  flashcard      Flashcard    @relation(fields: [flashcardId], references: [id], onDelete: Cascade)
+  studySession   StudySession @relation(fields: [studySessionId], references: [id], onDelete: Cascade)
 }

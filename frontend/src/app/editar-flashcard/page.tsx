@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQuery } from "react-query";
@@ -26,14 +25,25 @@ const EditFlashcardPage = () => {
     }
   );
 
-  const mutation = useMutation(updateFlashcard, {
+  const mutation = useMutation(async (formData: FormData) => {
+    return await updateFlashcard(formData);
+  }, {
     onSuccess: () => {
       router.push("/flashcards");
     },
   });
 
-  const handleSubmit = (updatedFlashcard: Flashcard) => {
-    mutation.mutate(updatedFlashcard);
+  const handleSubmit = (updatedFlashcard: Flashcard, file: File | null) => {
+    const formData = new FormData();
+    formData.append("title", updatedFlashcard.title);
+    formData.append("description", updatedFlashcard.description);
+    formData.append("id", updatedFlashcard.id.toString());
+    formData.append("userId", updatedFlashcard.userId.toString());
+    if (file) {
+      formData.append("image", file);
+    }
+
+    mutation.mutate(formData);
   };
 
   return (
@@ -52,7 +62,7 @@ const EditFlashcardPage = () => {
           <p className="text-gray-600">Flashcard não encontrado.</p>
         ) : (
           <>
-            <FlashcardForm flashcard={flashcard} onSubmit={handleSubmit} />
+            <FlashcardForm flashcard={flashcard} onSubmit={(flashcard, file) => handleSubmit(flashcard, file)} />
             <div className="flex justify-between mt-4">
               <button
                 onClick={() => router.push("/flashcards")}
@@ -61,7 +71,7 @@ const EditFlashcardPage = () => {
                 Voltar
               </button>
               <button
-                onClick={() => handleSubmit(flashcard)}
+                onClick={() => handleSubmit(flashcard, null)}
                 className={`px-4 py-2 rounded-lg ${
                   mutation.isLoading
                     ? "bg-blue-300 cursor-not-allowed"

@@ -52,11 +52,15 @@ const CreateFlashcard: React.FC<{}> = () => {
     formData.append('description', description);
     formData.append('tags', tags);
     formData.append('userId', session.user.id);
+    if (image) {
+      formData.append('image', image);
+    }
 
     try {
-      await axios.post("/api/flashcards", formData, {
+      await axios.post("http://localhost:5000/api/flashcards/create", formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${session?.accessToken}`,
         },
       });
     } catch (error) {

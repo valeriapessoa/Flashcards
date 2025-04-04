@@ -1,8 +1,9 @@
-import express, { Request, Response, NextFunction } from "express"; // Adiciona NextFunction
-import bcrypt from "bcryptjs"; // Garante que está usando bcryptjs
-import passport from 'passport'; // Importa o passport
-import jwt from 'jsonwebtoken'; // Importa jsonwebtoken
+import express, { Request, Response, NextFunction } from "express"; 
+import bcrypt from "bcryptjs";
+import passport from 'passport';
+import jwt from 'jsonwebtoken';
 import { PrismaClient, User } from "@prisma/client";
+import axios from "axios";
 import { body, validationResult } from 'express-validator';
 
 // TODO: Mover para variáveis de ambiente (.env)
@@ -98,6 +99,56 @@ router.post("/login", loginValidationRules, (req: Request, res: Response, next: 
       return res.json({ token, user: userWithoutPassword });
     });
   })(req, res, next); // Chama o middleware do passport
+});
+
+// Nova rota para autenticação via Google/Facebook
+router.post("/oauth", async (req: Request, res: Response) => {
+  const { code, provider } = req.body;
+
+  if (!code || !provider) {
+    return res.status(400).json({ message: "Código e provedor são obrigatórios." });
+  }
+
+  try {
+    let tokenResponse;
+
+    if (provider === 'google') {
+      tokenResponse = await axios.post('https://oauth2.googleapis.com/token', {
+        code,
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+        grant_type: 'authorization_code',
+      });
+    } else if (provider === 'facebook') {
+      tokenResponse = await axios.post('https://graph.facebook.com/v10.0/oauth/access_token', {
+        code,
+        client_id: process.env.FACEBOOK_CLIENT_ID,
+        client_secret: process.env.FACEBOOK_CLIENT_SECRET,
+        redirect_uri: process.env.FACEBOOK_REDIRECT_URI,
+      });
+    } else {
+      return res.status(400).json({ message: "Provedor inválido." });
+    }
+
+    const accessToken = tokenResponse.data.access_token;
+
+    // Aqui você pode adicionar lógica para buscar informações do usuário usando o accessToken
+    // e criar ou atualizar o usuário no banco de dados
+
+    // Exemplo de payload para o token JWT
+    const payload = {
+      provider,
+      accessToken,
+    };
+
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+
+    return res.json({ token });
+  } catch (error) {
+    console.error("Erro na autenticação OAuth:", error);
+    return res.status(500).json({ message: "Erro ao autenticar via OAuth." });
+  }
 });
 
 export default router;

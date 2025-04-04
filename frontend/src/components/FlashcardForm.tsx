@@ -6,7 +6,7 @@ import { Flashcard } from '../types';
 
 interface FlashcardFormProps {
   flashcard?: Flashcard;
-  onSubmit: (flashcard: Flashcard) => void;
+  onSubmit: (updatedFlashcard: Flashcard, file: File | null) => void;
 }
 
 const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit }) => {
@@ -21,14 +21,14 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit }) =>
   const createMutation = useMutation(createFlashcard, {
     onSuccess: (data) => {
       queryClient.invalidateQueries('flashcards');
-      onSubmit(data); // Chamar onSubmit com os dados retornados (incluindo id)
+      onSubmit(data, null); // Chamar onSubmit com os dados retornados (incluindo id) e o arquivo
     },
   });
 
   const updateMutation = useMutation(updateFlashcard, {
     onSuccess: (data) => {
       queryClient.invalidateQueries('flashcards');
-      onSubmit(data); // Chamar onSubmit com os dados retornados (incluindo id)
+      onSubmit(data, null); // Chamar onSubmit com os dados retornados (incluindo id) e o arquivo
     },
   });
 
