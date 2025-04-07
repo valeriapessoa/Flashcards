@@ -92,6 +92,36 @@ router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRe
   }
 });
 
+router.get("/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const flashcardId = parseInt(id, 10);
+
+    if (isNaN(flashcardId)) {
+      return res.status(400).json({ message: "ID do flashcard inválido." });
+    }
+
+    const flashcard = await prisma.flashcard.findUnique({
+      where: { id: flashcardId },
+      include: {
+        categories: true,
+        user: {
+          select: { id: true, name: true, email: true, image: true },
+        },
+      },
+    });
+
+    if (!flashcard) {
+      return res.status(404).json({ message: "Flashcard não encontrado." });
+    }
+
+    return res.status(200).json(flashcard);
+  } catch (error: any) {
+    console.error("❌ Erro ao buscar flashcard:", error.message);
+    return res.status(500).json({ message: "Erro ao buscar flashcard", details: error.message });
+  }
+});
+
 // ✏️ Atualizar flashcard
 router.put("/:id", protect, newUploadMiddleware, async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -164,6 +194,45 @@ router.put("/:id", protect, newUploadMiddleware, async (req: AuthenticatedReques
   } catch (error: any) {
     console.error("❌ Erro ao atualizar flashcard:", error.message);
     return res.status(500).json({ message: "Erro ao atualizar flashcard", details: error.message });
+  }
+});
+
+// ️ Excluir flashcard
+router.delete("/:id", protect, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const flashcardId = parseInt(id, 10);
+
+    if (isNaN(flashcardId)) {
+      return res.status(400).json({ message: "ID do flashcard inválido." });
+    }
+
+    const loggedInUserId = req.user?.id;
+
+    if (!loggedInUserId) {
+      return res.status(401).json({ message: "Usuário não autenticado." });
+    }
+
+    const flashcardToDelete = await prisma.flashcard.findUnique({
+      where: { id: flashcardId },
+    });
+
+    if (!flashcardToDelete) {
+      return res.status(404).json({ message: "Flashcard não encontrado." });
+    }
+
+    if (flashcardToDelete.userId !== loggedInUserId) {
+      return res.status(403).json({ message: "Você não tem permissão para excluir este flashcard." });
+    }
+
+    await prisma.flashcard.delete({
+      where: { id: flashcardId },
+    });
+
+    return res.status(204).json({ message: "Flashcard excluído com sucesso." });
+  } catch (error: any) {
+    console.error("❌ Erro ao excluir flashcard:", error.message);
+    return res.status(500).json({ message: "Erro ao excluir flashcard", details: error.message });
   }
 });
 

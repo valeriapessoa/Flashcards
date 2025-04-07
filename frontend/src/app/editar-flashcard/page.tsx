@@ -70,25 +70,13 @@ const EditFlashcardPage = () => {
         ) : (
           <>
             <FlashcardForm flashcard={flashcard} onSubmit={handleSubmit} />
-            <div className="flex justify-between mt-4">
+            <div className="flex justify-start mt-4">
               <button
                 type="button"
                 onClick={() => router.push("/flashcards")}
                 className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
               >
                 Voltar
-              </button>
-              <button
-                type="submit"
-                className={`px-4 py-2 rounded-lg ${
-                  mutation.isLoading
-                    ? "bg-blue-300 cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-700"
-                } text-white`}
-                disabled={mutation.isLoading}
-                onClick={() => flashcard && handleSubmit(flashcard, null)}
-              >
-                {mutation.isLoading ? "Salvando..." : "Salvar"}
               </button>
             </div>
           </>
@@ -105,3 +93,4 @@ const App = () => (
 );
 
 export default App;
+

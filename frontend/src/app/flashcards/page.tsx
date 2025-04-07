@@ -18,6 +18,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient, useMutation } from "react-query";
 import axios from "axios";
+import { deleteFlashcard } from "../../lib/api";
 
 interface Flashcard {
   id: number;
@@ -42,11 +43,11 @@ const Flashcards: React.FC = () => {
   const [deleteId, setDeleteId] = React.useState<number | null>(null);
 
   const handleEdit = (id: number) => {
-    router.push(`/flashcards/edit/${id}`);
+    router.push(`/editar-flashcard?id=${id}`);
   };
 
   const mutation = useMutation(
-    (id: number) => axios.delete(`/api/flashcards/${id}`),
+    (id: number) => deleteFlashcard(id.toString()),
     {
       onSuccess: () => {
         queryClient.invalidateQueries("flashcards");

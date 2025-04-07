@@ -2,10 +2,9 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 
 interface ActionButtonsProps {
+  isLoading: boolean;
   onSave: () => void;
   onBack: () => void;
-  isSaving: boolean;
-  isLoading: boolean;
 }
 
 const ActionButtons: React.FC<ActionButtonsProps> = ({ isLoading, onSave }) => {
@@ -16,7 +15,6 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({ isLoading, onSave }) => {
       <button
         type="button"
         onClick={onBack}
-        disabled={isSaving}
         className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
       >
         Voltar

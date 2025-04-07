@@ -63,3 +63,8 @@ export const fetchCategories = async () => {
   const response = await apiClient.get(`/api/categories`); // Usa apiClient e remove baseURL
   return response.data;
 };
+
+export const deleteFlashcard = async (id: string) => {
+  const response = await apiClient.delete(`/api/flashcards/${id}`);
+  return response.data;
+};
