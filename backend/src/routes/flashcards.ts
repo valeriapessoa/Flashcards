@@ -14,12 +14,34 @@ interface AuthenticatedRequest extends Request {
   user?: { id: string };
 }
 
+// 📋 Listar todos os flashcards
+router.get("/", async (req: Request, res: Response) => {
+  try {
+    const flashcards = await prisma.flashcard.findMany({
+      include: {
+        categories: true,
+        user: {
+          select: { id: true, name: true, email: true, image: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    res.status(200).json(flashcards);
+  } catch (error: any) {
+    console.error("❌ Erro ao listar flashcards:", error.message);
+    res.status(500).json({
+      message: "Erro ao listar flashcards",
+      details: error.message,
+    });
+  }
+});
+
 // 📌 Criar flashcard
 router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRequest, res: Response) => {
   try {
-    console.log('📥 Requisição recebida - Criar Flashcard');
-    console.log('req.body:', req.body);
-    console.log('req.file:', req.file);
+    console.log("📥 Requisição recebida - Criar Flashcard");
+    console.log("req.body:", req.body);
+    console.log("req.file:", req.file);
 
     const { title, description, userId, tags: tagsString } = req.body;
 
@@ -34,15 +56,13 @@ router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRe
     let tags: string[] = [];
     try {
       if (tagsString) {
-        tags = typeof tagsString === 'string'
-          ? tagsString.split(',').map(tag => tag.trim())
-          : [];
+        tags = typeof tagsString === "string" ? tagsString.split(",").map((tag) => tag.trim()) : [];
       }
     } catch (err) {
       console.warn("⚠️ Erro ao processar tags:", tagsString, err);
     }
 
-    const categoryConnectOrCreate = tags.map(tag => ({
+    const categoryConnectOrCreate = tags.map((tag) => ({
       where: { name: tag },
       create: { name: tag },
     }));
@@ -57,7 +77,12 @@ router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRe
           connectOrCreate: categoryConnectOrCreate,
         },
       },
-      include: { categories: true },
+      include: {
+        categories: true,
+        user: {
+          select: { id: true, name: true, email: true, image: true },
+        },
+      },
     });
 
     return res.status(201).json(newFlashcard);
@@ -99,9 +124,7 @@ router.put("/:id", protect, newUploadMiddleware, async (req: AuthenticatedReques
     let tags: string[] = [];
     try {
       if (tagsString) {
-        tags = typeof tagsString === 'string'
-          ? JSON.parse(tagsString)
-          : [];
+        tags = typeof tagsString === "string" ? JSON.parse(tagsString) : [];
       }
     } catch (err) {
       console.warn("⚠️ Erro ao processar tags na edição:", tagsString, err);
@@ -114,13 +137,12 @@ router.put("/:id", protect, newUploadMiddleware, async (req: AuthenticatedReques
 
     if (req.file?.path) {
       dataToUpdate.imageUrl = req.file.path;
-      // Aqui você pode deletar a imagem antiga do Cloudinary, se desejar
     }
 
     if (tags.length > 0) {
       dataToUpdate.categories = {
         set: [],
-        connectOrCreate: tags.map(tag => ({
+        connectOrCreate: tags.map((tag) => ({
           where: { name: tag },
           create: { name: tag },
         })),
@@ -130,7 +152,12 @@ router.put("/:id", protect, newUploadMiddleware, async (req: AuthenticatedReques
     const updatedFlashcard = await prisma.flashcard.update({
       where: { id: flashcardId },
       data: dataToUpdate,
-      include: { categories: true },
+      include: {
+        categories: true,
+        user: {
+          select: { id: true, name: true, email: true, image: true },
+        },
+      },
     });
 
     return res.status(200).json(updatedFlashcard);

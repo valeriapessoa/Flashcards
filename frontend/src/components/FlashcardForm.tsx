@@ -10,6 +10,7 @@ interface FlashcardFormProps {
 }
 
 const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit }) => {
+  const [errors, setErrors] = useState<{ title?: string; description?: string }>({});
   const [title, setTitle] = useState(flashcard?.title || '');
   const [description, setDescription] = useState(flashcard?.description || '');
   const [image, setImage] = useState(flashcard?.imageUrl || ''); // Usar imageUrl no estado inicial, mas manter o estado como 'image'
@@ -50,6 +51,47 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit }) =>
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const newErrors: { title?: string; description?: string } = {};
+
+    if (!title.trim()) {
+      newErrors.title = 'O título é obrigatório.';
+    }
+
+    if (!description.trim()) {
+      newErrors.description = 'A descrição é obrigatória.';
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      // Verificar se a sessão e o ID do usuário existem
+      if (!session?.user?.id) {
+        console.error("Usuário não autenticado ou ID do usuário não encontrado na sessão.");
+        // TODO: Adicionar tratamento de erro para o usuário (ex: exibir mensagem)
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('description', description);
+      formData.append('tags', tags.join(', '));
+      formData.append('userId', session.user.id);
+      if (imageFile) {
+        formData.append('image', imageFile);
+      }
+
+      // Ajustar para usar formData na requisição
+
+      // Remover essa parte pois não é mais necessária
+      if (flashcard?.id) {
+        // @ts-ignore // Temporário para lidar com a diferença de tipo entre create e update
+        updateMutation.mutate(formData);
+      } else {
+        // @ts-ignore // Temporário para lidar com a diferença de tipo entre create e update
+        createMutation.mutate(formData);
+      }
+    }
+    e.preventDefault();
     // Verificar se a sessão e o ID do usuário existem
     if (!session?.user?.id) {
       console.error("Usuário não autenticado ou ID do usuário não encontrado na sessão.");
@@ -67,8 +109,6 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit }) =>
     }
 
     // Ajustar para usar formData na requisição
-
-    // Remover essa parte pois não é mais necessária
     if (flashcard?.id) {
       // @ts-ignore // Temporário para lidar com a diferença de tipo entre create e update
       updateMutation.mutate(formData);
@@ -80,6 +120,7 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit }) =>
 
   return (
     <form onSubmit={handleSubmit}>
+      {errors.title && <p className="text-red-600">{errors.title}</p>}
       <div>
         <label>Título</label>
         <input
@@ -89,6 +130,7 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit }) =>
           required
         />
       </div>
+        {errors.description && <p className="text-red-600">{errors.description}</p>}
       <div>
         <label>Descrição</label>
         <textarea

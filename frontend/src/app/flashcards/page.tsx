@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Button,
   Container,
@@ -15,8 +15,9 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
-import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useQuery, useQueryClient, useMutation } from "react-query";
+import axios from "axios";
 
 interface Flashcard {
   id: number;
@@ -27,40 +28,36 @@ interface Flashcard {
 }
 
 const Flashcards: React.FC = () => {
-  const [flashcards, setFlashcards] = useState<Flashcard[] | undefined>(undefined);
-  const [loading, setLoading] = useState(true);
-  const [deleteId, setDeleteId] = useState<number | null>(null);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const fetchFlashcards = async () => {
-      try {
-        const response = await axios.get("/api/flashcards");
-        setFlashcards(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar flashcards:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const { data: flashcards, isLoading, error } = useQuery<Flashcard[], Error>(
+    "flashcards",
+    async () => {
+      const response = await axios.get("http://localhost:5000/api/flashcards");
+      return response.data;
+    }
+  );
 
-    fetchFlashcards();
-  }, []);
+  const [deleteId, setDeleteId] = React.useState<number | null>(null);
 
   const handleEdit = (id: number) => {
     router.push(`/flashcards/edit/${id}`);
   };
 
-  const handleDelete = async () => {
-    if (deleteId !== null) {
-      try {
-        await axios.delete(`/api/flashcards/${deleteId}`);
-        setFlashcards((prev) => prev?.filter((flashcard) => flashcard.id !== deleteId));
-      } catch (error) {
-        console.error("Erro ao excluir flashcard:", error);
-      } finally {
+  const mutation = useMutation(
+    (id: number) => axios.delete(`/api/flashcards/${id}`),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("flashcards");
         setDeleteId(null);
-      }
+      },
+    }
+  );
+
+  const handleDelete = () => {
+    if (deleteId !== null) {
+      mutation.mutate(deleteId);
     }
   };
 
@@ -70,13 +67,15 @@ const Flashcards: React.FC = () => {
         📚 Flashcards
       </Typography>
 
-      {loading ? (
+      {isLoading ? (
         <Grid container justifyContent="center">
           <CircularProgress />
         </Grid>
+      ) : error ? (
+        <Typography color="error">Erro ao carregar flashcards: {error.message}</Typography>
       ) : flashcards && flashcards.length > 0 ? (
         <Grid container spacing={3}>
-          {flashcards.map((flashcard) => (
+          {flashcards.map((flashcard: Flashcard) => (
             <Grid item xs={12} sm={6} md={4} key={flashcard.id}>
               <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
                 <CardContent>
@@ -91,6 +90,7 @@ const Flashcards: React.FC = () => {
                       src={flashcard.imageUrl}
                       alt={flashcard.title}
                       style={{ width: "100%", borderRadius: "8px", objectFit: "cover" }}
+                      loading="lazy"
                     />
                   )}
                   <Typography variant="caption" color="primary" sx={{ mt: 1, display: "block" }}>
