@@ -40,8 +40,8 @@ const StudyMode: React.FC<StudyModeProps> = ({ flashcards }) => {
         <Typography variant="h5" component="div">
           {isFront ? currentFlashcard.title : currentFlashcard.description}
         </Typography>
-        {currentFlashcard.imageUrl && (
-          <img src={currentFlashcard.imageUrl} alt={currentFlashcard.title} />
+        {!isFront && currentFlashcard.imageUrl && (
+          <img src={currentFlashcard.imageUrl} alt={currentFlashcard.title} className="mt-4 max-w-full h-auto" />
         )}
         <div>
           <Button onClick={handleFlip}>
