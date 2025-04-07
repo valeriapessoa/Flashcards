@@ -56,6 +56,8 @@ const CreateFlashcard: React.FC<{}> = () => {
       formData.append('image', image);
     }
 
+    console.log("Session:", session);
+
     try {
       await axios.post("http://localhost:5000/api/flashcards/create", formData, {
         headers: {
@@ -64,18 +66,20 @@ const CreateFlashcard: React.FC<{}> = () => {
         },
       });
     } catch (error) {
-      setError("Erro ao criar o flashcard. Tente novamente.");
+
       console.error("Error creating flashcard:", error);
+
       if (axios.isAxiosError(error) && error.response) {
-        console.error("Response status:", error.response.status);
-        console.error("Response data:", error.response.data);
-      } else {
-        console.error("Request error:", error);
+        if(error?.response?.data?.message) {
+          return setError("Erro: " + error.response.data.message);
+        }
       }
+      setError("Erro ao criar o flashcard. Tente novamente.");
+
     } finally {
       setLoading(false);
     }
-  }, [session, title, description, tags]);
+  }, [session, title, description, tags, image]);
 
   return (
     <Container maxWidth="sm">

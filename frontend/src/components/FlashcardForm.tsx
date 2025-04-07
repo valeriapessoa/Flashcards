@@ -18,31 +18,33 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit }) =>
   const { data: session } = useSession(); // Obter dados da sessão
   const queryClient = useQueryClient();
 
-  const createMutation = useMutation(createFlashcard, {
+  const createMutation = useMutation((formData: FormData) => createFlashcard(formData), {
     onSuccess: (data) => {
       queryClient.invalidateQueries('flashcards');
-      onSubmit(data, null); // Chamar onSubmit com os dados retornados (incluindo id) e o arquivo
+      onSubmit(data, null);
     },
   });
 
-  const updateMutation = useMutation(updateFlashcard, {
+  const updateMutation = useMutation((formData: FormData) => {
+    if (flashcard?.id) {
+      return updateFlashcard(flashcard.id.toString(), formData);
+    } else {
+      throw new Error('Flashcard ID is missing');
+    }
+  }, {
     onSuccess: (data) => {
       queryClient.invalidateQueries('flashcards');
-      onSubmit(data, null); // Chamar onSubmit com os dados retornados (incluindo id) e o arquivo
+      onSubmit(data, null);
     },
   });
+
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      const reader = new FileReader();
-
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setImage(base64String); // Define o estado 'image' com a string Base64
-      };
-
-      reader.readAsDataURL(file); // Lê o arquivo como URL de dados (Base64)
+      setImageFile(file);
+      setImage(URL.createObjectURL(file)); // Para preview da imagem
     }
   };
 
@@ -55,23 +57,24 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit }) =>
       return;
     }
 
-    const flashcardData = {
-      title,
-      description,
-      imageUrl: image, // A API espera imageUrl, não image
-      tags,
-      userId: session.user.id, // Incluir o userId da sessão
-    };
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('tags', tags.join(', '));
+    formData.append('userId', session.user.id);
+    if (imageFile) {
+      formData.append('image', imageFile);
+    }
 
-    const mutationData = flashcard?.id
-      ? { ...flashcardData, id: flashcard.id } // Para update, incluir o id do flashcard
-      : flashcardData; // Para create, apenas os dados novos
+    // Ajustar para usar formData na requisição
+
+    // Remover essa parte pois não é mais necessária
     if (flashcard?.id) {
       // @ts-ignore // Temporário para lidar com a diferença de tipo entre create e update
-      updateMutation.mutate(mutationData);
+      updateMutation.mutate(formData);
     } else {
       // @ts-ignore // Temporário para lidar com a diferença de tipo entre create e update
-      createMutation.mutate(mutationData);
+      createMutation.mutate(formData);
     }
   };
 
