@@ -166,12 +166,11 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
                 tagInput: 'flex-1',
                 tagInputField: 'p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full',
                 selected: 'flex flex-wrap gap-2',
-                tag: 'bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm flex items-center gap-1',
-                remove: 'text-blue-500 hover:text-blue-700 cursor-pointer',
+                tag: 'bg-blue-100 text-blue-800 px-3 py-1 rounded-md text-sm flex items-center gap-1',
+                remove: 'text-blue-500 hover:text-blue-700 cursor-pointer ps-1',
                 suggestions: 'mt-1 border border-gray-300 rounded-lg bg-white shadow-lg',
                 activeSuggestion: 'bg-blue-100 p-2 cursor-pointer',
             }}
-            inputRef={tagInputRef} // Adiciona o ref ao input de tags
           />
         </div>
 
