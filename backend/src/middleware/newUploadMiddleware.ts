@@ -29,39 +29,46 @@ const newUploadMiddleware = (req: Request, res: Response, next: NextFunction) =>
       return res.status(400).json({ message: err.message });
     }
 
-    if (!req.file) {
-      console.warn("Nenhum arquivo enviado.");
-      return res.status(400).json({ message: 'Imagem obrigatória.' });
-    }
+    // Se um arquivo foi enviado, processa e faz upload para o Cloudinary
+    if (req.file) {
+      try {
+        console.log("Arquivo recebido. Enviando imagem para o Cloudinary...");
+        const stream = streamifier.createReadStream(req.file.buffer);
 
-    try {
-      console.log("Enviando imagem para o Cloudinary...");
-      const stream = streamifier.createReadStream(req.file.buffer);
-
-      const result = await new Promise((resolve, reject) => {
-        const uploadStream = cloudinary.uploader.upload_stream(
-          {
-            folder: 'uploads',
-            allowed_formats: ['jpg', 'png', 'jpeg', 'gif'],
-            public_id: `${Date.now()}-${req.file?.originalname}`,
-          },
-          (error, result) => {
-            if (error) {
-              reject(error);
-            } else {
-              resolve(result);
+        const result = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            {
+              folder: 'uploads', // Considere tornar isso configurável ou mais específico
+              allowed_formats: ['jpg', 'png', 'jpeg', 'gif'],
+              // Usar public_id único para evitar sobrescritas acidentais, se necessário
+              public_id: `${Date.now()}-${req.file?.originalname.split('.')[0]}`, // Exemplo: remove extensão do nome original
+            },
+            (error, result) => {
+              if (error) {
+                console.error("Erro no stream de upload do Cloudinary:", error);
+                reject(error);
+              } else {
+                resolve(result);
+              }
             }
-          }
-        );
-        stream.pipe(uploadStream);
-      });
+          );
+          stream.pipe(uploadStream);
+        });
 
-      req.file.path = (result as any).secure_url;
-      console.log("Upload finalizado. URL da imagem:", req.file.path);
+        // Adiciona a URL segura ao objeto req.file para uso na rota
+        req.file.path = (result as any).secure_url;
+        console.log("Upload para Cloudinary finalizado. URL da imagem:", req.file.path);
+        next(); // Prossegue para a rota APÓS o upload bem-sucedido
+
+      } catch (error) {
+        console.error('Erro ao enviar imagem para o Cloudinary:', error);
+        // Retorna um erro 500 se o upload falhar
+        return res.status(500).json({ message: 'Erro ao fazer upload da imagem.' });
+      }
+    } else {
+      // Se NENHUM arquivo foi enviado, apenas prossegue para a rota
+      console.log("Nenhum arquivo de imagem enviado, prosseguindo para a rota.");
       next();
-    } catch (error) {
-      console.error('Erro ao enviar imagem para o Cloudinary:', error);
-      res.status(500).json({ message: 'Erro ao fazer upload da imagem.' });
     }
   });
 };

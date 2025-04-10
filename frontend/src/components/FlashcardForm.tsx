@@ -1,53 +1,51 @@
-import React, { useState } from 'react';
-import { useMutation, useQueryClient } from 'react-query';
-import { useSession } from 'next-auth/react';
-import { updateFlashcard, createFlashcard } from '../lib/api';
+import React, { useState, useEffect } from 'react'; // Adicionado useEffect
+// Removido: useMutation, useQueryClient, useSession, updateFlashcard, createFlashcard
 import { Flashcard } from '../types';
 
 interface FlashcardFormProps {
-  flashcard?: Flashcard;
-  onSubmit: (updatedFlashcard: Flashcard, file: File | null) => void;
+  flashcard?: Flashcard | null; // Permitir null
+  onSubmit: (data: Partial<Flashcard>, file: File | null) => void; // Assinatura ajustada
+  isEditing?: boolean; // Nova prop
 }
 
-const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit }) => {
+const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEditing = false }) => { // Recebe isEditing
   const [errors, setErrors] = useState<{ title?: string; description?: string }>({});
   const [title, setTitle] = useState(flashcard?.title || '');
   const [description, setDescription] = useState(flashcard?.description || '');
-  const [image, setImage] = useState(flashcard?.imageUrl || '');
-  const [tags, setTags] = useState(flashcard?.tags || []);
+  const [imagePreview, setImagePreview] = useState<string | null>(flashcard?.imageUrl || null); // Renomeado para clareza
+  const [tagsInput, setTagsInput] = useState<string>(flashcard?.tags?.join(', ') || ''); // Estado para o input de tags
 
-  const { data: session } = useSession();
-  const queryClient = useQueryClient();
-
-  const createMutation = useMutation((formData: FormData) => createFlashcard(formData), {
-    onSuccess: (data) => {
-      queryClient.invalidateQueries('flashcards');
-      onSubmit(data, null);
-    },
-  });
-
-  const updateMutation = useMutation((formData: FormData) => {
-    if (flashcard?.id) {
-      return updateFlashcard(flashcard.id.toString(), formData);
-    } else {
-      throw new Error('Flashcard ID is missing');
-    }
-  }, {
-    onSuccess: (data) => {
-      queryClient.invalidateQueries('flashcards');
-      onSubmit(data, null);
-    },
-  });
-
+  // Removido: useSession, useQueryClient
+  // Removido: createMutation, updateMutation
   const [imageFile, setImageFile] = useState<File | null>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       setImageFile(file);
-      setImage(URL.createObjectURL(file));
+      setImagePreview(URL.createObjectURL(file)); // Atualiza preview
     }
   };
+
+  // Efeito para atualizar o formulário se o flashcard mudar (ex: navegação entre edições)
+  useEffect(() => {
+    if (flashcard) {
+      setTitle(flashcard.title || '');
+      setDescription(flashcard.description || '');
+      setImagePreview(flashcard.imageUrl || null);
+      setTagsInput(flashcard.tags?.join(', ') || '');
+      setImageFile(null); // Reseta o arquivo selecionado
+      setErrors({}); // Limpa erros
+    } else {
+       // Resetar o formulário se não houver flashcard (modo criação)
+       setTitle('');
+       setDescription('');
+       setImagePreview(null);
+       setTagsInput('');
+       setImageFile(null);
+       setErrors({});
+    }
+  }, [flashcard]); // Depende do flashcard
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,33 +54,28 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit }) =>
     if (!title.trim()) {
       newErrors.title = 'O título é obrigatório.';
     }
-
     if (!description.trim()) {
       newErrors.description = 'A descrição é obrigatória.';
     }
+    // Adicione outras validações se necessário (ex: tags)
 
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      if (!session?.user?.id) {
-        console.error("Usuário não autenticado ou ID do usuário não encontrado na sessão.");
-        return;
-      }
+      // Prepara os dados para enviar via onSubmit
+      const updatedData: Partial<Flashcard> = {
+        title: title,
+        description: description,
+        // Converte a string de tags de volta para array, removendo espaços vazios
+        tags: tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag !== ''),
+        // Inclui o ID se estiver editando, para referência na função onSubmit da página pai
+        ...(isEditing && flashcard?.id && { id: flashcard.id }),
+        // Inclui o userId se estiver editando, para referência
+        ...(isEditing && flashcard?.userId && { userId: flashcard.userId }),
+      };
 
-      const formData = new FormData();
-      formData.append('title', title);
-      formData.append('description', description);
-      formData.append('tags', tags.join(', '));
-      formData.append('userId', session.user.id);
-      if (imageFile) {
-        formData.append('image', imageFile);
-      }
-
-      if (flashcard?.id) {
-        updateMutation.mutate(formData);
-      } else {
-        createMutation.mutate(formData);
-      }
+      // Chama a prop onSubmit passada pela página pai
+      onSubmit(updatedData, imageFile);
     }
   };
 
@@ -117,16 +110,17 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit }) =>
             onChange={handleImageChange}
             className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          {image && (
-            <img src={image} alt="Preview" className="mt-2 w-full h-48 object-cover rounded-lg shadow-md" />
+          {imagePreview && (
+            <img src={imagePreview} alt="Preview" className="mt-2 w-full h-48 object-cover rounded-lg shadow-md" />
           )}
         </div>
         <div className="flex flex-col">
           <label className="text-gray-700 font-medium mb-1">Tags</label>
           <input
             type="text"
-            value={tags.join(', ')}
-            onChange={(e) => setTags(e.target.value.split(', '))}
+            value={tagsInput}
+            onChange={(e) => setTagsInput(e.target.value)}
+            placeholder="Separe as tags por vírgula (ex: React, TypeScript)"
             className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -134,7 +128,7 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit }) =>
           type="submit"
           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >
-          Salvar
+          {isEditing ? 'Salvar Alterações' : 'Criar Flashcard'}
         </button>
       </form>
     </div>

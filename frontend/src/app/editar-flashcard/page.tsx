@@ -14,14 +14,18 @@ const EditFlashcardPage = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
 
-  const [flashcard, setFlashcard] = useState<Flashcard | null>(null);
+  const [flashcard, setFlashcard] = useState<Flashcard | null>(null); // Estado atual do formulário
+  const [originalFlashcard, setOriginalFlashcard] = useState<Flashcard | null>(null); // Estado original carregado
 
   const { data, isLoading, isError } = useQuery(
     ["flashcard", id],
     () => fetchFlashcard(id as string),
     {
       enabled: !!id,
-      onSuccess: (data) => setFlashcard(data),
+      onSuccess: (data) => {
+        setFlashcard(data);
+        setOriginalFlashcard(data); // Guarda o estado original
+      },
     }
   );
 
@@ -40,17 +44,49 @@ const EditFlashcardPage = () => {
     }
   );
 
-  const handleSubmit = (updatedFlashcard: Flashcard, file: File | null) => {
+  const handleSubmit = (updatedFlashcardData: Partial<Flashcard>, file: File | null) => {
+    if (!originalFlashcard) return; // Não deve acontecer, mas garante a segurança
+
     const formData = new FormData();
-    formData.append("title", updatedFlashcard.title);
-    formData.append("description", updatedFlashcard.description);
-    formData.append("id", updatedFlashcard.id.toString());
-    formData.append("userId", updatedFlashcard.userId.toString());
+    let hasChanges = false;
+
+    // Compara e adiciona apenas os campos modificados
+    if (updatedFlashcardData.title !== originalFlashcard.title) {
+      formData.append("title", updatedFlashcardData.title || ""); // Envia string vazia se for undefined
+      hasChanges = true;
+    }
+    if (updatedFlashcardData.description !== originalFlashcard.description) {
+      formData.append("description", updatedFlashcardData.description || ""); // Envia string vazia se for undefined
+      hasChanges = true;
+    }
+    // Adiciona a imagem se um novo arquivo foi selecionado
     if (file) {
       formData.append("image", file);
+      hasChanges = true;
     }
 
-    mutation.mutate(formData);
+    // Adiciona tags se forem diferentes (assumindo que 'tags' é um array de strings no seu tipo Flashcard)
+    // Adapte esta lógica se a estrutura de tags for diferente
+    const currentTagsString = JSON.stringify(updatedFlashcardData.tags?.sort() || []);
+    const originalTagsString = JSON.stringify(originalFlashcard.tags?.sort() || []);
+    if (currentTagsString !== originalTagsString) {
+       // O backend espera uma string JSON para tags na atualização
+       formData.append("tags", JSON.stringify(updatedFlashcardData.tags || []));
+       hasChanges = true;
+    }
+
+
+    // Só envia a mutação se houver alterações
+    if (hasChanges) {
+       console.log("Enviando dados modificados:", Object.fromEntries(formData.entries()));
+      mutation.mutate(formData);
+    } else {
+      console.log("Nenhuma alteração detectada.");
+      // Opcional: Mostrar uma mensagem para o usuário que nada foi alterado
+      alert("Nenhuma alteração foi feita.");
+      // Ou redirecionar diretamente
+      // router.push("/flashcards");
+    }
   };
 
   return (
@@ -69,7 +105,11 @@ const EditFlashcardPage = () => {
           <p className="text-gray-600">Flashcard não encontrado.</p>
         ) : (
           <>
-            <FlashcardForm flashcard={flashcard} onSubmit={handleSubmit} />
+            <FlashcardForm
+              flashcard={flashcard}
+              onSubmit={handleSubmit}
+              isEditing={true} // Passa a prop para indicar edição
+            />
             <div className="flex justify-start mt-4">
               <button
                 type="button"

@@ -92,6 +92,7 @@ router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRe
   }
 });
 
+
 router.get("/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
