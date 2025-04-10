@@ -1,54 +1,95 @@
-import React, { useState, useEffect } from 'react'; // Adicionado useEffect
-// Removido: useMutation, useQueryClient, useSession, updateFlashcard, createFlashcard
+import React, { useState, useEffect, useRef } from 'react';
 import { Flashcard } from '../types';
+import { WithContext as ReactTags, SEPARATORS, Tag as ReactTag } from 'react-tag-input';
 
 interface FlashcardFormProps {
-  flashcard?: Flashcard | null; // Permitir null
-  onSubmit: (data: Partial<Flashcard>, file: File | null) => void; // Assinatura ajustada
-  isEditing?: boolean; // Nova prop
+  flashcard?: Flashcard | null;
+  onSubmit: (data: Partial<Flashcard>, file: File | null) => void;
+  isEditing?: boolean;
 }
 
-const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEditing = false }) => { // Recebe isEditing
+const KeyCodes = {
+  comma: 188,
+  enter: 13, // Usar apenas o keyCode 13 para Enter
+};
+
+const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEditing = false }) => {
   const [errors, setErrors] = useState<{ title?: string; description?: string }>({});
   const [title, setTitle] = useState(flashcard?.title || '');
   const [description, setDescription] = useState(flashcard?.description || '');
-  const [imagePreview, setImagePreview] = useState<string | null>(flashcard?.imageUrl || null); // Renomeado para clareza
-  const [tagsInput, setTagsInput] = useState<string>(flashcard?.tags?.join(', ') || ''); // Estado para o input de tags
+  const [imagePreview, setImagePreview] = useState<string | null>(flashcard?.imageUrl || null);
+  const [tags, setTags] = useState<ReactTag[]>(flashcard?.tags?.map((tag, index) => ({ id: `${index}`, text: tag, className: '' })) || []);
 
-  // Removido: useSession, useQueryClient
-  // Removido: createMutation, updateMutation
   const [imageFile, setImageFile] = useState<File | null>(null);
+
+  const tagInputRef = useRef<HTMLInputElement>(null);
+
+  const handleDelete = (index: number) => {
+    setTags(tags.filter((_, i) => i !== index));
+  };
+
+  const handleAddition = (tag: ReactTag) => {
+    // Adiciona a tag apenas se o texto não estiver vazio
+    if (tag.text.trim()) {
+        setTags([...tags, tag]);
+    }
+  };
+
+  const handleDrag = (tag: ReactTag, currPos: number, newPos: number) => {
+    const newTags = tags.slice();
+    newTags.splice(currPos, 1);
+    newTags.splice(newPos, 0, tag);
+    setTags(newTags);
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       setImageFile(file);
-      setImagePreview(URL.createObjectURL(file)); // Atualiza preview
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
-  // Efeito para atualizar o formulário se o flashcard mudar (ex: navegação entre edições)
   useEffect(() => {
     if (flashcard) {
       setTitle(flashcard.title || '');
       setDescription(flashcard.description || '');
       setImagePreview(flashcard.imageUrl || null);
-      setTagsInput(flashcard.tags?.join(', ') || '');
-      setImageFile(null); // Reseta o arquivo selecionado
-      setErrors({}); // Limpa erros
+      setTags(flashcard.tags?.map((tag, index) => ({ id: `${index}`, text: tag, className: '' })) || []);
+      setImageFile(null);
+      setErrors({});
     } else {
-       // Resetar o formulário se não houver flashcard (modo criação)
-       setTitle('');
-       setDescription('');
-       setImagePreview(null);
-       setTagsInput('');
-       setImageFile(null);
-       setErrors({});
+      setTitle('');
+      setDescription('');
+      setImagePreview(null);
+      setTags([]);
+      setImageFile(null);
+      setErrors({});
     }
-  }, [flashcard]); // Depende do flashcard
+  }, [flashcard]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.keyCode === KeyCodes.enter && document.activeElement === tagInputRef.current) {
+        e.preventDefault(); // Impede a submissão do formulário
+      }
+    };
+
+    const inputElement = tagInputRef.current;
+    if (inputElement) {
+      inputElement.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      if (inputElement) {
+        inputElement.removeEventListener('keydown', handleKeyDown);
+      }
+    };
+  }, []);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // Prevenir submissão padrão sempre
+
     const newErrors: { title?: string; description?: string } = {};
 
     if (!title.trim()) {
@@ -57,24 +98,18 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
     if (!description.trim()) {
       newErrors.description = 'A descrição é obrigatória.';
     }
-    // Adicione outras validações se necessário (ex: tags)
 
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      // Prepara os dados para enviar via onSubmit
       const updatedData: Partial<Flashcard> = {
-        title: title,
-        description: description,
-        // Converte a string de tags de volta para array, removendo espaços vazios
-        tags: tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag !== ''),
-        // Inclui o ID se estiver editando, para referência na função onSubmit da página pai
+        title,
+        description,
+        tags: tags.map(tag => tag.text), // Enviar apenas os textos das tags
         ...(isEditing && flashcard?.id && { id: flashcard.id }),
-        // Inclui o userId se estiver editando, para referência
         ...(isEditing && flashcard?.userId && { userId: flashcard.userId }),
       };
 
-      // Chama a prop onSubmit passada pela página pai
       onSubmit(updatedData, imageFile);
     }
   };
@@ -82,7 +117,7 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
   return (
     <div className="space-y-4">
       <form onSubmit={handleSubmit}>
-        {errors.title && <p className="text-red-600 text-sm">{errors.title}</p>}
+        {/* Campos Título, Descrição, Imagem ... */}
         <div className="flex flex-col">
           <label className="text-gray-700 font-medium mb-1">Título</label>
           <input
@@ -114,19 +149,36 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
             <img src={imagePreview} alt="Preview" className="mt-2 w-full h-48 object-cover rounded-lg shadow-md" />
           )}
         </div>
+
+        {/* Campo de Tags */}
         <div className="flex flex-col">
           <label className="text-gray-700 font-medium mb-1">Tags</label>
-          <input
-            type="text"
-            value={tagsInput}
-            onChange={(e) => setTagsInput(e.target.value)}
-            placeholder="Separe as tags por vírgula (ex: React, TypeScript)"
-            className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          <ReactTags
+            tags={tags}
+            handleDelete={handleDelete}
+            handleAddition={handleAddition}
+            handleDrag={handleDrag}
+            delimiters={[KeyCodes.comma, KeyCodes.enter]} // Usar KeyCodes definidos
+            placeholder="Adicione tags e pressione Enter ou vírgula"
+            allowDragDrop // Habilitar drag and drop se desejado
+            classNames={{ // Adicionar classes Tailwind se necessário para estilização
+                tags: 'flex flex-wrap gap-2',
+                tagInput: 'flex-1',
+                tagInputField: 'p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full',
+                selected: 'flex flex-wrap gap-2',
+                tag: 'bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm flex items-center gap-1',
+                remove: 'text-blue-500 hover:text-blue-700 cursor-pointer',
+                suggestions: 'mt-1 border border-gray-300 rounded-lg bg-white shadow-lg',
+                activeSuggestion: 'bg-blue-100 p-2 cursor-pointer',
+            }}
+            inputRef={tagInputRef} // Adiciona o ref ao input de tags
           />
         </div>
+
+        {/* Botão de Submit */}
         <button
           type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >
           {isEditing ? 'Salvar Alterações' : 'Criar Flashcard'}
         </button>

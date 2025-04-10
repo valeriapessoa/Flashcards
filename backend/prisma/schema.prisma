@@ -20,6 +20,12 @@ model User {
   studySessions StudySession[]
 }
 
+model Tag {
+  id   Int    @id @default(autoincrement())
+  text String @unique
+  flashcards Flashcard[] @relation("FlashcardTags")
+}
+
 model Flashcard {
   id           Int           @id @default(autoincrement())
   title        String        @db.VarChar(255)
@@ -31,6 +37,7 @@ model Flashcard {
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   studyResults StudyResult[]
   categories   Category[]    @relation("FlashcardCategories")
+  tags         Tag[]         @relation("FlashcardTags")
 }
 
 model Category {

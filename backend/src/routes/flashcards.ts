@@ -19,7 +19,7 @@ router.get("/", async (req: Request, res: Response) => {
   try {
     const flashcards = await prisma.flashcard.findMany({
       include: {
-        categories: true,
+        categories: true, // Manter se ainda for relevante
         user: {
           select: { id: true, name: true, email: true, image: true },
         },
@@ -43,7 +43,8 @@ router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRe
     console.log("req.body:", req.body);
     console.log("req.file:", req.file);
 
-    const { title, description, userId, tags: tagsString } = req.body;
+    const { title, description, tags: tagsInput } = req.body;
+    const userId = req.user?.id;
 
     if (!title || !description || !userId) {
       return res.status(400).json({ message: "Título, descrição e ID do usuário são obrigatórios!" });
@@ -53,19 +54,32 @@ router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRe
       return res.status(400).json({ message: "Imagem é obrigatória para criar um flashcard." });
     }
 
-    let tags: string[] = [];
-    try {
-      if (tagsString) {
-        tags = typeof tagsString === "string" ? tagsString.split(",").map((tag) => tag.trim()) : [];
+    // Processar tagsInput (esperando array de objetos { id, text })
+    let tagsToConnect: { id: number }[] = [];
+    if (tagsInput) {
+      try {
+        const tagsArray = JSON.parse(tagsInput);
+        if (Array.isArray(tagsArray)) {
+          for (const tag of tagsArray) {
+            if (tag.id) {
+              // Se a tag já existe (tem ID), conectar
+              tagsToConnect.push({ id: tag.id });
+            } else if (tag.text) {
+              // Se é uma nova tag (sem ID mas com text), criar e conectar
+              const newTag = await prisma.tag.upsert({
+                where: { text: tag.text },
+                update: {}, // Não atualiza nada se já existir
+                create: { text: tag.text },
+              });
+              tagsToConnect.push({ id: newTag.id });
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Erro ao processar tagsInput:", error);
+        return res.status(400).json({ message: "Formato de tags inválido." });
       }
-    } catch (err) {
-      console.warn("⚠️ Erro ao processar tags:", tagsString, err);
     }
-
-    const categoryConnectOrCreate = tags.map((tag) => ({
-      where: { name: tag },
-      create: { name: tag },
-    }));
 
     const newFlashcard = await prisma.flashcard.create({
       data: {
@@ -73,12 +87,12 @@ router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRe
         description,
         imageUrl: req.file.path,
         userId,
-        categories: {
-          connectOrCreate: categoryConnectOrCreate,
+        tags: {
+          connect: tagsToConnect,
         },
       },
       include: {
-        categories: true,
+        tags: true,
         user: {
           select: { id: true, name: true, email: true, image: true },
         },
@@ -105,7 +119,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     const flashcard = await prisma.flashcard.findUnique({
       where: { id: flashcardId },
       include: {
-        categories: true,
+        categories: true, // Manter se relevante
         user: {
           select: { id: true, name: true, email: true, image: true },
         },
@@ -133,7 +147,7 @@ router.put("/:id", protect, newUploadMiddleware, async (req: AuthenticatedReques
       return res.status(400).json({ message: "ID do flashcard inválido." });
     }
 
-    const { title, description, tags: tagsString } = req.body;
+    const { title, description, tags: tagsInput } = req.body; // Pegar tagsInput
     const loggedInUserId = req.user?.id;
 
     if (!loggedInUserId) {
@@ -152,39 +166,44 @@ router.put("/:id", protect, newUploadMiddleware, async (req: AuthenticatedReques
       return res.status(403).json({ message: "Você não tem permissão para editar este flashcard." });
     }
 
-    let tags: string[] = [];
-    try {
-      if (tagsString) {
-        tags = typeof tagsString === "string" ? JSON.parse(tagsString) : [];
-      }
-    } catch (err) {
-      console.warn("⚠️ Erro ao processar tags na edição:", tagsString, err);
+    // Processar tags (mesma lógica da criação)
+    let tags: string[] | undefined = undefined; // Usar undefined para não sobrescrever se não for enviado
+    if (tagsInput !== undefined) { // Processar apenas se tagsInput foi enviado
+        tags = []; // Inicializa como array vazio se enviado (mesmo que vazio)
+        if (typeof tagsInput === 'string') {
+            tags = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+        } else if (Array.isArray(tagsInput)) {
+            tags = tagsInput.map(tag => String(tag).trim()).filter(tag => tag.length > 0);
+        }
     }
 
     const dataToUpdate: any = {
       ...(title && { title }),
       ...(description && { description }),
+      // Atualizar tags apenas se um novo array foi processado (permite limpar tags enviando array vazio ou string vazia)
+      ...(tags !== undefined && { tags: tags }),
     };
 
     if (req.file?.path) {
       dataToUpdate.imageUrl = req.file.path;
     }
 
-    if (tags.length > 0) {
-      dataToUpdate.categories = {
-        set: [],
-        connectOrCreate: tags.map((tag) => ({
-          where: { name: tag },
-          create: { name: tag },
-        })),
-      };
-    }
+    // REMOVIDO: Lógica que usava tags para manipular 'categories'
+    // if (tags.length > 0) {
+    //   dataToUpdate.categories = {
+    //     set: [], // CUIDADO: Isso desconecta todas as categorias existentes
+    //     connectOrCreate: tags.map((tag) => ({
+    //       where: { name: tag },
+    //       create: { name: tag },
+    //     })),
+    //   };
+    // }
 
     const updatedFlashcard = await prisma.flashcard.update({
       where: { id: flashcardId },
       data: dataToUpdate,
       include: {
-        categories: true,
+        categories: true, // Manter se relevante
         user: {
           select: { id: true, name: true, email: true, image: true },
         },
