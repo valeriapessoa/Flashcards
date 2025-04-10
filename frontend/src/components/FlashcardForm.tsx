@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
 import { Flashcard } from '../types';
 import { WithContext as ReactTags, SEPARATORS, Tag as ReactTag } from 'react-tag-input';
 
@@ -42,13 +43,29 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
     setTags(newTags);
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    if (acceptedFiles.length > 0) {
+      const file = acceptedFiles[0];
       setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
     }
+  }, []);
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
   };
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'image/jpeg': ['.jpg', '.jpeg'],
+      'image/png': ['.png'],
+      'image/gif': ['.gif'],
+    },
+    maxFiles: 1,
+    multiple: false, // Garante que apenas um arquivo seja aceito
+  });
 
   useEffect(() => {
     if (flashcard) {
@@ -110,7 +127,7 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
         ...(isEditing && flashcard?.userId && { userId: flashcard.userId }),
       };
 
-      onSubmit(updatedData, imageFile);
+      onSubmit(updatedData, imageFile); // Certifica-se de enviar o arquivo corretamente
     }
   };
 
@@ -140,13 +157,34 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
         </div>
         <div className="flex flex-col">
           <label className="text-gray-700 font-medium mb-1">Imagem</label>
-          <input
-            type="file"
-            onChange={handleImageChange}
-            className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <div
+            {...getRootProps()}
+            className={`p-4 border-2 border-dashed rounded-lg text-center cursor-pointer ${
+              isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+            }`}
+          >
+            <input {...getInputProps()} />
+            {isDragActive ? (
+              <p className="text-blue-500">Solte a imagem aqui...</p>
+            ) : (
+              <p className="text-gray-500">Arraste e solte uma imagem aqui ou clique para selecionar</p>
+            )}
+          </div>
           {imagePreview && (
-            <img src={imagePreview} alt="Preview" className="mt-2 w-full h-48 object-cover rounded-lg shadow-md" />
+            <div className="mt-2 relative">
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="w-full h-48 object-cover rounded-lg shadow-md"
+              />
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+              >
+                ✖
+              </button>
+            </div>
           )}
         </div>
 

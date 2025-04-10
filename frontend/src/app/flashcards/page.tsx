@@ -67,7 +67,15 @@ const Flashcards: React.FC = () => {
       <Typography variant="h4" gutterBottom textAlign="center">
         📚 Flashcards
       </Typography>
-
+      <Grid container justifyContent="flex-end" sx={{ mb: 2 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => router.push("/criar-flashcard")}
+        >
+          ➕ Criar Novo Flashcard
+        </Button>
+      </Grid>
       {isLoading ? (
         <Grid container justifyContent="center">
           <CircularProgress />
