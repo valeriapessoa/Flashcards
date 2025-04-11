@@ -20,12 +20,17 @@ import { useQuery, useQueryClient, useMutation } from "react-query";
 import axios from "axios";
 import { deleteFlashcard } from "../../lib/api";
 
+interface Tag {
+  id: number;
+  text: string;
+}
+
 interface Flashcard {
   id: number;
   title: string;
   description: string;
   imageUrl: string;
-  tags: string[];
+  tags: Tag[];
 }
 
 const Flashcards: React.FC = () => {
@@ -102,9 +107,16 @@ const Flashcards: React.FC = () => {
                       loading="lazy"
                     />
                   )}
-                  <Typography variant="caption" color="primary" sx={{ mt: 1, display: "block" }}>
-                    🔖 Tags: {flashcard.tags}
-                  </Typography>
+                  <div className="mt-3 flex flex-wrap gap-2 items-center">
+                  🔖 Tags: { flashcard.tags.map( tag =>
+                    (<Typography
+                      variant="caption"
+                      color="primary"
+                      className="bg-blue-100 text-blue-800 px-3 py-1 my-2 rounded-md text-sm flex items-center gap-2">
+                    {tag.text}
+                  </Typography>))}
+                  </div>
+
                 </CardContent>
                 <CardActions sx={{ justifyContent: "space-between", px: 2 }}>
                   <Button variant="outlined" size="small" onClick={() => handleEdit(flashcard.id)}>

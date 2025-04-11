@@ -7,6 +7,7 @@ interface FlashcardData {
   title: string;
   description: string;
   imageUrl?: string;
+  tags?: string[];
 }
 
 interface FlashcardListProps {
@@ -22,6 +23,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ flashcards }) => {
             title={flashcard.title}
             description={flashcard.description}
             imageUrl={flashcard.imageUrl}
+            tags={flashcard.tags}
           />
         </Grid>
       ))}

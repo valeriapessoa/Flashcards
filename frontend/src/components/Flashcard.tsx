@@ -8,7 +8,7 @@ interface FlashcardProps {
   tags?: string[];
 }
 
-const Flashcard: React.FC<FlashcardProps> = ({ title, description, imageUrl }) => {
+const Flashcard: React.FC<FlashcardProps> = ({ title, description, imageUrl, tags }) => {
   return (
     <Card>
       {imageUrl && <CardMedia component="img" height="140" image={imageUrl} alt={title} />}

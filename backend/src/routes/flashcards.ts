@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { prisma } from '../libs/prismaClient';
+import prisma from '../libs/prismaClient';
 import dotenv from "dotenv";
 import newUploadMiddleware from "../middleware/newUploadMiddleware";
 import { protect } from "../middleware/authMiddleware";
@@ -19,6 +19,7 @@ router.get("/", async (req: Request, res: Response) => {
     const flashcards = await prisma.flashcard.findMany({
       include: {
         categories: true,
+        tags: true,
         user: {
           select: { id: true, name: true, email: true, image: true },
         },
@@ -67,8 +68,8 @@ router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRe
                 create: { text: tagText },
               })
             )
-          ).then((results) => {
-            tagsToConnect = results.map((tag) => ({ id: tag.id }));
+          ).then((results: any[]) => {
+            tagsToConnect = results.map((tag: any) => ({ id: tag.id }));
           });
         }
       } catch (error) {

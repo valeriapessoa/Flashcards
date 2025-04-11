@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { prisma } from './libs/prismaClient';
+import prisma from './libs/prismaClient';
 import apiRoute from "./routes/api";
 import passport from "passport";
 import "./services/authService";

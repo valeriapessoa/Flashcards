@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
-import { prisma } from '../libs/prismaClient';
+import prisma from '../libs/prismaClient';
 import axios from "axios";
 import { body, validationResult } from 'express-validator';
 

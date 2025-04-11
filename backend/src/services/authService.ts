@@ -2,9 +2,7 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { VerifyFunction } from 'passport-local'; // Importar VerifyFunction pode ajudar na tipagem
 import bcrypt from 'bcryptjs';
-import { PrismaClient, User } from '@prisma/client'; // Importa User também
-
-const prisma = new PrismaClient();
+import prisma from '../libs/prismaClient'; // Importa a instância centralizada do PrismaClient
 
 // Configuração da Estratégia Local
 passport.use(
