@@ -107,16 +107,18 @@ const Flashcards: React.FC = () => {
                       loading="lazy"
                     />
                   )}
-                  <div className="mt-3 flex flex-wrap gap-2 items-center">
-                  🔖 Tags: { flashcard.tags.map( tag =>
-                    (<Typography
+                <div className="mt-3 flex flex-wrap gap-2 items-center">
+                  🔖 Tags: {flashcard.tags.map((tag, index) => (
+                    <Typography
+                      key={`${tag.text}-${index}`} // adiciona uma key única
                       variant="caption"
                       color="primary"
-                      className="bg-blue-100 text-blue-800 px-3 py-1 my-2 rounded-md text-sm flex items-center gap-2">
-                    {tag.text}
-                  </Typography>))}
-                  </div>
-
+                      className="bg-blue-100 text-blue-800 px-3 py-1 my-2 rounded-md text-sm flex items-center gap-2"
+                    >
+                      {tag.text}
+                    </Typography>
+                  ))}
+                </div>
                 </CardContent>
                 <CardActions sx={{ justifyContent: "space-between", px: 2 }}>
                   <Button variant="outlined" size="small" onClick={() => handleEdit(flashcard.id)}>
