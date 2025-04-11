@@ -9,7 +9,7 @@ import { CircularProgress, Button } from "@mui/material";
 import { useRouter } from "next/navigation";
 
 const fetchFlashcards = async () => {
-  const response = await axios.get("/api/flashcards");
+  const response = await axios.get("http://localhost:5000/api/flashcards");
   return response.data;
 };
 
