@@ -10,8 +10,8 @@ interface FlashcardFormProps {
 }
 
 const KeyCodes = {
-  comma: 188,
-  enter: 13, // Usar apenas o keyCode 13 para Enter
+  comma: 'Comma',
+  enter: 'Enter', // Usar strings para representar as teclas
 };
 
 const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEditing = false }) => {
@@ -87,7 +87,7 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.keyCode === KeyCodes.enter && document.activeElement === tagInputRef.current) {
+      if (e.key === KeyCodes.enter && document.activeElement === tagInputRef.current) {
         e.preventDefault(); // Impede a submissão do formulário
       }
     };
@@ -196,7 +196,7 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
             handleDelete={handleDelete}
             handleAddition={handleAddition}
             handleDrag={handleDrag}
-            delimiters={[KeyCodes.comma, KeyCodes.enter]} // Usar KeyCodes definidos
+            separators={[KeyCodes.comma, KeyCodes.enter]} // Usar KeyCodes definidos
             placeholder="Adicione tags e pressione Enter ou vírgula"
             allowDragDrop // Habilitar drag and drop se desejado
             classNames={{ // Adicionar classes Tailwind se necessário para estilização

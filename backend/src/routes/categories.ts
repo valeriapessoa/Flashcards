@@ -1,8 +1,7 @@
 import express, { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from '../libs/prismaClient';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Buscar todas as categorias
 router.get("/", async (req: Request, res: Response) => {

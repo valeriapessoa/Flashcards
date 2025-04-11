@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from '../libs/prismaClient';
 import dotenv from "dotenv";
 import newUploadMiddleware from "../middleware/newUploadMiddleware";
 import { protect } from "../middleware/authMiddleware";
@@ -7,7 +7,6 @@ import { protect } from "../middleware/authMiddleware";
 dotenv.config();
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Tipagem da Request autenticada
 interface AuthenticatedRequest extends Request {
@@ -19,7 +18,7 @@ router.get("/", async (req: Request, res: Response) => {
   try {
     const flashcards = await prisma.flashcard.findMany({
       include: {
-        categories: true, // Manter se ainda for relevante
+        categories: true,
         user: {
           select: { id: true, name: true, email: true, image: true },
         },
@@ -54,26 +53,23 @@ router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRe
       return res.status(400).json({ message: "Imagem é obrigatória para criar um flashcard." });
     }
 
-    // Processar tagsInput (esperando array de objetos { id, text })
+    // Processar tagsInput (esperando array de strings)
     let tagsToConnect: { id: number }[] = [];
     if (tagsInput) {
       try {
         const tagsArray = JSON.parse(tagsInput);
         if (Array.isArray(tagsArray)) {
-          for (const tag of tagsArray) {
-            if (tag.id) {
-              // Se a tag já existe (tem ID), conectar
-              tagsToConnect.push({ id: tag.id });
-            } else if (tag.text) {
-              // Se é uma nova tag (sem ID mas com text), criar e conectar
-              const newTag = await prisma.tag.upsert({
-                where: { text: tag.text },
-                update: {}, // Não atualiza nada se já existir
-                create: { text: tag.text },
-              });
-              tagsToConnect.push({ id: newTag.id });
-            }
-          }
+          await prisma.$transaction(
+            tagsArray.map((tagText) =>
+              prisma.tag.upsert({
+                where: { text: tagText },
+                update: {},
+                create: { text: tagText },
+              })
+            )
+          ).then((results) => {
+            tagsToConnect = results.map((tag) => ({ id: tag.id }));
+          });
         }
       } catch (error) {
         console.error("Erro ao processar tagsInput:", error);
@@ -106,7 +102,6 @@ router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRe
   }
 });
 
-
 router.get("/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -119,7 +114,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     const flashcard = await prisma.flashcard.findUnique({
       where: { id: flashcardId },
       include: {
-        categories: true, // Manter se relevante
+        categories: true,
         user: {
           select: { id: true, name: true, email: true, image: true },
         },
@@ -147,7 +142,7 @@ router.put("/:id", protect, newUploadMiddleware, async (req: AuthenticatedReques
       return res.status(400).json({ message: "ID do flashcard inválido." });
     }
 
-    const { title, description, tags: tagsInput } = req.body; // Pegar tagsInput
+    const { title, description, tags: tagsInput } = req.body;
     const loggedInUserId = req.user?.id;
 
     if (!loggedInUserId) {
@@ -167,9 +162,9 @@ router.put("/:id", protect, newUploadMiddleware, async (req: AuthenticatedReques
     }
 
     // Processar tags (mesma lógica da criação)
-    let tags: string[] | undefined = undefined; // Usar undefined para não sobrescrever se não for enviado
-    if (tagsInput !== undefined) { // Processar apenas se tagsInput foi enviado
-        tags = []; // Inicializa como array vazio se enviado (mesmo que vazio)
+    let tags: string[] | undefined = undefined;
+    if (tagsInput !== undefined) {
+        tags = [];
         if (typeof tagsInput === 'string') {
             tags = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
         } else if (Array.isArray(tagsInput)) {
@@ -180,7 +175,6 @@ router.put("/:id", protect, newUploadMiddleware, async (req: AuthenticatedReques
     const dataToUpdate: any = {
       ...(title && { title }),
       ...(description && { description }),
-      // Atualizar tags apenas se um novo array foi processado (permite limpar tags enviando array vazio ou string vazia)
       ...(tags !== undefined && { tags: tags }),
     };
 
@@ -188,22 +182,11 @@ router.put("/:id", protect, newUploadMiddleware, async (req: AuthenticatedReques
       dataToUpdate.imageUrl = req.file.path;
     }
 
-    // REMOVIDO: Lógica que usava tags para manipular 'categories'
-    // if (tags.length > 0) {
-    //   dataToUpdate.categories = {
-    //     set: [], // CUIDADO: Isso desconecta todas as categorias existentes
-    //     connectOrCreate: tags.map((tag) => ({
-    //       where: { name: tag },
-    //       create: { name: tag },
-    //     })),
-    //   };
-    // }
-
     const updatedFlashcard = await prisma.flashcard.update({
       where: { id: flashcardId },
       data: dataToUpdate,
       include: {
-        categories: true, // Manter se relevante
+        categories: true,
         user: {
           select: { id: true, name: true, email: true, image: true },
         },

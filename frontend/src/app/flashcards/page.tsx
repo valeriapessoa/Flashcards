@@ -25,7 +25,7 @@ interface Flashcard {
   title: string;
   description: string;
   imageUrl: string;
-  tags: string;
+  tags: string[];
 }
 
 const Flashcards: React.FC = () => {

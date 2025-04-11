@@ -22,7 +22,7 @@ const FlashcardItem: React.FC<FlashcardItemProps> = ({ flashcard, onEdit, onDele
           <img src={flashcard.imageUrl} alt={flashcard.title} style={{ width: '100%', marginTop: '10px' }} />
         )}
         <Typography variant="body2" color="text.secondary">
-          Tags: {flashcard.tags}
+          Tags: {flashcard.tags.join(', ')}
         </Typography>
       </CardContent>
       <CardActions>

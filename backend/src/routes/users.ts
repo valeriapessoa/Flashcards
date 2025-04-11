@@ -1,9 +1,8 @@
 import express, { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from '../libs/prismaClient';
 import bcrypt from "bcrypt";
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Criar um novo usuário antes de permitir a criação de um flashcard
 router.post("/create", async (req: Request, res: Response) => {
@@ -21,12 +20,12 @@ router.post("/create", async (req: Request, res: Response) => {
     }
 
     // Hashear a senha
-    const saltRounds = 10; // Fator de custo para o hashing
+    const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Criar usuário com senha hasheada
     const newUser = await prisma.user.create({
-      data: { name, email, password: hashedPassword }, // Salvar a senha hasheada
+      data: { name, email, password: hashedPassword },
     });
 
     return res.status(201).json(newUser);
@@ -36,4 +35,4 @@ router.post("/create", async (req: Request, res: Response) => {
   }
 });
 
-export default router; // Adiciona a exportação padrão
+export default router;

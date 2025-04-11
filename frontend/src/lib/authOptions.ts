@@ -1,3 +1,5 @@
+// src/lib/authOptions.ts
+
 import NextAuth, { NextAuthOptions, User } from 'next-auth';
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
@@ -14,14 +16,14 @@ declare module 'next-auth' {
       email: string;
       image?: string;
     };
-    accessToken?: string; // Adiciona o token à sessão
+    accessToken?: string;
   }
 }
 
 declare module 'next-auth/jwt' {
   interface JWT {
     id: string;
-    accessToken?: string; // Adiciona o token ao JWT
+    accessToken?: string;
   }
 }
 
@@ -43,49 +45,51 @@ export const authOptions: NextAuthOptions = {
       authorize: async (credentials) => {
         if (!credentials?.email || !credentials?.password) {
           console.error("Credenciais inválidas: falta email ou senha");
-          throw new Error("Credenciais inválidas."); // Lança erro para NextAuth exibir
+          throw new Error("Credenciais inválidas.");
         }
 
         try {
-          // Garante que a URL base da API está definida
           const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
           if (!apiBaseUrl) {
             console.error("Variável de ambiente NEXT_PUBLIC_API_BASE_URL não definida.");
             throw new Error("Erro de configuração do servidor.");
           }
 
-          const res = await fetch(`${apiBaseUrl}/api/auth/login`, { // Usa a variável
+          const res = await fetch(`${apiBaseUrl}/api/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               email: credentials.email,
-              password: credentials.password
+              password: credentials.password,
             }),
           });
 
+          const contentType = res.headers.get("content-type");
+          const isJson = contentType && contentType.includes("application/json");
+
           if (!res.ok) {
-            const errorData = await res.json(); // Tenta pegar a mensagem de erro do backend
-            console.error(`Erro na autenticação (${res.status}):`, errorData.message || 'Erro desconhecido');
-            throw new Error(errorData.message || "Credenciais inválidas."); // Lança erro com mensagem do backend
+            const errorMessage = isJson
+              ? (await res.json())?.message
+              : await res.text();
+
+            console.error(`Erro na autenticação (${res.status}):`, errorMessage || 'Erro desconhecido');
+            throw new Error(errorMessage || "Credenciais inválidas.");
           }
 
-          const data = await res.json(); // Espera { token, user }
+          const data = await res.json();
 
-          // Verifica se a resposta contém o token e o usuário
           if (!data || !data.token || !data.user || !data.user.id) {
             console.error("Resposta inválida da API de login:", data);
             throw new Error("Erro ao processar login.");
           }
 
-          // Retorna o objeto user enriquecido com o token para o callback jwt
           return {
-            ...data.user, // id, name, email, etc.
-            accessToken: data.token, // Adiciona o token aqui
+            ...data.user,
+            accessToken: data.token,
           };
 
         } catch (error: any) {
           console.error("Erro durante a autorização:", error);
-          // Garante que a mensagem de erro seja propagada para o NextAuth
           throw new Error(error.message || "Erro durante a autenticação.");
         }
       },
@@ -95,18 +99,16 @@ export const authOptions: NextAuthOptions = {
   pages: { signIn: '/login' },
   callbacks: {
     async jwt({ token, user }: { token: JWT; user?: (User | AdapterUser) & { accessToken?: string } | null }) {
-      // Na primeira vez (login), o objeto 'user' vindo do 'authorize' estará disponível
       if (user) {
         token.id = user.id;
-        token.accessToken = user.accessToken; // Armazena o token no JWT
+        token.accessToken = user.accessToken;
       }
       return token;
     },
     async session({ session, token }: { session: Session; token: JWT }) {
-      // Adiciona o id e o accessToken do token JWT para o objeto session
       if (token) {
         session.user.id = token.id;
-        session.accessToken = token.accessToken; // Disponibiliza o token na sessão
+        session.accessToken = token.accessToken;
       }
       return session;
     },

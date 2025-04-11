@@ -1,13 +1,13 @@
-import express, { Request, Response, NextFunction } from "express"; 
+import express, { Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
-import { PrismaClient, User } from "@prisma/client";
+import { prisma } from '../libs/prismaClient';
 import axios from "axios";
 import { body, validationResult } from 'express-validator';
 
 // TODO: Mover para variáveis de ambiente (.env)
-const JWT_SECRET = process.env.JWT_SECRET || 'YOUR_SECRET_KEY'; // Chave secreta para assinar o JWT
+const JWT_SECRET = process.env.JWT_SECRET || 'YOUR_SECRET_KEY';
 type UserCreateInputWithPassword = {
   name: string;
   email: string;
@@ -15,7 +15,6 @@ type UserCreateInputWithPassword = {
 };
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 const registerValidationRules = [
   body('name').notEmpty().withMessage('Nome é obrigatório'),
@@ -62,46 +61,36 @@ router.post("/login", loginValidationRules, (req: Request, res: Response, next: 
     return res.status(400).json({ errors: errors.array() });
   }
 
-  // Usa passport.authenticate com a estratégia 'local'
-  // { session: false } indica que não usaremos sessões do lado do servidor
-  passport.authenticate('local', { session: false }, (err: Error | null, user: User | false, info: { message: string } | undefined) => {
+  passport.authenticate('local', { session: false }, (err: Error | null, user: any | false, info: { message: string } | undefined) => {
     if (err) {
       console.error("Erro na autenticação:", err);
       return res.status(500).json({ message: "Erro interno no servidor durante a autenticação." });
     }
-    // Se o usuário não for encontrado ou a senha estiver incorreta (retornado como 'false' pela estratégia)
     if (!user) {
-      // Usa a mensagem de erro fornecida pela estratégia (se houver)
       return res.status(401).json({ message: info?.message || "Credenciais inválidas." });
     }
 
-    // Se a autenticação for bem-sucedida, gera o token JWT
     req.login(user, { session: false }, (loginErr) => {
       if (loginErr) {
         console.error("Erro no req.login:", loginErr);
         return res.status(500).json({ message: "Erro ao processar login." });
       }
 
-      // Payload do token: geralmente inclui informações para identificar o usuário (como ID e email)
       const payload = {
         id: user.id,
         email: user.email,
-        name: user.name // Pode incluir outros dados úteis
+        name: user.name
       };
 
-      // Assina o token com a chave secreta e define um tempo de expiração (ex: 1 hora)
       const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
 
-      // Remove a senha do objeto usuário antes de retornar
       const { password: removedPassword, ...userWithoutPassword } = user;
 
-      // Retorna o token e os dados do usuário (sem a senha)
       return res.json({ token, user: userWithoutPassword });
     });
-  })(req, res, next); // Chama o middleware do passport
+  })(req, res, next);
 });
 
-// Nova rota para autenticação via Google/Facebook
 router.post("/oauth", async (req: Request, res: Response) => {
   const { code, provider } = req.body;
 
@@ -133,10 +122,6 @@ router.post("/oauth", async (req: Request, res: Response) => {
 
     const accessToken = tokenResponse.data.access_token;
 
-    // Aqui você pode adicionar lógica para buscar informações do usuário usando o accessToken
-    // e criar ou atualizar o usuário no banco de dados
-
-    // Exemplo de payload para o token JWT
     const payload = {
       provider,
       accessToken,

@@ -1,14 +1,12 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from './libs/prismaClient';
 import apiRoute from "./routes/api";
-import passport from "passport"; // Importa o Passport
-import "./services/authService"; // Importa a configuração da estratégia (será criada/ajustada)
+import passport from "passport";
+import "./services/authService";
 
-dotenv.config(); // Carrega variáveis de ambiente do arquivo .env
-
-const prisma = new PrismaClient(); // Instância do Prisma Client para interagir com o banco de dados
+dotenv.config();
 
 const app = express();
 
@@ -33,7 +31,6 @@ app.use("/api", apiRoute); // Configuração das rotas de API
 app.get("/", (req, res) => {
   res.send("Bem-vindo à aplicação Flashcards!");
 });
-
 
 // Configuração do servidor e porta
 const PORT = process.env.PORT || 5000;
