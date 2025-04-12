@@ -40,11 +40,8 @@ passport.use(
   )
 );
 
-// Serializa o usuário para armazenar na sessão/token (usaremos o ID)
-// A tipagem de 'user' em serialize/deserialize pode precisar de ajuste
-// dependendo da configuração global de Express.User
+
 passport.serializeUser((user: any, done) => {
-  // Aqui 'user' é o objeto retornado pela estratégia local
   done(null, user.id);
 });
 
@@ -61,6 +58,3 @@ passport.deserializeUser(async (id: string, done: (err: any, user?: Express.User
   }
 });
 
-// Exporta o passport configurado (opcional, mas pode ser útil)
-// export default passport;
-// Nota: A importação em server.ts ("./services/authService") já executa este código.

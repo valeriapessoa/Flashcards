@@ -38,6 +38,7 @@ model Flashcard {
   studyResults StudyResult[]
   categories   Category[]    @relation("FlashcardCategories")
   tags         Tag[]         @relation("FlashcardTags")
+  errorCount   Int           @default(0) // Campo para contar erros
 }
 
 model Category {
