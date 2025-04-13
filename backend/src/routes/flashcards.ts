@@ -13,10 +13,18 @@ interface AuthenticatedRequest extends Request {
   user?: { id: string };
 }
 
-// 📋 Listar todos os flashcards
-router.get("/", async (req: Request, res: Response) => {
+// 📋 Listar flashcards do usuário autenticado
+router.get("/", protect, async (req: AuthenticatedRequest, res: Response) => { // Adicionado protect e AuthenticatedRequest
+  const userId = req.user?.id;
+
+  if (!userId) {
+    // Embora protect deva garantir isso, é uma boa prática verificar
+    return res.status(401).json({ message: "Usuário não autenticado." });
+  }
+
   try {
     const flashcards = await prisma.flashcard.findMany({
+      where: { userId: userId }, // Filtrar pelo ID do usuário logado
       include: {
         categories: true,
         tags: true,
@@ -246,10 +254,16 @@ router.get('/mais-errado', protect, async (req: AuthenticatedRequest, res: Respo
   }
 });
 
-// 🆔 Buscar flashcard por ID
-router.get("/:id", async (req: Request, res: Response) => {
+// 🆔 Buscar flashcard por ID (apenas do usuário logado)
+router.get("/:id", protect, async (req: AuthenticatedRequest, res: Response) => { // Adicionado protect e AuthenticatedRequest
+  const userId = req.user?.id;
+  const { id } = req.params;
+
+  if (!userId) {
+    return res.status(401).json({ message: "Usuário não autenticado." });
+  }
+
   try {
-    const { id } = req.params;
     const flashcardId = parseInt(id, 10);
 
     if (isNaN(flashcardId)) {
@@ -268,6 +282,11 @@ router.get("/:id", async (req: Request, res: Response) => {
 
     if (!flashcard) {
       return res.status(404).json({ message: "Flashcard não encontrado." });
+    }
+
+    // Verificar se o flashcard pertence ao usuário logado
+    if (flashcard.userId !== userId) {
+        return res.status(403).json({ message: "Você não tem permissão para acessar este flashcard." });
     }
 
     return res.status(200).json(flashcard);

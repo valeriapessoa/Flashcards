@@ -1,24 +1,24 @@
 "use client";
 
 import React from "react";
-import { useQuery } from "react-query";
-import axios from "axios";
+import { useQuery } from "@tanstack/react-query"; // Corrigido para @tanstack/react-query
+// Removido axios
 import StudyMode from "@/components/StudyMode";
-import { Flashcard } from "@/types";
-import { CircularProgress, Button } from "@mui/material";
+import { Flashcard } from "@/types"; // Mantido
+import { fetchFlashcards } from "@/lib/api"; // Importado fetchFlashcards de lib/api
+import { CircularProgress, Button, Typography, Alert } from "@mui/material"; // Adicionado Typography e Alert
 import { useRouter } from "next/navigation";
 
-const fetchFlashcards = async () => {
-  const response = await axios.get("http://localhost:5000/api/flashcards");
-  return response.data;
-};
+// Removida a função fetchFlashcards local, usaremos a importada de lib/api
 
 const StudyPage: React.FC = () => {
   const router = useRouter();
-  const { data: flashcards, isLoading, error, refetch } = useQuery<Flashcard[]>(
-    "flashcards",
-    fetchFlashcards
-  );
+  // Usar a sintaxe de objeto para useQuery (v5+) e a função importada
+  const { data: flashcards = [], isLoading, isError, error, refetch } = useQuery<Flashcard[], Error>({
+    queryKey: ["flashcards"],
+    queryFn: fetchFlashcards, // Usa a função autenticada de lib/api
+    // enabled: status === 'authenticated' // Descomentar se usar useSession aqui
+  });
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-white to-gray-100 p-6">
@@ -33,13 +33,15 @@ const StudyPage: React.FC = () => {
         </div>
       )}
 
-      {!!error && (
-        <div className="bg-red-100 text-red-800 p-4 rounded-lg shadow-md flex flex-col items-center gap-2 animate-fade-in">
-          <p>❌ Ocorreu um erro ao carregar os flashcards.</p>
-          <Button variant="contained" color="error" onClick={() => refetch()} className="mt-2">
+      {/* Melhor tratamento de erro usando isError */}
+      {isError && (
+        <Alert severity="error" action={
+          <Button color="inherit" size="small" onClick={() => refetch()}>
             Tentar novamente
           </Button>
-        </div>
+        }>
+          Erro ao carregar flashcards: {(error as Error)?.message || 'Erro desconhecido'}
+        </Alert>
       )}
 
       {flashcards?.length === 0 && (
@@ -49,16 +51,17 @@ const StudyPage: React.FC = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => router.push("/flashcards/new")}
+            onClick={() => router.push("/criar-flashcard")} // Corrigido o link para criar
           >
             ➕ Criar Flashcard
           </Button>
         </div>
       )}
 
-      {(flashcards?.length ?? 0) > 0 && (
+      {/* Simplificado: se não está carregando, não há erro e há flashcards */}
+      {!isLoading && !isError && flashcards.length > 0 && (
         <div className="w-full max-w-4xl">
-          <StudyMode flashcards={flashcards ?? []} />
+          <StudyMode flashcards={flashcards} /> {/* Não precisa mais de ?? [] */}
         </div>
       )}
     </div>

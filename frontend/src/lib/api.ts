@@ -32,17 +32,24 @@ apiClient.interceptors.request.use(
   }
 );
 
+// Busca um flashcard específico por ID
 export const fetchFlashcard = async (id: string) => {
-  const response = await apiClient.get(`/api/flashcards/${id}`); // Usa apiClient e remove baseURL
+  const response = await apiClient.get(`/api/flashcards/${id}`);
+  return response.data;
+};
+
+// Busca a lista de flashcards do usuário logado
+export const fetchFlashcards = async () => {
+  const response = await apiClient.get(`/api/flashcards`); // Endpoint base, o backend filtra por usuário
   return response.data;
 };
 
 // Aceita FormData diretamente
 export const createFlashcard = async (formData: FormData) => {
-  const response = await apiClient.post(`/api/flashcards`, formData, {
+  // Corrigido o endpoint para /api/flashcards/create
+  const response = await apiClient.post(`/api/flashcards/create`, formData, {
     headers: {
       // Deixe o Axios definir o Content-Type para multipart/form-data
-      // 'Content-Type': 'multipart/form-data', // Não é necessário definir manualmente
     },
   });
   return response.data;

@@ -16,10 +16,9 @@ import {
   DialogTitle,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { useQuery, useQueryClient, useMutation } from "react-query";
-import axios from "axios";
-import { deleteFlashcard } from "../../lib/api";
-
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query"; // Corrigido para @tanstack/react-query
+// Removida a importação direta do axios
+import { deleteFlashcard, fetchFlashcards } from "../../lib/api"; // Importado fetchFlashcards
 interface Tag {
   id: number;
   text: string;
@@ -37,13 +36,12 @@ const Flashcards: React.FC = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data: flashcards, isLoading, error } = useQuery<Flashcard[], Error>(
-    "flashcards",
-    async () => {
-      const response = await axios.get("http://localhost:5000/api/flashcards");
-      return response.data;
-    }
-  );
+  // Usar a sintaxe de objeto para useQuery (v5+)
+  const { data: flashcards = [], isLoading, error } = useQuery<Flashcard[], Error>({
+    queryKey: ["flashcards"], // queryKey dentro do objeto
+    queryFn: fetchFlashcards, // queryFn dentro do objeto
+    // enabled: status === 'authenticated' // Opcional: garantir que só busca se autenticado
+  });
 
   const [deleteId, setDeleteId] = React.useState<number | null>(null);
 
@@ -51,18 +49,22 @@ const Flashcards: React.FC = () => {
     router.push(`/editar-flashcard?id=${id}`);
   };
 
-  const mutation = useMutation(
-    (id: number) => deleteFlashcard(id.toString()),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries("flashcards");
-        setDeleteId(null);
-      },
-    }
-  );
+  // Usar a sintaxe de objeto para useMutation (v5+)
+  const mutation = useMutation<unknown, Error, number>({ // Tipos: TData, TError, TVariables
+    mutationFn: (id: number) => deleteFlashcard(id.toString()), // mutationFn dentro do objeto
+    onSuccess: () => {
+      // Usar sintaxe de objeto para invalidateQueries (v5+)
+      queryClient.invalidateQueries({ queryKey: ["flashcards"] });
+      setDeleteId(null); // Fechar modal após sucesso
+    },
+    // onError: (err) => { // Opcional: tratar erros de mutação
+    //   console.error("Erro ao deletar flashcard:", err);
+    // }
+  });
 
   const handleDelete = () => {
     if (deleteId !== null) {
+      // A chamada mutate está correta, pois TVariables é number
       mutation.mutate(deleteId);
     }
   };
@@ -87,9 +89,11 @@ const Flashcards: React.FC = () => {
         </Grid>
       ) : error ? (
         <Typography color="error">Erro ao carregar flashcards: {error.message}</Typography>
-      ) : flashcards && flashcards.length > 0 ? (
+      // Como flashcards tem valor padrão [], a verificação flashcards && é redundante
+      // A verificação flashcards.length > 0 é suficiente
+      ) : flashcards.length > 0 ? (
         <Grid container spacing={3}>
-          {flashcards.map((flashcard: Flashcard) => (
+          {flashcards.map((flashcard: Flashcard) => ( // A tipagem aqui está correta
             <Grid item xs={12} sm={6} md={4} key={flashcard.id}>
               <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
                 <CardContent>
