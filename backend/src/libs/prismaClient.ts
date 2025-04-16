@@ -1,26 +1,24 @@
-/*
- * Este arquivo cria uma única instância do PrismaClient para evitar erros em desenvolvimento.
- *
- * Quando usamos ts-node-dev (ou Next.js no frontend), o código pode ser recarregado várias vezes,
- * e criar múltiplas instâncias do PrismaClient gera erros como:
- *
- * "Error: prepared statement 's0' already exists"
- *
- * Para resolver isso, usamos uma variável global em ambientes de desenvolvimento.
- */
-
 import { PrismaClient } from '@prisma/client';
 
+// Declaração da variável global
 const globalForPrisma = global as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    log: ['query'], // opcional: ajuda a debugar
+// Verificar se já existe uma instância global
+if (!globalForPrisma.prisma) {
+  globalForPrisma.prisma = new PrismaClient({
+    log: ['error', 'warn'],
+    errorFormat: 'pretty',
   });
+}
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+// Exportar a instância global
+const prisma = globalForPrisma.prisma;
+
+// Adicionar um manipulador de eventos para desconectar ao encerrar
+process.on('beforeExit', async () => {
+  await prisma.$disconnect();
+});
 
 export default prisma;

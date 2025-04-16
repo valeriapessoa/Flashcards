@@ -39,6 +39,7 @@ model Flashcard {
   categories   Category[]    @relation("FlashcardCategories")
   tags         Tag[]         @relation("FlashcardTags")
   errorCount   Int           @default(0) // Campo para contar erros
+  reviewed     Boolean       @default(false) // Campo para indicar se o flashcard foi revisado
 }
 
 model Category {

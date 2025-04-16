@@ -46,8 +46,30 @@ export const fetchFlashcards = async (path: string | object = '/api/flashcards')
   console.log('Fetching flashcards from path:', apiPath);
   console.log('apiClient baseURL:', apiClient.defaults.baseURL);
   
-  const response = await apiClient.get(apiPath); // Usa o path fornecido ou o padrão
-  return response.data;
+  try {
+    // Verificar se o usuário está autenticado
+    const session = await getSession();
+    if (!session?.accessToken) {
+      console.error('Usuário não autenticado ao tentar buscar flashcards');
+      throw new Error('Usuário não autenticado');
+    }
+    
+    // Fazer a requisição com o token de autenticação
+    const response = await apiClient.get(apiPath, {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`
+      }
+    });
+    
+    console.log('Resposta da API:', response.status, response.statusText);
+    console.log('Dados recebidos:', response.data);
+    
+    return response.data;
+  } catch (error: any) {
+    console.error('Erro ao buscar flashcards:', error.message);
+    console.error('Detalhes do erro:', error.response?.data || error);
+    throw error;
+  }
 };
 
 // Aceita FormData diretamente
@@ -87,5 +109,13 @@ export const fetchCategories = async () => {
 
 export const deleteFlashcard = async (id: string) => {
   const response = await apiClient.delete(`/api/flashcards/${id}`);
+  return response.data;
+};
+
+// Marca um flashcard como revisado
+export const markFlashcardAsReviewed = async (id: number | string) => {
+  // Garante que o ID seja string para a URL
+  const flashcardId = typeof id === 'number' ? id.toString() : id;
+  const response = await apiClient.post(`/api/flashcards/${flashcardId}/reviewed`);
   return response.data;
 };

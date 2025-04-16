@@ -3,7 +3,7 @@ import prisma from '../libs/prismaClient';
 import dotenv from "dotenv";
 import newUploadMiddleware from "../middleware/newUploadMiddleware";
 import { protect } from "../middleware/authMiddleware";
-import { incrementFlashcardError } from "../services/flashcardService"; // Importar a função do serviço
+import { incrementFlashcardError, markFlashcardAsReviewed } from "../services/flashcardService"; // Importar as funções do serviço
 
 dotenv.config();
 
@@ -223,30 +223,55 @@ router.delete("/:id", protect, async (req: AuthenticatedRequest, res: Response) 
 router.get('/mais-errado', protect, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user?.id;
+    console.log("🔍 Buscando flashcards mais errados para o usuário:", userId);
 
     if (!userId) {
       // Middleware protect já deve garantir isso, mas é uma boa prática verificar
       return res.status(401).json({ message: "Usuário não autenticado." });
     }
 
+    // Buscar flashcards com erros (errorCount > 0)
     const flashcards = await prisma.flashcard.findMany({
       where: {
-        userId: userId, // Filtrar pelo usuário logado
+        userId: userId,
         errorCount: {
-          gt: 0 // Apenas flashcards com pelo menos um erro
+          gt: 0
         }
+        // Temporariamente removido o filtro reviewed: false para verificar se existem flashcards com erros
       },
       orderBy: {
-        errorCount: 'desc', // Ordenar pelos mais errados
+        errorCount: 'desc'
       },
       include: {
-        categories: true,
         tags: true,
+        categories: true,
         user: {
-          select: { id: true, name: true, email: true, image: true },
-        },
-      },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true
+          }
+        }
+      }
     });
+
+    console.log("🔢 Total de flashcards com erros:", flashcards.length);
+    if (flashcards.length > 0) {
+      console.log("📋 Primeiro flashcard:", JSON.stringify(flashcards[0], null, 2));
+    } else {
+      console.log("❌ Nenhum flashcard com erros encontrado para o usuário:", userId);
+      
+      // Verificar se existem flashcards para o usuário
+      const todosFlashcards = await prisma.flashcard.findMany({
+        where: { userId: userId },
+        select: { id: true, title: true, errorCount: true }
+      });
+      
+      console.log("📊 Total de flashcards do usuário:", todosFlashcards.length);
+      console.log("📋 Detalhes dos flashcards do usuário:", JSON.stringify(todosFlashcards, null, 2));
+    }
+    
     res.status(200).json(flashcards);
   } catch (error: any) {
     console.error("❌ Erro ao listar flashcards mais errados:", error.message);
@@ -298,6 +323,47 @@ router.post("/:id/error", protect, async (req: AuthenticatedRequest, res: Respon
   }
 });
 
+// 🔍 Marcar flashcard como revisado
+router.post("/:id/reviewed", protect, async (req: AuthenticatedRequest, res: Response) => {
+  const userId = req.user?.id;
+  const { id } = req.params;
+
+  if (!userId) {
+    return res.status(401).json({ message: "Usuário não autenticado." });
+  }
+
+  try {
+    const flashcardId = parseInt(id, 10);
+
+    if (isNaN(flashcardId)) {
+      return res.status(400).json({ message: "ID do flashcard inválido." });
+    }
+
+    // Verificar se o flashcard pertence ao usuário
+    const flashcard = await prisma.flashcard.findUnique({
+      where: { id: flashcardId },
+      select: { userId: true } // Selecionar apenas o userId para eficiência
+    });
+
+    if (!flashcard) {
+      return res.status(404).json({ message: "Flashcard não encontrado." });
+    }
+
+    if (flashcard.userId !== userId) {
+      return res.status(403).json({ message: "Você não tem permissão para modificar este flashcard." });
+    }
+
+    // Marcar o flashcard como revisado usando o serviço
+    await markFlashcardAsReviewed(flashcardId);
+
+    return res.status(200).json({ message: "Flashcard marcado como revisado com sucesso." });
+
+  } catch (error: any) {
+    console.error("❌ Erro ao marcar flashcard como revisado:", error.message);
+    return res.status(500).json({ message: "Erro ao marcar flashcard como revisado", details: error.message });
+  }
+});
+
 // 🆔 Buscar flashcard por ID (apenas do usuário logado)
 router.get("/:id", protect, async (req: AuthenticatedRequest, res: Response) => { // Adicionado protect e AuthenticatedRequest
   const userId = req.user?.id;
@@ -339,6 +405,5 @@ router.get("/:id", protect, async (req: AuthenticatedRequest, res: Response) => 
     return res.status(500).json({ message: "Erro ao buscar flashcard", details: error.message });
   }
 });
-
 
 export default router;
