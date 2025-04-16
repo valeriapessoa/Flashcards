@@ -20,6 +20,8 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query"; /
 // Removida a importação direta do axios
 import { deleteFlashcard, fetchFlashcards } from "../../lib/api"; // Importado fetchFlashcards
 import { useSession } from "next-auth/react";
+import AccessDeniedMessage from "../../components/AccessDeniedMessage";
+
 interface Tag {
   id: number;
   text: string;
@@ -39,20 +41,7 @@ const Flashcards: React.FC = () => {
   const { data: session } = useSession();
 
   if (!session) {
-    return (
-      <Container maxWidth="md" sx={{ mt: 4 }}>
-        <Typography variant="h4" gutterBottom textAlign="center">
-          📚 Flashcards
-        </Typography>
-        <Card sx={{ p: 2, mt: 4 }}>
-          <CardContent>
-            <Typography component="div">
-              <span role="img" aria-label="aviso">⚠️</span> Você precisa estar logado para acessar esta página.
-            </Typography>
-          </CardContent>
-        </Card>
-      </Container>
-    );
+    return <AccessDeniedMessage />;
   }
 
   // Usar a sintaxe de objeto para useQuery (v5+)

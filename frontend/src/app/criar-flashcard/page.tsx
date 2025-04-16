@@ -4,6 +4,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import FlashcardForm from "../../components/FlashcardForm";
+import AccessDeniedMessage from "../../components/AccessDeniedMessage";
 import axios from "axios";
 
 const CreateFlashcard: React.FC = () => {
@@ -11,16 +12,7 @@ const CreateFlashcard: React.FC = () => {
   const { data: session } = useSession();
 
   if (!session) {
-    return (
-      <main className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-        <section className="bg-white shadow-md rounded-lg p-6 w-full max-w-2xl">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">Criar Flashcard</h1>
-          <div className="my-4">
-            <span role="img" aria-label="aviso">⚠️</span> Você precisa estar logado para acessar esta página.
-          </div>
-        </section>
-      </main>
-    );
+    return <AccessDeniedMessage />;
   }
 
   const handleSubmit = async (data: Partial<Flashcard>, file: File | null) => {

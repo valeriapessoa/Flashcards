@@ -1,21 +1,16 @@
 'use client';
 
 import React from 'react';
-import { Typography, Container, Alert } from '@mui/material';
+import { Typography, Container } from '@mui/material';
 import FlashcardList from '../../components/FlashcardList';
+import AccessDeniedMessage from '../../components/AccessDeniedMessage';
 import { useSession } from 'next-auth/react';
 
 const RevisaoInteligentePage = () => {
   const { data: session } = useSession();
 
   if (!session) {
-    return (
-      <Container maxWidth="md" sx={{ mt: 4 }}>
-        <Alert severity="warning">
-          Você precisa estar logado para acessar a revisão inteligente.
-        </Alert>
-      </Container>
-    );
+    return <AccessDeniedMessage />;
   }
 
   return (

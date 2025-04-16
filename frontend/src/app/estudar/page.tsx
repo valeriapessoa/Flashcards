@@ -9,6 +9,7 @@ import { fetchFlashcards } from "@/lib/api"; // Importado fetchFlashcards de lib
 import { CircularProgress, Button, Typography, Alert } from "@mui/material"; // Adicionado Typography e Alert
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import AccessDeniedMessage from "../../components/AccessDeniedMessage";
 
 // Removida a função fetchFlashcards local, usaremos a importada de lib/api
 
@@ -17,16 +18,7 @@ const StudyPage: React.FC = () => {
   const { data: session } = useSession();
   // Usar a sintaxe de objeto para useQuery (v5+) e a função importada
   if (!session) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-white to-gray-100 p-6">
-        <h1 className="text-4xl font-extrabold text-gray-900 mb-6 animate-fade-in">
-          📚 Modo de Estudo
-        </h1>
-        <div className="bg-white p-6 rounded-lg shadow-lg animate-fade-in">
-          <span role="img" aria-label="aviso">⚠️</span> Você precisa estar logado para acessar esta página.
-        </div>
-      </div>
-    );
+    return <AccessDeniedMessage />;
   }
 
   const { data: flashcards = [], isLoading, isError, error, refetch } = useQuery<Flashcard[], Error>({
