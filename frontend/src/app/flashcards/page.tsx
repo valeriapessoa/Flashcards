@@ -39,7 +39,7 @@ const Flashcards: React.FC = () => {
   // Usar a sintaxe de objeto para useQuery (v5+)
   const { data: flashcards = [], isLoading, error } = useQuery<Flashcard[], Error>({
     queryKey: ["flashcards"], // queryKey dentro do objeto
-    queryFn: fetchFlashcards, // queryFn dentro do objeto
+    queryFn: () => fetchFlashcards(), // Chama a função sem passar o contexto do useQuery
     // enabled: status === 'authenticated' // Opcional: garantir que só busca se autenticado
   });
 

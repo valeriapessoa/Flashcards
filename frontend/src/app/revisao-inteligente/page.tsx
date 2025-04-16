@@ -5,7 +5,8 @@ const RevisaoInteligentePage = () => {
   return (
     <div>
       <h1>Revisão Inteligente</h1>
-      <FlashcardList endpoint={`${process.env.NEXT_PUBLIC_API_URL}/flashcards/mais-errado`} />
+      {/* Passa o caminho relativo da API usando a nova prop fetchPath */}
+      <FlashcardList fetchPath="/api/flashcards/mais-errado" />
     </div>
   );
 };

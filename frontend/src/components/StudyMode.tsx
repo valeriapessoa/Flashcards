@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import { Button, Card, CardContent, Typography } from '@mui/material';
-
+import { useMutation, useQueryClient } from '@tanstack/react-query'; // Importar useMutation e useQueryClient
+import { incrementErrorCount } from '../lib/api'; // Importar a função da API
 import { Flashcard } from '../types';
-
 interface StudyModeProps {
   flashcards: Flashcard[];
 }
@@ -12,6 +12,22 @@ interface StudyModeProps {
 const StudyMode: React.FC<StudyModeProps> = ({ flashcards }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFront, setIsFront] = useState(true);
+  const queryClient = useQueryClient(); // Obter o cliente do React Query
+
+  // Configurar a mutation para incrementar o erro
+  const mutation = useMutation({
+    mutationFn: incrementErrorCount,
+    onSuccess: () => {
+      // Invalidar queries relacionadas aos flashcards para buscar dados atualizados
+      // Isso garante que a lista de "mais errados" seja atualizada na próxima vez que for carregada
+      queryClient.invalidateQueries({ queryKey: ['flashcards'] });
+      console.log('Contador de erro incrementado e query invalidada.');
+    },
+    onError: (error) => {
+      console.error("Erro ao incrementar contador de erro:", error);
+      // Adicionar feedback para o usuário aqui, se necessário
+    },
+  });
 
   const handleNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % flashcards.length);
@@ -29,7 +45,11 @@ const StudyMode: React.FC<StudyModeProps> = ({ flashcards }) => {
 
   const handleMarkIncorrect = () => {
     // Lógica para marcar como incorreto
-    handleNext();
+    if (currentFlashcard) {
+      console.log(`Marcando incorreto e incrementando erro para flashcard ID: ${currentFlashcard.id}`);
+      mutation.mutate(currentFlashcard.id); // Chamar a mutation com o ID do flashcard
+    }
+    handleNext(); // Avança para o próximo card independentemente do sucesso/erro da mutation por enquanto
   };
 
   const currentFlashcard = flashcards[currentIndex];

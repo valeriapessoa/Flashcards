@@ -3,6 +3,7 @@ import prisma from '../libs/prismaClient';
 import dotenv from "dotenv";
 import newUploadMiddleware from "../middleware/newUploadMiddleware";
 import { protect } from "../middleware/authMiddleware";
+import { incrementFlashcardError } from "../services/flashcardService"; // Importar a função do serviço
 
 dotenv.config();
 
@@ -231,11 +232,13 @@ router.get('/mais-errado', protect, async (req: AuthenticatedRequest, res: Respo
     const flashcards = await prisma.flashcard.findMany({
       where: {
         userId: userId, // Filtrar pelo usuário logado
+        errorCount: {
+          gt: 0 // Apenas flashcards com pelo menos um erro
+        }
       },
       orderBy: {
         errorCount: 'desc', // Ordenar pelos mais errados
       },
-      take: 10, // Limitar aos 10 primeiros
       include: {
         categories: true,
         tags: true,
@@ -251,6 +254,47 @@ router.get('/mais-errado', protect, async (req: AuthenticatedRequest, res: Respo
       message: "Erro ao listar flashcards mais errados",
       details: error.message,
     });
+  }
+});
+
+// 🔥 Incrementar contador de erro de um flashcard
+router.post("/:id/error", protect, async (req: AuthenticatedRequest, res: Response) => {
+  const userId = req.user?.id;
+  const { id } = req.params;
+
+  if (!userId) {
+    return res.status(401).json({ message: "Usuário não autenticado." });
+  }
+
+  try {
+    const flashcardId = parseInt(id, 10);
+
+    if (isNaN(flashcardId)) {
+      return res.status(400).json({ message: "ID do flashcard inválido." });
+    }
+
+    // Verificar se o flashcard pertence ao usuário (opcional, mas bom para segurança)
+    const flashcard = await prisma.flashcard.findUnique({
+      where: { id: flashcardId },
+      select: { userId: true } // Selecionar apenas o userId para eficiência
+    });
+
+    if (!flashcard) {
+      return res.status(404).json({ message: "Flashcard não encontrado." });
+    }
+
+    if (flashcard.userId !== userId) {
+      return res.status(403).json({ message: "Você não tem permissão para modificar este flashcard." });
+    }
+
+    // Chamar o serviço para incrementar o erro
+    await incrementFlashcardError(flashcardId);
+
+    return res.status(200).json({ message: "Contador de erro incrementado com sucesso." });
+
+  } catch (error: any) {
+    console.error("❌ Erro ao incrementar erro do flashcard:", error.message);
+    return res.status(500).json({ message: "Erro ao incrementar erro do flashcard", details: error.message });
   }
 });
 

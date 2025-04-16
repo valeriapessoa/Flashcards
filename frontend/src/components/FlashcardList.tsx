@@ -16,8 +16,11 @@ interface FlashcardData {
   errorCount?: number;
 }
 
-// Removida a prop endpoint, pois a função fetchFlashcards já sabe o endpoint correto
-const FlashcardList: React.FC = () => {
+interface FlashcardListProps {
+  fetchPath?: string; // Caminho da API para buscar os flashcards
+}
+
+const FlashcardList: React.FC<FlashcardListProps> = ({ fetchPath = '/api/flashcards' }) => {
   const { data: session, status } = useSession();
   const isAuthenticated = status === 'authenticated';
 
@@ -28,8 +31,10 @@ const FlashcardList: React.FC = () => {
     isError,
     error,
   } = useQuery<FlashcardData[], Error>({ // Tipagem explícita para data e error
-    queryKey: ['flashcards'], // Chave da query
-    queryFn: fetchFlashcards, // Função que busca os dados (usando apiClient)
+    // Chave da query inclui o path para diferenciar caches
+    queryKey: ['flashcards', fetchPath],
+    // Passa o path para a função fetchFlashcards corretamente dentro de uma arrow function
+    queryFn: async () => fetchFlashcards(fetchPath),
     enabled: isAuthenticated, // Só executa a query se o usuário estiver autenticado
   });
 

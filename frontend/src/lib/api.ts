@@ -38,9 +38,15 @@ export const fetchFlashcard = async (id: string) => {
   return response.data;
 };
 
-// Busca a lista de flashcards do usuário logado
-export const fetchFlashcards = async () => {
-  const response = await apiClient.get(`/api/flashcards`); // Endpoint base, o backend filtra por usuário
+// Busca a lista de flashcards do usuário logado a partir de um path específico
+export const fetchFlashcards = async (path: string | object = '/api/flashcards') => {
+  // Se path for um objeto (como pode acontecer com React Query), use o caminho padrão
+  const apiPath = typeof path === 'string' ? path : '/api/flashcards';
+  
+  console.log('Fetching flashcards from path:', apiPath);
+  console.log('apiClient baseURL:', apiClient.defaults.baseURL);
+  
+  const response = await apiClient.get(apiPath); // Usa o path fornecido ou o padrão
   return response.data;
 };
 
@@ -52,6 +58,14 @@ export const createFlashcard = async (formData: FormData) => {
       // Deixe o Axios definir o Content-Type para multipart/form-data
     },
   });
+  return response.data;
+};
+
+// Incrementa o contador de erro de um flashcard específico
+export const incrementErrorCount = async (id: number | string) => {
+  // Garante que o ID seja string para a URL
+  const flashcardId = typeof id === 'number' ? id.toString() : id;
+  const response = await apiClient.post(`/api/flashcards/${flashcardId}/error`);
   return response.data;
 };
 
