@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Typography, Card, CardContent, Grid } from '@mui/material';
 import axios from 'axios';
+import { useSession } from 'next-auth/react';
 import UserStatsCard from '../../components/UserStatsCard';
 import ScoreCard from '../../components/ScoreCard';
 
@@ -14,6 +15,7 @@ interface UserStats {
 }
 
 const Dashboard: React.FC = () => {
+  const { data: session } = useSession();
   const [stats, setStats] = useState<UserStats | null>(null);
 
   useEffect(() => {
@@ -28,6 +30,23 @@ const Dashboard: React.FC = () => {
 
     fetchStats();
   }, []);
+
+  if (!session) {
+    return (
+      <Container maxWidth="md" sx={{ mt: 4 }}>
+        <Typography variant="h4" gutterBottom textAlign="center">
+          Dashboard
+        </Typography>
+        <Card sx={{ p: 2, mt: 4 }}>
+          <CardContent>
+            <Typography component="div">
+              <span role="img" aria-label="aviso">⚠️</span> Você precisa estar logado para acessar esta página.
+            </Typography>
+          </CardContent>
+        </Card>
+      </Container>
+    );
+  }
 
   if (!stats) {
     return (

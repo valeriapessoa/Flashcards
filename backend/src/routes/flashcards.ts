@@ -219,14 +219,13 @@ router.delete("/:id", protect, async (req: AuthenticatedRequest, res: Response) 
   }
 });
 
-// 📊 Listar flashcards mais errados (requer autenticação)
-router.get('/mais-errado', protect, async (req: AuthenticatedRequest, res: Response) => {
+// 📊 Listar flashcards para revisão inteligente (requer autenticação)
+router.get('/revisao-inteligente', protect, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user?.id;
-    console.log("🔍 Buscando flashcards mais errados para o usuário:", userId);
+    console.log("🔍 Buscando flashcards para revisão inteligente do usuário:", userId);
 
     if (!userId) {
-      // Middleware protect já deve garantir isso, mas é uma boa prática verificar
       return res.status(401).json({ message: "Usuário não autenticado." });
     }
 
@@ -237,7 +236,6 @@ router.get('/mais-errado', protect, async (req: AuthenticatedRequest, res: Respo
         errorCount: {
           gt: 0
         }
-        // Temporariamente removido o filtro reviewed: false para verificar se existem flashcards com erros
       },
       orderBy: {
         errorCount: 'desc'
@@ -256,27 +254,17 @@ router.get('/mais-errado', protect, async (req: AuthenticatedRequest, res: Respo
       }
     });
 
-    console.log("🔢 Total de flashcards com erros:", flashcards.length);
+    console.log("🔢 Total de flashcards para revisão inteligente:", flashcards.length);
     if (flashcards.length > 0) {
       console.log("📋 Primeiro flashcard:", JSON.stringify(flashcards[0], null, 2));
     } else {
       console.log("❌ Nenhum flashcard com erros encontrado para o usuário:", userId);
-      
-      // Verificar se existem flashcards para o usuário
-      const todosFlashcards = await prisma.flashcard.findMany({
-        where: { userId: userId },
-        select: { id: true, title: true, errorCount: true }
-      });
-      
-      console.log("📊 Total de flashcards do usuário:", todosFlashcards.length);
-      console.log("📋 Detalhes dos flashcards do usuário:", JSON.stringify(todosFlashcards, null, 2));
     }
-    
     res.status(200).json(flashcards);
   } catch (error: any) {
-    console.error("❌ Erro ao listar flashcards mais errados:", error.message);
+    console.error("❌ Erro ao listar flashcards para revisão inteligente:", error.message);
     res.status(500).json({
-      message: "Erro ao listar flashcards mais errados",
+      message: "Erro ao listar flashcards para revisão inteligente",
       details: error.message,
     });
   }
