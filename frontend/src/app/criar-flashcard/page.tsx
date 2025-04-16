@@ -6,14 +6,11 @@ import { useSession } from "next-auth/react";
 import FlashcardForm from "../../components/FlashcardForm";
 import AccessDeniedMessage from "../../components/AccessDeniedMessage";
 import axios from "axios";
+import { Flashcard } from "../../types";
 
 const CreateFlashcard: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
-
-  if (!session) {
-    return <AccessDeniedMessage />;
-  }
 
   const handleSubmit = async (data: Partial<Flashcard>, file: File | null) => {
     try {
@@ -43,6 +40,10 @@ const CreateFlashcard: React.FC = () => {
       alert("Erro ao criar o flashcard. Tente novamente.");
     }
   };
+
+  if (!session) {
+    return <AccessDeniedMessage />;
+  }
 
   return (
     <main className="flex items-center justify-center min-h-screen bg-gray-100 p-4">

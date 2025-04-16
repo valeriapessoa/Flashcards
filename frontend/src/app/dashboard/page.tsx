@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Typography, Card, CardContent, Grid } from '@mui/material';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
@@ -20,6 +20,7 @@ const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<UserStats | null>(null);
 
   useEffect(() => {
+    if (!session) return; // só busca se autenticado
     const fetchStats = async () => {
       try {
         const response = await axios.get('/api/stats');
@@ -28,9 +29,8 @@ const Dashboard: React.FC = () => {
         console.error('Error fetching stats:', error);
       }
     };
-
     fetchStats();
-  }, []);
+  }, [session]);
 
   if (!session) {
     return <AccessDeniedMessage />;
