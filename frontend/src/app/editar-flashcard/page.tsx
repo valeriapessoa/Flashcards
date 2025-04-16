@@ -17,10 +17,6 @@ const EditFlashcardPage = () => {
   const { data: session } = useSession();
   const id = searchParams.get("id");
 
-  if (!session) {
-    return <AccessDeniedMessage />;
-  }
-
   const [flashcard, setFlashcard] = useState<Flashcard | null>(null); // Estado atual do formulário
   const [originalFlashcard, setOriginalFlashcard] = useState<Flashcard | null>(null); // Estado original carregado
 
@@ -82,7 +78,6 @@ const EditFlashcardPage = () => {
        hasChanges = true;
     }
 
-
     // Só envia a mutação se houver alterações
     if (hasChanges) {
        console.log("Enviando dados modificados:", Object.fromEntries(formData.entries()));
@@ -95,6 +90,10 @@ const EditFlashcardPage = () => {
       // router.push("/flashcards");
     }
   };
+
+  if (!session) {
+    return <AccessDeniedMessage />;
+  }
 
   return (
     <main className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
