@@ -14,6 +14,7 @@ const RegisterForm = () => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   const validateEmail = (email: string) => {
@@ -23,6 +24,8 @@ const RegisterForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     setNameError('');
     setEmailError('');
     setPasswordError('');
@@ -31,26 +34,32 @@ const RegisterForm = () => {
 
     if (!name) {
       setNameError('Nome é obrigatório');
+      setIsSubmitting(false);
       return;
     }
     if (!email) {
       setEmailError('Email é obrigatório');
+      setIsSubmitting(false);
       return;
     }
     if (!validateEmail(email)) {
       setEmailError('Email inválido');
+      setIsSubmitting(false);
       return;
     }
     if (!password) {
       setPasswordError('Senha é obrigatória');
+      setIsSubmitting(false);
       return;
     }
     if (password.length < 6) {
       setPasswordError('Senha deve ter pelo menos 6 caracteres');
+      setIsSubmitting(false);
       return;
     }
     if (password !== confirmPassword) {
       setConfirmPasswordError('Senhas não conferem');
+      setIsSubmitting(false);
       return;
     }
 
@@ -64,6 +73,7 @@ const RegisterForm = () => {
       if (!res.ok) {
         const errorData = await res.json();
         setError(errorData.message || 'Erro ao registrar usuário');
+        setIsSubmitting(false);
         return;
       }
 
@@ -73,8 +83,10 @@ const RegisterForm = () => {
       } else {
         setError('Erro ao registrar usuário');
       }
+      setIsSubmitting(false);
     } catch (error) {
       setError('Erro ao registrar usuário');
+      setIsSubmitting(false);
     }
   };
 
@@ -124,8 +136,8 @@ const RegisterForm = () => {
         error={!!confirmPasswordError}
         helperText={confirmPasswordError}
       />
-      <Button type="submit" variant="contained" color="primary" fullWidth>
-        Registrar
+      <Button type="submit" variant="contained" color="primary" fullWidth disabled={isSubmitting}>
+        {isSubmitting ? 'Registrando...' : 'Registrar'}
       </Button>
       {error && (
         <Typography color="error" mt={2}>

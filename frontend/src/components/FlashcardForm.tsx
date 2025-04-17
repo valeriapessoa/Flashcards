@@ -20,8 +20,8 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
   const [description, setDescription] = useState(flashcard?.description || '');
   const [imagePreview, setImagePreview] = useState<string | null>(flashcard?.imageUrl || null);
   const [tags, setTags] = useState<ReactTag[]>(flashcard?.tags?.map((tag, index) => ({ id: `${index}`, text: tag, className: '' })) || []);
-
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false); // NOVO estado para controle do botão
 
   const tagInputRef = useRef<HTMLInputElement>(null);
 
@@ -104,8 +104,10 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
     };
   }, []);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevenir submissão padrão sempre
+    if (isSubmitting) return; // Evita múltiplos envios
+    setIsSubmitting(true);
 
     const newErrors: { title?: string; description?: string } = {};
 
@@ -126,8 +128,13 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
         ...(isEditing && flashcard?.id && { id: flashcard.id }),
         ...(isEditing && flashcard?.userId && { userId: flashcard.userId }),
       };
-
-      onSubmit(updatedData, imageFile); // Certifica-se de enviar o arquivo corretamente
+      try {
+        await onSubmit(updatedData, imageFile); // Certifica-se de enviar o arquivo corretamente
+      } finally {
+        setIsSubmitting(false); // Libera o botão
+      }
+    } else {
+      setIsSubmitting(false); // Libera o botão em caso de erro de validação
     }
   };
 
@@ -215,9 +222,10 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
         {/* Botão de Submit */}
         <button
           type="submit"
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className={`mt-4 px-4 py-2 rounded-lg text-white ${isSubmitting ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+          disabled={isSubmitting}
         >
-          {isEditing ? 'Salvar Alterações' : 'Criar Flashcard'}
+          {isSubmitting ? (isEditing ? 'Salvando...' : 'Criando...') : (isEditing ? 'Salvar Alterações' : 'Criar Flashcard')}
         </button>
       </form>
     </div>

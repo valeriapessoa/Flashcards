@@ -9,20 +9,27 @@ const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     const res = await signIn('email', { redirect: false, email, password });
     if (res?.error) {
       setError(res.error);
+      setIsSubmitting(false);
     } else {
       router.push('/dashboard');
+      setIsSubmitting(false);
     }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     const res = await fetch('/api/auth/register', {
       method: 'POST',
       headers: {
@@ -33,8 +40,10 @@ const AuthForm = () => {
     const data = await res.json();
     if (data.error) {
       setError(data.error);
+      setIsSubmitting(false);
     } else {
       router.push('/dashboard');
+      setIsSubmitting(false);
     }
   };
 
@@ -75,8 +84,8 @@ const AuthForm = () => {
             margin="normal"
             required
           />
-          <Button type="submit" variant="contained" color="primary" fullWidth>
-            Login/Registro
+          <Button type="submit" variant="contained" color="primary" fullWidth disabled={isSubmitting}>
+            {isSubmitting ? 'Enviando...' : 'Login/Registro'}
           </Button>
         </form>
         {error && (
@@ -98,19 +107,3 @@ const AuthForm = () => {
 };
 
 export default AuthForm;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

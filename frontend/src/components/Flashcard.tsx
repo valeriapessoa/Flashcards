@@ -32,7 +32,13 @@ const Flashcard: React.FC<FlashcardProps> = ({
         </Typography>
         {tags && tags.length > 0 && (
           <Typography variant="body2" color="text.secondary">
-            Tags: {tags.join(', ')}
+            Tags: {Array.isArray(tags)
+              ? tags.map((tag, idx) => (
+                  <span key={idx} style={{ marginRight: 4 }}>
+                    {tag}
+                  </span>
+                ))
+              : tags}
           </Typography>
         )}
         {showReviewButton && (

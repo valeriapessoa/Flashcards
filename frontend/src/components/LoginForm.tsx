@@ -14,6 +14,7 @@ const LoginForm = () => {
   const [error, setError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   const validateEmail = (email: string) => {
@@ -23,42 +24,49 @@ const LoginForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     setEmailError('');
     setPasswordError('');
     setError('');
 
     if (!email) {
       setEmailError('Email é obrigatório');
+      setIsSubmitting(false);
       return;
     }
     if (!validateEmail(email)) {
       setEmailError('Email inválido');
+      setIsSubmitting(false);
       return;
     }
     if (!password) {
       setPasswordError('Senha é obrigatória');
+      setIsSubmitting(false);
       return;
     }
     if (password.length < 6) {
       setPasswordError('Senha deve ter pelo menos 6 caracteres');
+      setIsSubmitting(false);
       return;
     }
 
     const res = await signIn('credentials', { redirect: false, email, password });
     if (res?.error) {
-      // Mapeia o erro padrão "CredentialsSignin" para uma mensagem mais amigável
       if (res.error === "CredentialsSignin") {
         setError("Email ou senha inválidos. Verifique suas credenciais.");
       } else {
-        setError(res.error); // Exibe outros erros que possam ocorrer (menos comuns aqui)
+        setError(res.error);
       }
+      setIsSubmitting(false);
     } else if (!res?.ok) {
-        // Fallback para caso de falha sem erro específico (pouco provável com Credentials)
-        setError("Falha no login. Tente novamente mais tarde.");
+      setError("Falha no login. Tente novamente mais tarde.");
+      setIsSubmitting(false);
     } else {
       setIsLoggedIn(true);
       setWelcomeMessage('Bem-vindo!');
       router.push('/');
+      setIsSubmitting(false);
     }
   };
 
@@ -86,8 +94,8 @@ const LoginForm = () => {
         error={!!passwordError}
         helperText={passwordError}
       />
-      <Button type="submit" variant="contained" color="primary" fullWidth>
-        Login
+      <Button type="submit" variant="contained" color="primary" fullWidth disabled={isSubmitting}>
+        {isSubmitting ? 'Entrando...' : 'Login'}
       </Button>
       {error && (
         <Typography color="error" mt={2}>

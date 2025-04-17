@@ -66,24 +66,35 @@ router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRe
     // Processar tagsInput (esperando array de strings)
     let tagsToConnect: { id: number }[] = [];
     if (tagsInput) {
-      try {
-        const tagsArray = JSON.parse(tagsInput);
-        if (Array.isArray(tagsArray)) {
-          await prisma.$transaction(
-            tagsArray.map((tagText) =>
-              prisma.tag.upsert({
-                where: { text: tagText },
-                update: {},
-                create: { text: tagText },
-              })
-            )
-          ).then((results: any[]) => {
-            tagsToConnect = results.map((tag: any) => ({ id: tag.id }));
-          });
+      let tagsArray: string[] = [];
+      if (typeof tagsInput === 'string') {
+        try {
+          // Tenta converter de JSON string para array
+          const parsed = JSON.parse(tagsInput);
+          if (Array.isArray(parsed)) {
+            tagsArray = parsed.map(tag => String(tag).trim()).filter(tag => tag.length > 0);
+          } else {
+            tagsArray = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+          }
+        } catch {
+          // Não era JSON, tenta split por vírgula
+          tagsArray = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
         }
-      } catch (error) {
-        console.error("Erro ao processar tagsInput:", error);
-        return res.status(400).json({ message: "Formato de tags inválido." });
+      } else if (Array.isArray(tagsInput)) {
+        tagsArray = tagsInput.map(tag => String(tag).trim()).filter(tag => tag.length > 0);
+      }
+      if (tagsArray.length > 0) {
+        await prisma.$transaction(
+          tagsArray.map((tagText) =>
+            prisma.tag.upsert({
+              where: { text: tagText },
+              update: {},
+              create: { text: tagText },
+            })
+          )
+        ).then((results: any[]) => {
+          tagsToConnect = results.map((tag: any) => ({ id: tag.id }));
+        });
       }
     }
 
@@ -142,20 +153,46 @@ router.put("/:id", protect, newUploadMiddleware, async (req: AuthenticatedReques
     }
 
     // Processar tags (mesma lógica da criação)
-    let tags: string[] | undefined = undefined;
+    let tagsToSet = undefined;
     if (tagsInput !== undefined) {
-        tags = [];
+        let tagsArray: string[] = [];
         if (typeof tagsInput === 'string') {
-            tags = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+          try {
+            // Tenta converter de JSON string para array
+            const parsed = JSON.parse(tagsInput);
+            if (Array.isArray(parsed)) {
+              tagsArray = parsed.map(tag => String(tag).trim()).filter(tag => tag.length > 0);
+            } else {
+              tagsArray = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+            }
+          } catch {
+            // Não era JSON, tenta split por vírgula
+            tagsArray = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+          }
         } else if (Array.isArray(tagsInput)) {
-            tags = tagsInput.map(tag => String(tag).trim()).filter(tag => tag.length > 0);
+          tagsArray = tagsInput.map(tag => String(tag).trim()).filter(tag => tag.length > 0);
+        }
+        if (tagsArray.length > 0) {
+          // Buscar ou criar as tags no banco
+          const tagRecords = await prisma.$transaction(
+            tagsArray.map(tagText =>
+              prisma.tag.upsert({
+                where: { text: tagText },
+                update: {},
+                create: { text: tagText }
+              })
+            )
+          );
+          tagsToSet = tagRecords.map(tag => ({ id: tag.id }));
+        } else {
+          tagsToSet = [];
         }
     }
 
     const dataToUpdate: any = {
       ...(title && { title }),
       ...(description && { description }),
-      ...(tags !== undefined && { tags: tags }),
+      ...(tagsToSet !== undefined && { tags: { set: tagsToSet } }),
     };
 
     if (req.file?.path) {
