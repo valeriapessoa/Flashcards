@@ -72,10 +72,10 @@ import {
 
             const value =
               typeof getterOrValue === 'function'
-                ? await getterOrValue(req, file)
+                ? await (getterOrValue as OptionCallback<any>)(req, file)
                 : getterOrValue;
 
-            uploadOptions[key] = value;
+            (uploadOptions as any)[key] = value;
           }
         }
 
@@ -111,6 +111,7 @@ import {
           opts,
           (err, response) => {
             if (err != null) return reject(err);
+            if (!response) return reject(new Error('Nenhuma resposta do Cloudinary.'));
             return resolve(response);
           }
         );

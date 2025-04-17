@@ -153,7 +153,7 @@ router.put("/:id", protect, newUploadMiddleware, async (req: AuthenticatedReques
     }
 
     // Processar tags (mesma lógica da criação)
-    let tagsToSet = undefined;
+    let tagsToSet: { id: string | number }[] | undefined = undefined;
     if (tagsInput !== undefined) {
         let tagsArray: string[] = [];
         if (typeof tagsInput === 'string') {
