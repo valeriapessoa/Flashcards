@@ -24,7 +24,12 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
     if (Array.isArray(tagsInput)) {
       // Se for array de objetos {id, text}
       if (tagsInput.length > 0 && typeof tagsInput[0] === 'object' && 'text' in tagsInput[0]) {
-        return tagsInput;
+        // Garante que id e text sejam sempre string
+        return tagsInput.map((tag, index) => ({
+          id: String(tag.id ?? index),
+          text: String(tag.text ?? ''),
+          className: tag.className || '',
+        }));
       }
       // Se for array de strings
       return tagsInput.map((tag, index) => ({ id: `${index}`, text: String(tag), className: '' }));

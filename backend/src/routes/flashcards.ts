@@ -409,6 +409,7 @@ router.get("/:id", protect, async (req: AuthenticatedRequest, res: Response) => 
       where: { id: flashcardId },
       include: {
         categories: true,
+        tags: true,
         user: {
           select: { id: true, name: true, email: true, image: true },
         },
@@ -419,6 +420,9 @@ router.get("/:id", protect, async (req: AuthenticatedRequest, res: Response) => 
       return res.status(404).json({ message: "Flashcard não encontrado." });
     }
 
+    // Log detalhado para depuração
+    console.log("[DEBUG] Flashcard retornado:", JSON.stringify(flashcard, null, 2));
+
     // Verificar se o flashcard pertence ao usuário logado
     if (flashcard.userId !== userId) {
         return res.status(403).json({ message: "Você não tem permissão para acessar este flashcard." });
@@ -426,7 +430,7 @@ router.get("/:id", protect, async (req: AuthenticatedRequest, res: Response) => 
 
     return res.status(200).json(flashcard);
   } catch (error: any) {
-    console.error("❌ Erro ao buscar flashcard:", error.message);
+    console.error("❌ Erro ao buscar flashcard:", error);
     return res.status(500).json({ message: "Erro ao buscar flashcard", details: error.message });
   }
 });
