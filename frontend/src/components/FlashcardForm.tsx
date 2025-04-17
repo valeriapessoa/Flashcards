@@ -19,7 +19,19 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
   const [title, setTitle] = useState(flashcard?.title || '');
   const [description, setDescription] = useState(flashcard?.description || '');
   const [imagePreview, setImagePreview] = useState<string | null>(flashcard?.imageUrl || null);
-  const [tags, setTags] = useState<ReactTag[]>(flashcard?.tags?.map((tag, index) => ({ id: `${index}`, text: tag, className: '' })) || []);
+  const formatTags = (tagsInput: any) => {
+    if (!tagsInput) return [];
+    if (Array.isArray(tagsInput)) {
+      // Se for array de objetos {id, text}
+      if (tagsInput.length > 0 && typeof tagsInput[0] === 'object' && 'text' in tagsInput[0]) {
+        return tagsInput;
+      }
+      // Se for array de strings
+      return tagsInput.map((tag, index) => ({ id: `${index}`, text: String(tag), className: '' }));
+    }
+    return [];
+  };
+  const [tags, setTags] = useState<ReactTag[]>(formatTags(flashcard?.tags));
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false); // NOVO estado para controle do botão
 
@@ -72,7 +84,7 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
       setTitle(flashcard.title || '');
       setDescription(flashcard.description || '');
       setImagePreview(flashcard.imageUrl || null);
-      setTags(flashcard.tags?.map((tag, index) => ({ id: `${index}`, text: tag, className: '' })) || []);
+      setTags(formatTags(flashcard.tags));
       setImageFile(null);
       setErrors({});
     } else {
@@ -198,25 +210,27 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
         {/* Campo de Tags */}
         <div className="flex flex-col">
           <label className="text-gray-700 font-medium mb-1">Tags</label>
-          <ReactTags
-            tags={tags}
-            handleDelete={handleDelete}
-            handleAddition={handleAddition}
-            handleDrag={handleDrag}
-            separators={[KeyCodes.comma, KeyCodes.enter]} // Usar KeyCodes definidos
-            placeholder="Adicione tags e pressione Enter ou vírgula"
-            allowDragDrop // Habilitar drag and drop se desejado
-            classNames={{ // Adicionar classes Tailwind se necessário para estilização
-                tags: 'flex flex-wrap gap-2',
-                tagInput: 'flex-1',
-                tagInputField: 'p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full',
-                selected: 'flex flex-wrap gap-2',
-                tag: 'bg-blue-100 text-blue-800 px-3 py-1 rounded-md text-sm flex items-center gap-1',
-                remove: 'text-blue-500 hover:text-blue-700 cursor-pointer ps-1',
-                suggestions: 'mt-1 border border-gray-300 rounded-lg bg-white shadow-lg',
-                activeSuggestion: 'bg-blue-100 p-2 cursor-pointer',
-            }}
-          />
+          {Array.isArray(tags) && (
+            <ReactTags
+              tags={tags}
+              handleDelete={handleDelete}
+              handleAddition={handleAddition}
+              handleDrag={handleDrag}
+              separators={[KeyCodes.comma, KeyCodes.enter]}
+              placeholder="Adicione tags e pressione Enter ou vírgula"
+              allowDragDrop
+              classNames={{
+                  tags: 'flex flex-wrap gap-2',
+                  tagInput: 'flex-1',
+                  tagInputField: 'p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full',
+                  selected: 'flex flex-wrap gap-2',
+                  tag: 'bg-blue-100 text-blue-800 px-3 py-1 rounded-md text-sm flex items-center gap-1',
+                  remove: 'text-blue-500 hover:text-blue-700 cursor-pointer ps-1',
+                  suggestions: 'mt-1 border border-gray-300 rounded-lg bg-white shadow-lg',
+                  activeSuggestion: 'bg-blue-100 p-2 cursor-pointer',
+              }}
+            />
+          )}
         </div>
 
         {/* Botão de Submit */}
