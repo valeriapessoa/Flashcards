@@ -15,8 +15,10 @@ import {
   DialogContent,
   DialogTitle,
   Box,
-  useTheme
+  useTheme,
+  IconButton
 } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
 import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { deleteFlashcard, fetchFlashcards } from "../../lib/api";
@@ -72,6 +74,19 @@ const Flashcards: React.FC = () => {
     }
   };
 
+  // Estado para modal de imagem ampliada
+  const [imageDialogOpen, setImageDialogOpen] = React.useState(false);
+  const [dialogImageUrl, setDialogImageUrl] = React.useState<string | null>(null);
+
+  const handleImageClick = (url: string) => {
+    setDialogImageUrl(url);
+    setImageDialogOpen(true);
+  };
+  const handleDialogClose = () => {
+    setImageDialogOpen(false);
+    setDialogImageUrl(null);
+  };
+
   if (!session) {
     return <AccessDeniedMessage />;
   }
@@ -123,11 +138,13 @@ const Flashcards: React.FC = () => {
                         {flashcard.description}
                       </Typography>
                       {flashcard.imageUrl && (
-                        <Box component="img"
+                        <Box
+                          component="img"
                           src={flashcard.imageUrl}
                           alt={flashcard.title}
-                          sx={{ width: "100%", borderRadius: 2, objectFit: "cover", maxHeight: 140, mb: 1 }}
+                          sx={{ width: "100%", borderRadius: 2, objectFit: "cover", maxHeight: 140, mb: 1, cursor: 'pointer' }}
                           loading="lazy"
+                          onClick={() => handleImageClick(flashcard.imageUrl)}
                         />
                       )}
                       <Box mt={2} display="flex" flexWrap="wrap" gap={1} alignItems="center">
@@ -183,6 +200,33 @@ const Flashcards: React.FC = () => {
                 Excluir
               </Button>
             </DialogActions>
+          </Dialog>
+
+          {/* Modal de imagem ampliada fullscreen */}
+          <Dialog open={imageDialogOpen} onClose={handleDialogClose} maxWidth="md" fullScreen>
+            <DialogContent sx={{ position: 'relative', p: 0, bgcolor: 'black', width: '100vw', height: '100vh', overflow: 'hidden' }}>
+              <IconButton
+                aria-label="Fechar"
+                onClick={handleDialogClose}
+                sx={{ position: 'absolute', top: 8, right: 8, color: 'white', zIndex: 1 }}
+              >
+                <CloseIcon />
+              </IconButton>
+              {dialogImageUrl && (
+                <img
+                  src={dialogImageUrl}
+                  alt="Imagem ampliada"
+                  style={{
+                    width: '100vw',
+                    height: '100vh',
+                    objectFit: 'contain',
+                    display: 'block',
+                    margin: 0,
+                    background: 'black',
+                  }}
+                />
+              )}
+            </DialogContent>
           </Dialog>
         </Container>
       </Box>

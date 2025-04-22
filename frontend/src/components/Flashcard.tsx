@@ -1,5 +1,6 @@
 import React from 'react';
-import { Card, CardContent, CardMedia, Typography, Button } from '@mui/material';
+import { Card, CardContent, CardMedia, Typography, Button, Dialog, DialogContent, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 interface FlashcardProps {
   id: number;
@@ -20,9 +21,30 @@ const Flashcard: React.FC<FlashcardProps> = ({
   onMarkAsReviewed,
   showReviewButton,
 }) => {
+  const [imageDialogOpen, setImageDialogOpen] = React.useState(false);
+  const [dialogImageUrl, setDialogImageUrl] = React.useState<string | null>(null);
+
+  const handleImageClick = (url: string) => {
+    setDialogImageUrl(url);
+    setImageDialogOpen(true);
+  };
+  const handleDialogClose = () => {
+    setImageDialogOpen(false);
+    setDialogImageUrl(null);
+  };
+
   return (
     <Card>
-      {imageUrl && <CardMedia component="img" height="140" image={imageUrl} alt={title} />}
+      {imageUrl && (
+        <CardMedia
+          component="img"
+          height="140"
+          image={imageUrl}
+          alt={title}
+          style={{ cursor: 'pointer' }}
+          onClick={() => handleImageClick(imageUrl)}
+        />
+      )}
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
           {title}
@@ -52,6 +74,32 @@ const Flashcard: React.FC<FlashcardProps> = ({
           </Button>
         )}
       </CardContent>
+      {/* Modal de imagem ampliada fullscreen */}
+      <Dialog open={imageDialogOpen} onClose={handleDialogClose} maxWidth="md" fullScreen>
+        <DialogContent sx={{ position: 'relative', p: 0, bgcolor: 'black', width: '100vw', height: '100vh', overflow: 'hidden' }}>
+          <IconButton
+            aria-label="Fechar"
+            onClick={handleDialogClose}
+            sx={{ position: 'absolute', top: 8, right: 8, color: 'white', zIndex: 1 }}
+          >
+            <CloseIcon />
+          </IconButton>
+          {dialogImageUrl && (
+            <img
+              src={dialogImageUrl}
+              alt="Imagem ampliada"
+              style={{
+                width: '100vw',
+                height: '100vh',
+                objectFit: 'contain',
+                display: 'block',
+                margin: 0,
+                background: 'black',
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };
