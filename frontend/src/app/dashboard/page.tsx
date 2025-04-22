@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Card, CardContent, Grid } from '@mui/material';
+import { Container, Typography, Card, CardContent, Grid, Paper, Box, useTheme } from '@mui/material';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import UserStatsCard from '../../components/UserStatsCard';
@@ -22,6 +22,7 @@ interface UserStats {
 const Dashboard: React.FC = () => {
   const { data: session } = useSession();
   const [stats, setStats] = useState<UserStats | null>(null);
+  const theme = useTheme();
 
   useEffect(() => {
     if (!session) return; // só busca se autenticado
@@ -44,10 +45,18 @@ const Dashboard: React.FC = () => {
     return (
       <>
         <Header />
-        <Container maxWidth="md">
-          <Typography variant="h4" gutterBottom>
-            Loading stats...
-          </Typography>
+        <Container maxWidth="md" sx={{
+          minHeight: '75vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.background.default} 100%)`,
+        }}>
+          <Paper elevation={4} sx={{ p: 4, borderRadius: 3, width: '100%', maxWidth: 400, mx: 'auto', textAlign: 'center' }}>
+            <Typography variant="h5" gutterBottom>
+              Carregando estatísticas...
+            </Typography>
+          </Paper>
         </Container>
         <Footer />
       </>
@@ -57,14 +66,33 @@ const Dashboard: React.FC = () => {
   return (
     <>
       <Header />
-      <Container maxWidth="md">
-        <PageNavigation />
-        <Typography variant="h4" gutterBottom>
-          Dashboard
-        </Typography>
-        <UserStatsCard stats={stats} />
-        <ScoreCard score={stats.score} />
-      </Container>
+      <Box
+        sx={{
+          minHeight: '75vh',
+          background: `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.background.default} 100%)`,
+          py: { xs: 2, md: 4 },
+        }}
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Container maxWidth="sm" sx={{ p: 0 }}>
+          <Card sx={{ boxShadow: 4, borderRadius: 3 }}>
+            <CardContent>
+              <PageNavigation />
+              <Typography variant="h4" gutterBottom align="center">
+                Olá, {session?.user?.name || 'usuário'}!
+              </Typography>
+              <Typography variant="body1" color="text.secondary" align="center" mb={2}>
+                Aqui está um resumo do seu desempenho com os flashcards.
+              </Typography>
+              <UserStatsCard stats={stats} />
+              <ScoreCard score={stats.score} />
+            </CardContent>
+          </Card>
+        </Container>
+      </Box>
       <Footer />
     </>
   );

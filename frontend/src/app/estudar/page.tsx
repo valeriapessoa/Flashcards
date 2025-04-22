@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query"; // Corrigido para @tanstack/re
 import StudyMode from "@/components/StudyMode";
 import { Flashcard } from "@/types"; // Mantido
 import { fetchFlashcards } from "@/lib/api"; // Importado fetchFlashcards de lib/api
-import { CircularProgress, Button, Typography, Alert } from "@mui/material"; // Adicionado Typography e Alert
+import { CircularProgress, Button, Typography, Alert, Box, Card, CardContent, useTheme } from "@mui/material"; // Adicionado Typography e Alert
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import AccessDeniedMessage from "../../components/AccessDeniedMessage";
@@ -20,6 +20,7 @@ import Footer from '../../components/Footer';
 const StudyPage: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
+  const theme = useTheme();
   // Chame useQuery sempre, mas só habilite quando autenticado
   const {
     data: flashcards = [],
@@ -40,51 +41,59 @@ const StudyPage: React.FC = () => {
   return (
     <>
       <Header />
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-white to-gray-100 p-6">
-        <PageNavigation />
-        <h1 className="text-4xl font-extrabold text-gray-900 mb-6 animate-fade-in">
-          📚 Modo de Estudo
-        </h1>
-
-        {isLoading && (
-          <div className="flex flex-col items-center gap-4 animate-fade-in" aria-live="polite">
-            <CircularProgress />
-            <p className="text-gray-600">Carregando flashcards, por favor aguarde...</p>
-          </div>
-        )}
-
-        {/* Melhor tratamento de erro usando isError */}
-        {isError && (
-          <Alert severity="error" action={
-            <Button color="inherit" size="small" onClick={() => refetch()}>
-              Tentar novamente
-            </Button>
-          }>
-            Erro ao carregar flashcards: {(error as Error)?.message || 'Erro desconhecido'}
-          </Alert>
-        )}
-
-        {flashcards?.length === 0 && !isLoading && !isError && (
-          <div className="flex flex-col items-center text-center bg-white p-6 rounded-lg shadow-lg animate-fade-in">
-            <p className="text-gray-700 text-lg">⚠️ Nenhum flashcard encontrado.</p>
-            <p className="text-gray-500 mb-4">Crie um novo flashcard para começar seus estudos.</p>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => router.push("/criar-flashcard")} // Corrigido o link para criar
-            >
-              ➕ Criar Flashcard
-            </Button>
-          </div>
-        )}
-
-        {/* Simplificado: se não está carregando, não há erro e há flashcards */}
-        {!isLoading && !isError && flashcards.length > 0 && (
-          <div className="w-full max-w-4xl">
-            <StudyMode flashcards={flashcards} /> {/* Não precisa mais de ?? [] */}
-          </div>
-        )}
-      </div>
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        minHeight="75vh"
+        sx={{
+          background: `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.background.default} 100%)`,
+          py: { xs: 2, md: 4 },
+        }}
+      >
+        <Card sx={{ maxWidth: 700, width: '100%', boxShadow: 4, borderRadius: 3 }}>
+          <CardContent>
+            <PageNavigation />
+            <Typography variant="h4" component="h1" gutterBottom align="center">
+              📚 Modo de Estudo
+            </Typography>
+            {isLoading && (
+              <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" my={3} aria-live="polite">
+                <CircularProgress />
+                <Typography color="text.secondary" mt={2}>Carregando flashcards, por favor aguarde...</Typography>
+              </Box>
+            )}
+            {isError && (
+              <Alert severity="error" action={
+                <Button color="inherit" size="small" onClick={() => refetch()}>
+                  Tentar novamente
+                </Button>
+              }>
+                Erro ao carregar flashcards: {(error as Error)?.message || 'Erro desconhecido'}
+              </Alert>
+            )}
+            {flashcards?.length === 0 && !isLoading && !isError && (
+              <Box display="flex" flexDirection="column" alignItems="center" textAlign="center" bgcolor="background.paper" p={4} borderRadius={2} boxShadow={2}>
+                <Typography color="text.secondary" fontSize={18} mb={1}>⚠️ Nenhum flashcard encontrado.</Typography>
+                <Typography color="text.secondary" mb={2}>Crie um novo flashcard para começar seus estudos.</Typography>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => router.push("/criar-flashcard")}
+                >
+                  ➕ Criar Flashcard
+                </Button>
+              </Box>
+            )}
+            {!isLoading && !isError && flashcards.length > 0 && (
+              <Box width="100%" maxWidth={600} mx="auto">
+                <StudyMode flashcards={flashcards} />
+              </Box>
+            )}
+          </CardContent>
+        </Card>
+      </Box>
       <Footer />
     </>
   );

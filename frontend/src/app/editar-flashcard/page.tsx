@@ -5,12 +5,12 @@ import { useMutation, useQuery, QueryClient, QueryClientProvider } from "react-q
 import { Flashcard } from "../../types";
 import { fetchFlashcard, updateFlashcard } from "../../lib/api";
 import FlashcardForm from "../../components/FlashcardForm";
-import { ClipLoader } from "react-spinners";
 import { useSession } from "next-auth/react";
 import AccessDeniedMessage from "../../components/AccessDeniedMessage";
 import AuthGuard from "@/components/AuthGuard";
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import { Box, Typography, Card, CardContent, Button, CircularProgress, useTheme } from '@mui/material';
 
 const queryClient = new QueryClient();
 
@@ -82,6 +82,8 @@ const EditFlashcardPage = () => {
     }
   };
 
+  const theme = useTheme();
+
   if (!session) {
     return <AccessDeniedMessage />;
   }
@@ -89,39 +91,55 @@ const EditFlashcardPage = () => {
   return (
     <>
       <Header />
-      <main className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-        <section className="bg-white shadow-md rounded-lg p-6 w-full max-w-2xl">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">Editar Flashcard</h1>
-
-          {isLoading ? (
-            <div className="flex flex-col items-center justify-center">
-              <ClipLoader size={40} color="#4A90E2" />
-              <p className="text-gray-600 mt-2">Carregando flashcard...</p>
-            </div>
-          ) : isError ? (
-            <p className="text-red-600">Erro ao carregar o flashcard. Tente novamente.</p>
-          ) : !flashcard ? (
-            <p className="text-gray-600">Flashcard não encontrado.</p>
-          ) : (
-            <>
-              <FlashcardForm
-                flashcard={flashcard}
-                onSubmit={handleSubmit}
-                isEditing={true}
-              />
-              <div className="flex justify-start mt-4">
-                <button
-                  type="button"
-                  onClick={() => router.push("/flashcards")}
-                  className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
-                >
-                  Voltar
-                </button>
-              </div>
-            </>
-          )}
-        </section>
-      </main>
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        minHeight="75vh"
+        sx={{
+          background: `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.background.default} 100%)`,
+          py: { xs: 2, md: 4 },
+        }}
+      >
+        <Card sx={{ maxWidth: 600, width: '100%', boxShadow: 4, borderRadius: 3 }}>
+          <CardContent>
+            <Typography variant="h4" component="h1" gutterBottom align="center">
+              Editar Flashcard
+            </Typography>
+            <Typography variant="body1" color="text.secondary" align="center" mb={2}>
+              Altere os campos desejados e salve as modificações do seu flashcard.
+            </Typography>
+            {isLoading ? (
+              <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" my={3}>
+                <CircularProgress color="primary" />
+                <Typography color="text.secondary" mt={2}>Carregando flashcard...</Typography>
+              </Box>
+            ) : isError ? (
+              <Typography color="error" align="center">Erro ao carregar o flashcard. Tente novamente.</Typography>
+            ) : !flashcard ? (
+              <Typography color="text.secondary" align="center">Flashcard não encontrado.</Typography>
+            ) : (
+              <>
+                <FlashcardForm
+                  flashcard={flashcard}
+                  onSubmit={handleSubmit}
+                  isEditing={true}
+                />
+                <Box display="flex" justifyContent="flex-start" mt={3}>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => router.push("/flashcards")}
+                  >
+                    Voltar
+                  </Button>
+                </Box>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </Box>
       <Footer />
     </>
   );

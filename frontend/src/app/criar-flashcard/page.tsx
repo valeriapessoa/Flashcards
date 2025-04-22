@@ -11,10 +11,12 @@ import AuthGuard from "@/components/AuthGuard";
 import PageNavigation from '../../components/PageNavigation';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import { Box, Typography, Card, CardContent, useTheme } from '@mui/material';
 
 const CreateFlashcard: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
+  const theme = useTheme();
 
   const handleSubmit = async (data: Partial<Flashcard>, file: File | null) => {
     try {
@@ -52,13 +54,30 @@ const CreateFlashcard: React.FC = () => {
   return (
     <>
       <Header />
-      <main className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-        <section className="bg-white shadow-md rounded-lg p-6 w-full max-w-2xl">
-          <PageNavigation />
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">Criar Flashcard</h1>
-          <FlashcardForm onSubmit={handleSubmit} />
-        </section>
-      </main>
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        minHeight="75vh"
+        sx={{
+          background: `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.background.default} 100%)`,
+          py: { xs: 2, md: 4 },
+        }}
+      >
+        <Card sx={{ maxWidth: 600, width: '100%', boxShadow: 4, borderRadius: 3 }}>
+          <CardContent>
+            <PageNavigation />
+            <Typography variant="h4" component="h1" gutterBottom align="center">
+              Criar Flashcard
+            </Typography>
+            <Typography variant="body1" color="text.secondary" align="center" mb={2}>
+              Preencha os campos abaixo para adicionar um novo flashcard à sua coleção.
+            </Typography>
+            <FlashcardForm onSubmit={handleSubmit} />
+          </CardContent>
+        </Card>
+      </Box>
       <Footer />
     </>
   );
