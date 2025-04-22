@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Button, Card, CardContent, Typography } from '@mui/material';
+import { Button, Card, CardContent, Typography, Dialog, DialogContent, IconButton } from '@mui/material';
 import { useMutation, useQueryClient } from '@tanstack/react-query'; // Importar useMutation e useQueryClient
 import { incrementErrorCount } from '../lib/api'; // Importar a função da API
 import { Flashcard } from '../types';
+import CloseIcon from '@mui/icons-material/Close';
 interface StudyModeProps {
   flashcards: Flashcard[];
 }
@@ -52,6 +53,21 @@ const StudyMode: React.FC<StudyModeProps> = ({ flashcards }) => {
     handleNext(); // Avança para o próximo card independentemente do sucesso/erro da mutation por enquanto
   };
 
+  const [imageDialogOpen, setImageDialogOpen] = useState(false);
+  const [dialogImageUrl, setDialogImageUrl] = useState<string | null>(null);
+
+  // handler para abrir o modal da imagem
+  const handleImageClick = (url: string) => {
+    setDialogImageUrl(url);
+    setImageDialogOpen(true);
+  }
+
+  // handler para fechar o modal
+  const handleDialogClose = () => {
+    setImageDialogOpen(false);
+    setDialogImageUrl(null);
+  }
+
   const currentFlashcard = flashcards[currentIndex];
 
   return (
@@ -65,9 +81,37 @@ const StudyMode: React.FC<StudyModeProps> = ({ flashcards }) => {
           <img
             src={currentFlashcard.imageUrl}
             alt="Imagem da resposta"
-            className="mt-4 max-w-full h-auto rounded shadow-md"
+            className="mt-4 max-w-full h-auto rounded shadow-md cursor-pointer"
+            style={{ maxHeight: 200 }}
+            onClick={() => handleImageClick(currentFlashcard.imageUrl!)}
           />
         )}
+        {/* Modal para imagem ampliada */}
+        <Dialog open={imageDialogOpen} onClose={handleDialogClose} maxWidth="md" fullScreen>
+          <DialogContent sx={{ position: 'relative', p: 0, bgcolor: 'black', width: '100vw', height: '100vh', overflow: 'hidden' }}>
+            <IconButton
+              aria-label="Fechar"
+              onClick={handleDialogClose}
+              sx={{ position: 'absolute', top: 8, right: 8, color: 'white', zIndex: 1 }}
+            >
+              <CloseIcon />
+            </IconButton>
+            {dialogImageUrl && (
+              <img
+                src={dialogImageUrl}
+                alt="Imagem ampliada"
+                style={{
+                  width: '100vw',
+                  height: '100vh',
+                  objectFit: 'contain',
+                  display: 'block',
+                  margin: 0,
+                  background: 'black',
+                }}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
         <div className="mt-4 flex justify-center gap-4"> {/* Adiciona espaçamento e centraliza */}
           <Button variant="outlined" onClick={handleFlip}> {/* Estilo para o botão de virar */}
             {isFront ? 'Ver Resposta' : 'Ver Pergunta'}
