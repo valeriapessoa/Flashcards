@@ -1,6 +1,7 @@
 "use client";
 import RegisterForm from '../../components/RegisterForm';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Button } from '@mui/material';
+import Link from 'next/link';
 
 const RegisterPage = () => {
   return (
@@ -9,6 +10,13 @@ const RegisterPage = () => {
         Registro
       </Typography>
       <RegisterForm />
+      <Box mt={2}>
+        <Link href="/dashboard" passHref legacyBehavior>
+          <Button variant="text" color="secondary">
+            Voltar ao Dashboard
+          </Button>
+        </Link>
+      </Box>
     </Box>
   );
 };

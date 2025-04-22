@@ -1,7 +1,8 @@
 "use client";
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import LoginForm from '../../components/LoginForm';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Button } from '@mui/material';
 
 const LoginPage = () => {
   return (
@@ -10,6 +11,13 @@ const LoginPage = () => {
         Login
       </Typography>
       <LoginForm />
+      <Box mt={2}>
+        <Link href="/dashboard" passHref legacyBehavior>
+          <Button variant="text" color="secondary">
+            Voltar ao Dashboard
+          </Button>
+        </Link>
+      </Box>
     </Box>
   );
 };
