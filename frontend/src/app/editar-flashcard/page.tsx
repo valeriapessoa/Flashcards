@@ -9,6 +9,8 @@ import { ClipLoader } from "react-spinners";
 import { useSession } from "next-auth/react";
 import AccessDeniedMessage from "../../components/AccessDeniedMessage";
 import AuthGuard from "@/components/AuthGuard";
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 
 const queryClient = new QueryClient();
 
@@ -85,39 +87,43 @@ const EditFlashcardPage = () => {
   }
 
   return (
-    <main className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-      <section className="bg-white shadow-md rounded-lg p-6 w-full max-w-2xl">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">Editar Flashcard</h1>
+    <>
+      <Header />
+      <main className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+        <section className="bg-white shadow-md rounded-lg p-6 w-full max-w-2xl">
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">Editar Flashcard</h1>
 
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center">
-            <ClipLoader size={40} color="#4A90E2" />
-            <p className="text-gray-600 mt-2">Carregando flashcard...</p>
-          </div>
-        ) : isError ? (
-          <p className="text-red-600">Erro ao carregar o flashcard. Tente novamente.</p>
-        ) : !flashcard ? (
-          <p className="text-gray-600">Flashcard não encontrado.</p>
-        ) : (
-          <>
-            <FlashcardForm
-              flashcard={flashcard}
-              onSubmit={handleSubmit}
-              isEditing={true}
-            />
-            <div className="flex justify-start mt-4">
-              <button
-                type="button"
-                onClick={() => router.push("/flashcards")}
-                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
-              >
-                Voltar
-              </button>
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center">
+              <ClipLoader size={40} color="#4A90E2" />
+              <p className="text-gray-600 mt-2">Carregando flashcard...</p>
             </div>
-          </>
-        )}
-      </section>
-    </main>
+          ) : isError ? (
+            <p className="text-red-600">Erro ao carregar o flashcard. Tente novamente.</p>
+          ) : !flashcard ? (
+            <p className="text-gray-600">Flashcard não encontrado.</p>
+          ) : (
+            <>
+              <FlashcardForm
+                flashcard={flashcard}
+                onSubmit={handleSubmit}
+                isEditing={true}
+              />
+              <div className="flex justify-start mt-4">
+                <button
+                  type="button"
+                  onClick={() => router.push("/flashcards")}
+                  className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+                >
+                  Voltar
+                </button>
+              </div>
+            </>
+          )}
+        </section>
+      </main>
+      <Footer />
+    </>
   );
 };
 

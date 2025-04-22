@@ -9,6 +9,8 @@ import axios from "axios";
 import { Flashcard } from "../../types";
 import AuthGuard from "@/components/AuthGuard";
 import PageNavigation from '../../components/PageNavigation';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 
 const CreateFlashcard: React.FC = () => {
   const router = useRouter();
@@ -48,13 +50,17 @@ const CreateFlashcard: React.FC = () => {
   }
 
   return (
-    <main className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-      <section className="bg-white shadow-md rounded-lg p-6 w-full max-w-2xl">
-        <PageNavigation />
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">Criar Flashcard</h1>
-        <FlashcardForm onSubmit={handleSubmit} />
-      </section>
-    </main>
+    <>
+      <Header />
+      <main className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+        <section className="bg-white shadow-md rounded-lg p-6 w-full max-w-2xl">
+          <PageNavigation />
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">Criar Flashcard</h1>
+          <FlashcardForm onSubmit={handleSubmit} />
+        </section>
+      </main>
+      <Footer />
+    </>
   );
 };
 

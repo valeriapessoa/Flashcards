@@ -9,6 +9,8 @@ import ScoreCard from '../../components/ScoreCard';
 import AccessDeniedMessage from '../../components/AccessDeniedMessage';
 import AuthGuard from '@/components/AuthGuard';
 import PageNavigation from '../../components/PageNavigation';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 
 interface UserStats {
   score: number;
@@ -40,23 +42,31 @@ const Dashboard: React.FC = () => {
 
   if (!stats) {
     return (
-      <Container maxWidth="md">
-        <Typography variant="h4" gutterBottom>
-          Loading stats...
-        </Typography>
-      </Container>
+      <>
+        <Header />
+        <Container maxWidth="md">
+          <Typography variant="h4" gutterBottom>
+            Loading stats...
+          </Typography>
+        </Container>
+        <Footer />
+      </>
     );
   }
 
   return (
-    <Container maxWidth="md">
-      <PageNavigation />
-      <Typography variant="h4" gutterBottom>
-        Dashboard
-      </Typography>
-      <UserStatsCard stats={stats} />
-      <ScoreCard score={stats.score} />
-    </Container>
+    <>
+      <Header />
+      <Container maxWidth="md">
+        <PageNavigation />
+        <Typography variant="h4" gutterBottom>
+          Dashboard
+        </Typography>
+        <UserStatsCard stats={stats} />
+        <ScoreCard score={stats.score} />
+      </Container>
+      <Footer />
+    </>
   );
 };
 
