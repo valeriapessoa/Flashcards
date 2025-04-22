@@ -8,6 +8,7 @@ import FlashcardForm from "../../components/FlashcardForm";
 import { ClipLoader } from "react-spinners";
 import { useSession } from "next-auth/react";
 import AccessDeniedMessage from "../../components/AccessDeniedMessage";
+import AuthGuard from "@/components/AuthGuard";
 
 const queryClient = new QueryClient();
 
@@ -122,7 +123,9 @@ const EditFlashcardPage = () => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <EditFlashcardPage />
+    <AuthGuard>
+      <EditFlashcardPage />
+    </AuthGuard>
   </QueryClientProvider>
 );
 

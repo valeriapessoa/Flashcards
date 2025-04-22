@@ -95,7 +95,11 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-  session: { strategy: 'jwt' },
+  session: { 
+    strategy: 'jwt', 
+    maxAge: 60 * 60, // 1 hora em segundos
+    updateAge: 60 * 5, // Atualiza token a cada 5 minutos de uso
+  },
   pages: { signIn: '/login' },
   callbacks: {
     async jwt({ token, user }: { token: JWT; user?: (User | AdapterUser) & { accessToken?: string } | null }) {

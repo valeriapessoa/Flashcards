@@ -7,6 +7,7 @@ import FlashcardForm from "../../components/FlashcardForm";
 import AccessDeniedMessage from "../../components/AccessDeniedMessage";
 import axios from "axios";
 import { Flashcard } from "../../types";
+import AuthGuard from "@/components/AuthGuard";
 
 const CreateFlashcard: React.FC = () => {
   const router = useRouter();
@@ -55,4 +56,10 @@ const CreateFlashcard: React.FC = () => {
   );
 };
 
-export default CreateFlashcard;
+export default function Page() {
+  return (
+    <AuthGuard>
+      <CreateFlashcard />
+    </AuthGuard>
+  );
+}

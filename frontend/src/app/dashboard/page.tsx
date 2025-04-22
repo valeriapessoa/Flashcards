@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react';
 import UserStatsCard from '../../components/UserStatsCard';
 import ScoreCard from '../../components/ScoreCard';
 import AccessDeniedMessage from '../../components/AccessDeniedMessage';
+import AuthGuard from '@/components/AuthGuard';
 
 interface UserStats {
   score: number;
@@ -57,4 +58,10 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default function Page() {
+  return (
+    <AuthGuard>
+      <Dashboard />
+    </AuthGuard>
+  );
+}

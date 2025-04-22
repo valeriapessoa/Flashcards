@@ -10,6 +10,7 @@ import { CircularProgress, Button, Typography, Alert } from "@mui/material"; // 
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import AccessDeniedMessage from "../../components/AccessDeniedMessage";
+import AuthGuard from "@/components/AuthGuard";
 
 // Removida a função fetchFlashcards local, usaremos a importada de lib/api
 
@@ -81,4 +82,10 @@ const StudyPage: React.FC = () => {
   );
 };
 
-export default StudyPage;
+export default function Page() {
+  return (
+    <AuthGuard>
+      <StudyPage />
+    </AuthGuard>
+  );
+}
