@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import AccessDeniedMessage from "../../components/AccessDeniedMessage";
 import AuthGuard from "@/components/AuthGuard";
+import PageNavigation from '../../components/PageNavigation';
 
 // Removida a função fetchFlashcards local, usaremos a importada de lib/api
 
@@ -36,6 +37,7 @@ const StudyPage: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-white to-gray-100 p-6">
+      <PageNavigation />
       <h1 className="text-4xl font-extrabold text-gray-900 mb-6 animate-fade-in">
         📚 Modo de Estudo
       </h1>

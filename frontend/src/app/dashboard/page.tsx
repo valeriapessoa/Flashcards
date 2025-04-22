@@ -8,6 +8,7 @@ import UserStatsCard from '../../components/UserStatsCard';
 import ScoreCard from '../../components/ScoreCard';
 import AccessDeniedMessage from '../../components/AccessDeniedMessage';
 import AuthGuard from '@/components/AuthGuard';
+import PageNavigation from '../../components/PageNavigation';
 
 interface UserStats {
   score: number;
@@ -49,6 +50,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <Container maxWidth="md">
+      <PageNavigation />
       <Typography variant="h4" gutterBottom>
         Dashboard
       </Typography>
