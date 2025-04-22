@@ -48,7 +48,7 @@ const StudyPage: React.FC = () => {
         alignItems="center"
         justifyContent="center"
         sx={{
-          background: `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.background.default} 100%)`,
+          // Removido o background para deixar o fundo sem cor
           py: { xs: 2, md: 4 },
         }}
       >

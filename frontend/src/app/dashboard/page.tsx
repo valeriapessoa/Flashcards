@@ -50,7 +50,7 @@ const Dashboard: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.background.default} 100%)`,
+          // Removido o background para deixar o fundo sem cor
         }}>
           <Paper elevation={4} sx={{ p: 4, borderRadius: 3, width: '100%', maxWidth: 400, mx: 'auto', textAlign: 'center' }}>
             <Typography variant="h5" gutterBottom>
@@ -69,7 +69,7 @@ const Dashboard: React.FC = () => {
       <Box
         sx={{
           minHeight: '75vh',
-          background: `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.background.default} 100%)`,
+          // Removido o background para deixar o fundo sem cor
           py: { xs: 2, md: 4 },
         }}
         display="flex"
