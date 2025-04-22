@@ -16,7 +16,8 @@ import {
   DialogTitle,
   Box,
   useTheme,
-  IconButton
+  IconButton,
+  CardMedia
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import { useRouter } from "next/navigation";
@@ -138,12 +139,12 @@ const Flashcards: React.FC = () => {
                         {flashcard.description}
                       </Typography>
                       {flashcard.imageUrl && (
-                        <Box
+                        <CardMedia
                           component="img"
-                          src={flashcard.imageUrl}
+                          height="140"
+                          image={flashcard.imageUrl}
                           alt={flashcard.title}
-                          sx={{ width: "100%", borderRadius: 2, objectFit: "cover", maxHeight: 140, mb: 1, cursor: 'pointer' }}
-                          loading="lazy"
+                          style={{ cursor: 'pointer' }}
                           onClick={() => handleImageClick(flashcard.imageUrl)}
                         />
                       )}
@@ -155,8 +156,8 @@ const Flashcards: React.FC = () => {
                           <Typography
                             key={`${tag.text}-${index}`}
                             variant="caption"
-                            color="primary"
-                            sx={{ backgroundColor: theme.palette.primary.light, px: 1.5, py: 0.5, borderRadius: 1 }}
+                            color="#fff"
+                            sx={{ backgroundColor: theme.palette.primary.light, px: 1.5, py: 0.5, borderRadius: 1, color: '#fff' }}
                           >
                             {tag.text}
                           </Typography>
