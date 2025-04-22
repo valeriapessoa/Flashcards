@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardMedia, Typography, Button, Dialog, DialogContent, IconButton } from '@mui/material';
+import { Card, CardContent, CardMedia, Typography, Button, Dialog, DialogContent, IconButton, useTheme } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
 interface FlashcardProps {
@@ -23,6 +23,7 @@ const Flashcard: React.FC<FlashcardProps> = ({
 }) => {
   const [imageDialogOpen, setImageDialogOpen] = React.useState(false);
   const [dialogImageUrl, setDialogImageUrl] = React.useState<string | null>(null);
+  const theme = useTheme();
 
   const handleImageClick = (url: string) => {
     setDialogImageUrl(url);
@@ -53,15 +54,20 @@ const Flashcard: React.FC<FlashcardProps> = ({
           {description}
         </Typography>
         {tags && tags.length > 0 && (
-          <Typography variant="body2" color="text.secondary">
-            Tags: {Array.isArray(tags)
-              ? tags.map((tag, idx) => (
-                  <span key={idx} style={{ marginRight: 4 }}>
-                    {tag}
-                  </span>
-                ))
-              : tags}
-          </Typography>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', marginTop: 8 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ mr: 1 }}>
+              🔖 Tags:
+            </Typography>
+            {tags.map((tag, idx) => (
+              <Typography
+                key={idx}
+                variant="caption"
+                sx={{ backgroundColor: theme.palette.primary.light, px: 1.5, py: 0.5, borderRadius: 1, color: '#fff' }}
+              >
+                {tag}
+              </Typography>
+            ))}
+          </div>
         )}
         {showReviewButton && (
           <Button
