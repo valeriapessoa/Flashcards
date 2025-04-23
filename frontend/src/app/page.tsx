@@ -61,28 +61,7 @@ export default function Home() {
               Organize seus estudos e memorize com facilidade.
             </Typography>
             <Divider sx={{ my: 2 }} />
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Card sx={{ bgcolor: '#E8F5E9', borderRadius: 2 }}>
-                  <CardContent>
-                    <Typography variant="subtitle2" color="success.main">Meus Flashcards</Typography>
-                    <Typography variant="h5" fontWeight="bold" color="success.dark">
-                      {flashcardCount !== null ? flashcardCount : '--'}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid item xs={6}>
-                <Card sx={{ bgcolor: '#FFF3E0', borderRadius: 2 }}>
-                  <CardContent>
-                    <Typography variant="subtitle2" color="warning.main">Revisões Pendentes</Typography>
-                    <Typography variant="h5" fontWeight="bold" color="warning.dark">
-                      {pendingReviews !== null ? pendingReviews : '--'}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
+            {/* Cards removidos conforme solicitado */}
           </CardContent>
         </Card>
       </Box>
