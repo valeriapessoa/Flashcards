@@ -21,7 +21,7 @@ const AuthForm = () => {
       setError(res.error);
       setIsSubmitting(false);
     } else {
-      router.push('/dashboard');
+      router.push('/'); 
       setIsSubmitting(false);
     }
   };
@@ -42,7 +42,7 @@ const AuthForm = () => {
       setError(data.error);
       setIsSubmitting(false);
     } else {
-      router.push('/dashboard');
+      router.push('/'); 
       setIsSubmitting(false);
     }
   };

@@ -32,11 +32,7 @@ const LoginPage = () => {
             </Typography>
             <LoginForm />
             <Box mt={2} display="flex" justifyContent="center">
-              <Link href="/dashboard" passHref legacyBehavior>
-                <Button variant="text" color="secondary" size="small">
-                  Voltar ao Dashboard
-                </Button>
-              </Link>
+              {/* Removido link para o Dashboard */}
             </Box>
           </CardContent>
         </Card>

@@ -4,7 +4,6 @@ import { Button, ButtonGroup, Box } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
 
 const navLinks = [
-  { label: "Dashboard", path: "/dashboard" },
   { label: "Flashcards", path: "/flashcards" },
   { label: "Estudar", path: "/estudar" },
   { label: "Revisão Inteligente", path: "/revisao-inteligente" },

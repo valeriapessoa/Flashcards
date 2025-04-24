@@ -5,7 +5,7 @@ const AuthPage = async () => {
   const session = await getSession();
 
   if (session) {
-    redirect('/dashboard');
+    redirect('/'); // Redireciona para Home ao invés de /dashboard
   } else {
     redirect('/login');
   }
