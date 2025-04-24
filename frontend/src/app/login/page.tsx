@@ -2,7 +2,6 @@
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import LoginForm from '../../components/LoginForm';
-import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { Box, Typography, Button, Card, CardContent, useTheme } from '@mui/material';
 
@@ -10,7 +9,6 @@ const LoginPage = () => {
   const theme = useTheme();
   return (
     <>
-      <Header />
       <Box
         display="flex"
         flexDirection="column"
@@ -18,7 +16,6 @@ const LoginPage = () => {
         justifyContent="center"
         minHeight="75vh"
         sx={{
-          // Removido o background para deixar o fundo sem cor
           py: { xs: 2, md: 4 },
         }}
       >
