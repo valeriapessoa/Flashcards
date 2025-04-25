@@ -59,8 +59,10 @@ router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRe
       return res.status(400).json({ message: "Título, descrição e ID do usuário são obrigatórios!" });
     }
 
-    if (!req.file || !req.file.path) {
-      return res.status(400).json({ message: "Imagem é obrigatória para criar um flashcard." });
+    // Se não houver imagem, ainda assim cria o flashcard (imagem opcional)
+    let imageUrl: string | undefined = undefined;
+    if (req.file && req.file.path) {
+      imageUrl = req.file.path;
     }
 
     // Processar tagsInput (esperando array de strings)
@@ -102,7 +104,7 @@ router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRe
       data: {
         title,
         description,
-        imageUrl: req.file.path,
+        ...(imageUrl && { imageUrl }),
         userId,
         tags: {
           connect: tagsToConnect,

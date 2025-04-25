@@ -191,7 +191,7 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
             {isDragActive ? (
               <p className="text-blue-500">Solte a imagem aqui...</p>
             ) : (
-              <p className="text-gray-500">Arraste e solte uma imagem aqui ou clique para selecionar</p>
+              <p className="text-gray-500">Arraste e solte uma imagem aqui ou clique para selecionar (opcional)</p>
             )}
           </div>
           {imagePreview && (
