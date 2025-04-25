@@ -156,6 +156,10 @@ router.put("/:id", protect, newUploadMiddleware, async (req: AuthenticatedReques
 
     // Processar tags (mesma lógica da criação)
     let tagsToSet: { id: string | number }[] | undefined = undefined;
+
+    // LOG: Mostrar o payload recebido
+    console.log('[DEBUG][EDIT] req.body:', req.body);
+
     if (tagsInput !== undefined) {
         let tagsArray: string[] = [];
         if (typeof tagsInput === 'string') {
@@ -191,15 +195,21 @@ router.put("/:id", protect, newUploadMiddleware, async (req: AuthenticatedReques
         }
     }
 
+    // LOG: Mostrar as tags que serão setadas
+    console.log('[DEBUG][EDIT] tagsToSet:', tagsToSet);
+
     const dataToUpdate: any = {
       ...(title && { title }),
       ...(description && { description }),
-      ...(tagsToSet !== undefined && { tags: { set: tagsToSet } }),
+      ...(Array.isArray(tagsToSet) ? { tags: { set: tagsToSet } } : {}),
     };
 
     if (req.file?.path) {
       dataToUpdate.imageUrl = req.file.path;
     }
+
+    // LOG: Mostrar o objeto final de update
+    console.log('[DEBUG][EDIT] dataToUpdate:', dataToUpdate);
 
     const updatedFlashcard = await prisma.flashcard.update({
       where: { id: flashcardId },

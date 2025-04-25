@@ -7,7 +7,7 @@ interface ActionButtonsProps {
   onBack: () => void;
 }
 
-const ActionButtons: React.FC<ActionButtonsProps> = ({ isLoading, onSave }) => {
+const ActionButtons: React.FC<ActionButtonsProps> = ({ isLoading, onSave, onBack }) => {
   const router = useRouter();
 
   return (
