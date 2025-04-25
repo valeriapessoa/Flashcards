@@ -102,19 +102,15 @@ const LoginForm = () => {
           {error}
         </Typography>
       )}
-       <Box mt={2} textAlign="center">
-         <Typography variant="body2">
-           Não tem uma conta? <Button color="secondary" onClick={() => router.push('/register')}>Cadastre-se</Button>
-         </Typography>
-       </Box>
-       <Box mt={2} display="flex" justifyContent="center" gap={2}>
-         <IconButton onClick={() => signIn('google')} color="primary">
-           <GoogleIcon />
-         </IconButton>
-         <IconButton onClick={() => signIn('facebook')} color="primary">
-           <FacebookIcon />
-         </IconButton>
-       </Box>
+      {/* Removido link duplicado para cadastro */}
+      <Box mt={2} display="flex" justifyContent="center" gap={2}>
+        <IconButton onClick={() => signIn('google')} color="primary">
+          <GoogleIcon />
+        </IconButton>
+        <IconButton onClick={() => signIn('facebook')} color="primary">
+          <FacebookIcon />
+        </IconButton>
+      </Box>
     </form>
   );
 };
