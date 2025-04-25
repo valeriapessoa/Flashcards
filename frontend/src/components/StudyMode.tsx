@@ -105,6 +105,55 @@ const StudyMode: React.FC<StudyModeProps> = ({ flashcards }) => {
             />
           </Box>
         )}
+        {/* Exibe as tags do flashcard DEPOIS da imagem */}
+        {currentFlashcard.tags && currentFlashcard.tags.length > 0 && (
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2, mb: 2 }}>
+            {(currentFlashcard.tags as (string | { id: string | number; text: string })[]).map((tagObjOrStr, idx) => {
+              if (typeof tagObjOrStr === 'string') {
+                return (
+                  <Box
+                    key={tagObjOrStr}
+                    sx={{
+                      px: 1.5,
+                      py: 0.5,
+                      bgcolor: 'primary.light',
+                      color: 'primary.contrastText',
+                      borderRadius: 2,
+                      fontSize: '0.85rem',
+                      fontWeight: 500,
+                      letterSpacing: 0.5,
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+                      display: 'inline-block',
+                    }}
+                  >
+                    #{tagObjOrStr}
+                  </Box>
+                );
+              } else if (tagObjOrStr && typeof tagObjOrStr === 'object' && 'text' in tagObjOrStr) {
+                return (
+                  <Box
+                    key={tagObjOrStr.id ?? idx}
+                    sx={{
+                      px: 1.5,
+                      py: 0.5,
+                      bgcolor: 'primary.light',
+                      color: 'primary.contrastText',
+                      borderRadius: 2,
+                      fontSize: '0.85rem',
+                      fontWeight: 500,
+                      letterSpacing: 0.5,
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+                      display: 'inline-block',
+                    }}
+                  >
+                    #{tagObjOrStr.text}
+                  </Box>
+                );
+              }
+              return null;
+            })}
+          </Box>
+        )}
         {/* Modal para imagem ampliada */}
         <Dialog open={imageDialogOpen} onClose={handleDialogClose} maxWidth="md" fullScreen>
           <DialogContent sx={{ position: 'relative', p: 0, bgcolor: 'black', width: '100vw', height: '100vh', overflow: 'hidden' }}>
