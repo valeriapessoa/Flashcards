@@ -24,7 +24,9 @@ const Footer: React.FC = () => {
           <Grid item xs={6} sm={4}>
             <Typography variant="subtitle2" fontWeight={700} gutterBottom>Links úteis</Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-              <Link href="/" color="inherit" underline="hover">Início</Link>
+              <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+                Home
+              </Link>
               <Link href="/criar-flashcard" color="inherit" underline="hover">Criar Flashcard</Link>
               <Link href="/estudar" color="inherit" underline="hover">Estudar</Link>
               <Link href="/flashcards" color="inherit" underline="hover">Meus Flashcards</Link>

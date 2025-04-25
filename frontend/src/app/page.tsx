@@ -7,6 +7,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -129,6 +130,7 @@ export default function Home() {
           </Card>
         </Box>
       </Box>
+      <Footer />
     </>
   );
 }

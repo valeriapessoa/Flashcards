@@ -110,13 +110,13 @@ const Flashcards: React.FC = () => {
             📚 Flashcards
           </Typography>
           <Grid container justifyContent="flex-end" sx={{ mb: 2 }}>
-            <Button
+            {/* <Button
               variant="contained"
               color="primary"
               onClick={() => router.push("/criar-flashcard")}
             >
               ➕ Criar Novo Flashcard
-            </Button>
+            </Button> */}
           </Grid>
           {isLoading ? (
             <Grid container justifyContent="center">

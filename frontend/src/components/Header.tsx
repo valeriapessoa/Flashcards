@@ -7,7 +7,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
 
 const navItems = [
-  { label: 'Início', href: '/' },
+  { label: 'Home', href: '/' },
   { label: 'Criar Flashcard', href: '/criar-flashcard' },
   { label: 'Estudar', href: '/estudar' },
   { label: 'Flashcards', href: '/flashcards' },
