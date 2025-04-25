@@ -4,10 +4,8 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import FlashcardForm from "../../components/FlashcardForm";
-import AccessDeniedMessage from "../../components/AccessDeniedMessage";
 import axios from "axios";
 import { Flashcard } from "../../types";
-import AuthGuard from "@/components/AuthGuard";
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { Box, Typography, Card, CardContent, useTheme } from '@mui/material';
@@ -21,6 +19,7 @@ const CreateFlashcard: React.FC = () => {
     try {
       if (!session?.user?.id) {
         alert("Usuário não autenticado.");
+        router.push("/login");
         return;
       }
       console.log("Dados do formulário:", data);
@@ -47,7 +46,8 @@ const CreateFlashcard: React.FC = () => {
   };
 
   if (!session) {
-    return <AccessDeniedMessage />;
+    router.push("/login");
+    return null;
   }
 
   return (
@@ -82,9 +82,14 @@ const CreateFlashcard: React.FC = () => {
 };
 
 export default function Page() {
-  return (
-    <AuthGuard>
-      <CreateFlashcard />
-    </AuthGuard>
-  );
+  const { status } = useSession();
+  const router = useRouter();
+
+  if (status === "loading") return null;
+  if (status === "unauthenticated") {
+    router.push("/login");
+    return null;
+  }
+
+  return <CreateFlashcard />;
 }

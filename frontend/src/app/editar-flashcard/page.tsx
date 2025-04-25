@@ -7,7 +7,6 @@ import { fetchFlashcard, updateFlashcard } from "../../lib/api";
 import FlashcardForm from "../../components/FlashcardForm";
 import { useSession } from "next-auth/react";
 import AccessDeniedMessage from "../../components/AccessDeniedMessage";
-import AuthGuard from "@/components/AuthGuard";
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { Box, Typography, Card, CardContent, Button, CircularProgress, useTheme } from '@mui/material';
@@ -145,12 +144,19 @@ const EditFlashcardPage = () => {
   );
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthGuard>
-      <EditFlashcardPage />
-    </AuthGuard>
-  </QueryClientProvider>
-);
+export default function Page() {
+  const { status } = useSession();
+  const router = useRouter();
 
-export default App;
+  if (status === "loading") return null;
+  if (status === "unauthenticated") {
+    router.push("/login");
+    return null;
+  }
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <EditFlashcardPage />
+    </QueryClientProvider>
+  );
+}

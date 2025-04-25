@@ -24,7 +24,6 @@ import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { deleteFlashcard, fetchFlashcards } from "../../lib/api";
 import { useSession } from "next-auth/react";
-import AccessDeniedMessage from "../../components/AccessDeniedMessage";
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import EmptyState from '../../components/EmptyState';
@@ -45,8 +44,14 @@ interface Flashcard {
 const Flashcards: React.FC = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const theme = useTheme();
+
+  if (status === "loading") return null;
+  if (status === "unauthenticated") {
+    router.push("/login");
+    return null;
+  }
 
   // useQuery sempre chamado, só habilita se autenticado
   const { data: flashcards = [], isLoading, error } = useQuery<Flashcard[], Error>({
@@ -87,10 +92,6 @@ const Flashcards: React.FC = () => {
     setImageDialogOpen(false);
     setDialogImageUrl(null);
   };
-
-  if (!session) {
-    return <AccessDeniedMessage />;
-  }
 
   return (
     <>

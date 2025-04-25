@@ -9,8 +9,6 @@ import { fetchFlashcards } from "@/lib/api"; // Importado fetchFlashcards de lib
 import { CircularProgress, Button, Typography, Alert, Box, Container, useTheme } from "@mui/material"; // Adicionado Typography e Alert
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import AccessDeniedMessage from "../../components/AccessDeniedMessage";
-import AuthGuard from "@/components/AuthGuard";
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import EmptyState from '../../components/EmptyState';
@@ -35,7 +33,8 @@ const StudyPage: React.FC = () => {
   });
 
   if (!session) {
-    return <AccessDeniedMessage />;
+    router.push("/login");
+    return null;
   }
 
   return (
@@ -93,9 +92,14 @@ const StudyPage: React.FC = () => {
 };
 
 export default function Page() {
-  return (
-    <AuthGuard>
-      <StudyPage />
-    </AuthGuard>
-  );
+  const { status } = useSession();
+  const router = useRouter();
+
+  if (status === "loading") return null;
+  if (status === "unauthenticated") {
+    router.push("/login");
+    return null;
+  }
+
+  return <StudyPage />;
 }
