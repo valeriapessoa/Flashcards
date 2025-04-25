@@ -11,7 +11,6 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import AccessDeniedMessage from "../../components/AccessDeniedMessage";
 import AuthGuard from "@/components/AuthGuard";
-import PageNavigation from '../../components/PageNavigation';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 
@@ -53,7 +52,6 @@ const StudyPage: React.FC = () => {
         }}
       >
         <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-          <PageNavigation />
           <Typography variant="h4" gutterBottom textAlign="center">
             📚 Modo de Estudo
           </Typography>

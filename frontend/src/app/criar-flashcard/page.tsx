@@ -8,7 +8,6 @@ import AccessDeniedMessage from "../../components/AccessDeniedMessage";
 import axios from "axios";
 import { Flashcard } from "../../types";
 import AuthGuard from "@/components/AuthGuard";
-import PageNavigation from '../../components/PageNavigation';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { Box, Typography, Card, CardContent, useTheme } from '@mui/material';
@@ -67,7 +66,6 @@ const CreateFlashcard: React.FC = () => {
       >
         <Card sx={{ maxWidth: 600, width: '100%', boxShadow: 4, borderRadius: 3 }}>
           <CardContent>
-            <PageNavigation />
             <Typography variant="h4" component="h1" gutterBottom align="center">
               Criar Flashcard
             </Typography>

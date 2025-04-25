@@ -6,7 +6,6 @@ import FlashcardList from '../../components/FlashcardList';
 import AccessDeniedMessage from '../../components/AccessDeniedMessage';
 import { useSession } from 'next-auth/react';
 import AuthGuard from "@/components/AuthGuard";
-import PageNavigation from '../../components/PageNavigation';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 
@@ -30,7 +29,6 @@ const RevisaoInteligentePage = () => {
           }}
         >
           <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-            <PageNavigation />
             {session ? (
               <>
                 <Typography variant="h4" gutterBottom textAlign="center">
