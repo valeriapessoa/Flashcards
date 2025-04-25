@@ -27,10 +27,10 @@ const Footer: React.FC = () => {
               <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
                 Home
               </Link>
-              <Link href="/criar-flashcard" color="inherit" underline="hover">Criar Flashcard</Link>
-              <Link href="/estudar" color="inherit" underline="hover">Estudar</Link>
-              <Link href="/flashcards" color="inherit" underline="hover">Meus Flashcards</Link>
-              <Link href="/revisao-inteligente" color="inherit" underline="hover">Revisão Inteligente</Link>
+              <Link href="/criar-flashcard" style={{ color: 'inherit', textDecoration: 'underline' }}>Criar Flashcard</Link>
+              <Link href="/estudar" style={{ color: 'inherit', textDecoration: 'underline' }}>Estudar</Link>
+              <Link href="/flashcards" style={{ color: 'inherit', textDecoration: 'underline' }}>Meus Flashcards</Link>
+              <Link href="/revisao-inteligente" style={{ color: 'inherit', textDecoration: 'underline' }}>Revisão Inteligente</Link>
             </Box>
           </Grid>
           <Grid item xs={6} sm={4}>
@@ -54,7 +54,7 @@ const Footer: React.FC = () => {
         <Divider sx={{ my: 3 }} />
         <Typography variant="body2" color="text.secondary" align="center">
           {'Copyright '}
-          <Link color="inherit" href="https://flashcards-app.com/">
+          <Link color="inherit" href="https://flashcards-app.com/" style={{ textDecoration: 'underline' }}>
             Flashcards App
           </Link>{' '}
           {new Date().getFullYear()}

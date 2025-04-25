@@ -69,7 +69,7 @@ export default function Home() {
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={4}>
                     <Tooltip title="Crie novos flashcards para estudar" arrow>
-                      <Link href="/criar-flashcard" passHref legacyBehavior>
+                      <Link href="/criar-flashcard">
                         <Button
                           variant="contained"
                           color="primary"
@@ -84,7 +84,7 @@ export default function Home() {
                   </Grid>
                   <Grid item xs={12} sm={4}>
                     <Tooltip title="Veja e edite seus flashcards" arrow>
-                      <Link href="/flashcards" passHref legacyBehavior>
+                      <Link href="/flashcards">
                         <Button
                           variant="outlined"
                           color="secondary"
@@ -99,7 +99,7 @@ export default function Home() {
                   </Grid>
                   <Grid item xs={12} sm={4}>
                     <Tooltip title="Estude seus flashcards de forma inteligente" arrow>
-                      <Link href="/estudar" passHref legacyBehavior>
+                      <Link href="/estudar">
                         <Button
                           variant="contained"
                           color="success"
