@@ -93,6 +93,15 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ fetchPath = '/api/flashca
 
   if (visibleFlashcards.length === 0 && !isLoading) {
     console.log('❌ Nenhum flashcard visível encontrado');
+    // Ajuste para mensagem de revisão inteligente
+    if (fetchPath === '/api/flashcards/revisao-inteligente') {
+      return (
+        <EmptyState
+          title="Nenhum flashcard para revisão."
+          subtitle="Você está indo muito bem! Volte mais tarde ou continue estudando para aparecerem novos cards aqui."
+        />
+      );
+    }
     return (
       <EmptyState
         icon="⚠️"
