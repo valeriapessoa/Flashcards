@@ -13,6 +13,7 @@ import AccessDeniedMessage from "../../components/AccessDeniedMessage";
 import AuthGuard from "@/components/AuthGuard";
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import EmptyState from '../../components/EmptyState';
 
 // Removida a função fetchFlashcards local, usaremos a importada de lib/api
 
@@ -71,17 +72,13 @@ const StudyPage: React.FC = () => {
             </Alert>
           )}
           {flashcards?.length === 0 && !isLoading && !isError && (
-            <Box display="flex" flexDirection="column" alignItems="center" textAlign="center" bgcolor="background.paper" p={4} borderRadius={2} boxShadow={2}>
-              <Typography color="text.secondary" fontSize={18} mb={1}>⚠️ Nenhum flashcard encontrado.</Typography>
-              <Typography color="text.secondary" mb={2}>Crie um novo flashcard para começar seus estudos.</Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => router.push("/criar-flashcard")}
-              >
-                ➕ Criar Flashcard
-              </Button>
-            </Box>
+            <EmptyState
+              icon="⚠️"
+              title="Nenhum flashcard encontrado."
+              subtitle="Crie um novo flashcard para começar seus estudos."
+              buttonText="➕ Criar Flashcard"
+              buttonHref="/criar-flashcard"
+            />
           )}
           {!isLoading && !isError && flashcards.length > 0 && (
             <Box width="100%" maxWidth={600} mx="auto">

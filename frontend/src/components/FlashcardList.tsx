@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState } from 'react'; // Removido useEffect
-import { Grid, CircularProgress, Typography, Alert } from '@mui/material'; // Adicionado Alert
+import { Grid, CircularProgress, Typography, Alert, Button, Box } from '@mui/material'; // Adicionado Alert, Button e Box
 // Removido axios
 import { useSession } from 'next-auth/react';
 import { useQuery } from '@tanstack/react-query'; // Importado useQuery
 import { fetchFlashcards, markFlashcardAsReviewed } from '../lib/api'; // Importado markFlashcardAsReviewed
 import Flashcard from './Flashcard';
+import EmptyState from './EmptyState'; // Import do EmptyState
 interface FlashcardData {
   id: number;
   title: string;
@@ -92,7 +93,15 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ fetchPath = '/api/flashca
 
   if (visibleFlashcards.length === 0 && !isLoading) {
     console.log('❌ Nenhum flashcard visível encontrado');
-    return <Typography>Nenhum flashcard encontrado ou todos já foram revisados!</Typography>;
+    return (
+      <EmptyState
+        icon="⚠️"
+        title="Nenhum flashcard encontrado."
+        subtitle="Crie um novo flashcard para começar sua coleção."
+        buttonText="➕ Criar Flashcard"
+        buttonHref="/criar-flashcard"
+      />
+    );
   }
 
   return (

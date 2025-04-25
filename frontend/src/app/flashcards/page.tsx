@@ -27,6 +27,7 @@ import { useSession } from "next-auth/react";
 import AccessDeniedMessage from "../../components/AccessDeniedMessage";
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import EmptyState from '../../components/EmptyState';
 
 interface Tag {
   id: number;
@@ -180,11 +181,13 @@ const Flashcards: React.FC = () => {
               ))}
             </Grid>
           ) : (
-            <Box textAlign="center" mt={6}>
-              <Typography color="text.secondary">
-                Nenhum flashcard encontrado. Comece criando um! 📌
-              </Typography>
-            </Box>
+            <EmptyState
+              icon="⚠️"
+              title="Nenhum flashcard encontrado."
+              subtitle="Crie um novo flashcard para começar sua coleção."
+              buttonText="➕ Criar Flashcard"
+              buttonHref="/criar-flashcard"
+            />
           )}
 
           {/* Modal de Confirmação para Exclusão */}
