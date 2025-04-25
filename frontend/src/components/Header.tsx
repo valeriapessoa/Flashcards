@@ -60,7 +60,7 @@ const Header: React.FC = () => {
                   px: 1.5,
                   py: 0.5,
                   minWidth: 80,
-                  background: 'none',
+                  background: isActive ? 'rgba(25, 118, 210, 0.08)' : 'none',
                   borderRadius: 1,
                   boxShadow: 'none',
                   overflow: 'hidden',
@@ -80,7 +80,7 @@ const Header: React.FC = () => {
                   },
                   '&:hover': {
                     color: '#1976d2',
-                    background: 'rgba(25, 118, 210, 0.06)',
+                    background: 'rgba(25, 118, 210, 0.13)',
                   },
                   '&:hover:after': {
                     background: '#90caf9',

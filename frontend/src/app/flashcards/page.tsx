@@ -47,12 +47,6 @@ const Flashcards: React.FC = () => {
   const { data: session, status } = useSession();
   const theme = useTheme();
 
-  if (status === "loading") return null;
-  if (status === "unauthenticated") {
-    router.push("/login");
-    return null;
-  }
-
   // useQuery sempre chamado, só habilita se autenticado
   const { data: flashcards = [], isLoading, error } = useQuery<Flashcard[], Error>({
     queryKey: ["flashcards"],
@@ -92,6 +86,21 @@ const Flashcards: React.FC = () => {
     setImageDialogOpen(false);
     setDialogImageUrl(null);
   };
+
+  // Correção: renderização condicional após hooks
+  if (status === "loading") {
+    return (
+      <Box minHeight="75vh" display="flex" alignItems="center" justifyContent="center">
+        <CircularProgress />
+      </Box>
+    );
+  }
+  if (status === "unauthenticated") {
+    if (typeof window !== "undefined") {
+      router.push("/login");
+    }
+    return null;
+  }
 
   return (
     <>
