@@ -6,7 +6,6 @@ import { Flashcard } from "../../types";
 import { fetchFlashcard, updateFlashcard } from "../../lib/api";
 import FlashcardForm from "../../components/FlashcardForm";
 import { useSession } from "next-auth/react";
-import AccessDeniedMessage from "../../components/AccessDeniedMessage";
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { Box, Typography, Card, CardContent, Button, CircularProgress, useTheme } from '@mui/material';
@@ -84,7 +83,8 @@ const EditFlashcardPage = () => {
   const theme = useTheme();
 
   if (!session) {
-    return <AccessDeniedMessage />;
+    router.push("/login");
+    return null;
   }
 
   return (
