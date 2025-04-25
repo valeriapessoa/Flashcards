@@ -96,7 +96,7 @@ const Header: React.FC = () => {
         {/* Login/Logout à direita */}
         {session && session.user ? (
           <Button
-            onClick={() => signOut()}
+            onClick={() => signOut({ callbackUrl: '/' })}
             variant="outlined"
             sx={{
               ml: 3,

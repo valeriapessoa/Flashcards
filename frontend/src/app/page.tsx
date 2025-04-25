@@ -53,16 +53,6 @@ export default function Home() {
     enabled: !!session,
   });
 
-  useEffect(() => {
-    if (!session) {
-      router.push("/login");
-    }
-  }, [session, router]);
-
-  if (!session || !session.user) {
-    return null;
-  }
-
   return (
     <>
       <Header />
