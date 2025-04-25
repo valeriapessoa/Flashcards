@@ -14,19 +14,48 @@ import DevicesIcon from '@mui/icons-material/Devices';
 import FlashOnIcon from '@mui/icons-material/FlashOn';
 import SchoolIcon from '@mui/icons-material/School';
 import TimelineIcon from '@mui/icons-material/Timeline';
+import { useQuery } from '@tanstack/react-query';
+import { fetchFlashcards } from '../lib/api';
+
+// Função para buscar flashcards para revisão inteligente
+const fetchPendingReviews = async () => {
+  const res = await fetch('http://localhost:5000/api/flashcards/revisao-inteligente', {
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!res.ok) throw new Error('Erro ao buscar revisões pendentes');
+  return res.json();
+};
 
 export default function Home() {
   const { data: session } = useSession();
   const router = useRouter();
-  const [flashcardCount, setFlashcardCount] = useState<number | null>(null);
-  const [pendingReviews, setPendingReviews] = useState<number | null>(null);
+
+  // Buscar todos os flashcards do usuário
+  const {
+    data: flashcards = [],
+    isLoading: isLoadingFlashcards,
+  } = useQuery({
+    queryKey: ['flashcards'],
+    queryFn: fetchFlashcards,
+    enabled: !!session,
+  });
+
+  // Buscar flashcards para revisão inteligente
+  const {
+    data: pendingReviewFlashcards = [],
+    isLoading: isLoadingPending,
+  } = useQuery({
+    queryKey: ['pendingReviews'],
+    queryFn: fetchPendingReviews,
+    enabled: !!session,
+  });
 
   useEffect(() => {
     if (!session) {
       router.push("/login");
-    } else {
-      setFlashcardCount(24); // Exemplo
-      setPendingReviews(5); // Exemplo
     }
   }, [session, router]);
 
@@ -82,7 +111,9 @@ export default function Home() {
                 <SchoolIcon fontSize="large" />
               </Avatar>
               <Typography variant="h6">Seus Flashcards</Typography>
-              <Typography variant="h4" color="primary" fontWeight="bold">{flashcardCount ?? '-'}</Typography>
+              <Typography variant="h4" color="primary" fontWeight="bold">
+                {isLoadingFlashcards ? '-' : flashcards.length}
+              </Typography>
             </Card>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -91,7 +122,9 @@ export default function Home() {
                 <TimelineIcon fontSize="large" />
               </Avatar>
               <Typography variant="h6">Revisões Pendentes</Typography>
-              <Typography variant="h4" color="success.main" fontWeight="bold">{pendingReviews ?? '-'}</Typography>
+              <Typography variant="h4" color="success.main" fontWeight="bold">
+                {isLoadingPending ? '-' : pendingReviewFlashcards.length}
+              </Typography>
             </Card>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
