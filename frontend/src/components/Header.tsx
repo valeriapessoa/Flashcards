@@ -1,10 +1,10 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
-import { AppBar, Toolbar, Typography, Button, Box, Avatar, Menu, MenuItem, IconButton } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
+import FlashOnIcon from '@mui/icons-material/FlashOn';
 import { useSession, signOut } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
-import FlashOnIcon from '@mui/icons-material/FlashOn';
 
 const navItems = [
   { label: 'Início', href: '/' },
@@ -18,14 +18,6 @@ const Header: React.FC = () => {
   const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
-  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   return (
     <AppBar
@@ -101,17 +93,35 @@ const Header: React.FC = () => {
             );
           })}
         </Box>
-        {/* Login/Avatar à direita */}
+        {/* Login/Logout à direita */}
         {session && session.user ? (
-          <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
-            <IconButton onClick={handleMenu} sx={{ p: 0 }}>
-              <Avatar alt={session.user.name || 'Usuário'} src={session.user.image || undefined} />
-            </IconButton>
-            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-              <MenuItem disabled>{session.user.name}</MenuItem>
-              <MenuItem onClick={() => { signOut(); handleClose(); }}>Sair</MenuItem>
-            </Menu>
-          </Box>
+          <Button
+            onClick={() => signOut()}
+            variant="outlined"
+            sx={{
+              ml: 3,
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 700,
+              fontSize: 16,
+              border: '2px solid #1976d2',
+              color: '#1976d2',
+              background: 'none',
+              px: 3,
+              py: 1,
+              minWidth: 100,
+              fontFamily: 'Montserrat, Arial, sans-serif',
+              letterSpacing: 0.5,
+              boxShadow: 'none',
+              '&:hover': {
+                background: '#e3f2fd',
+                color: '#1976d2',
+                border: '2.5px solid #1976d2',
+              },
+            }}
+          >
+            Sair
+          </Button>
         ) : (
           <Button
             component={Link}
