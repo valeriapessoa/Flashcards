@@ -1,6 +1,6 @@
 import React from 'react';
 import ScoreCard from '@/components/ScoreCard';
-import CorrectAnswersCard from '@/components/CorrectAnswersCard';
+import CorrectAnswersCard from "./CorrectAnswersCard";
 
 interface UserStatsCardProps {
   stats: {
@@ -21,4 +21,4 @@ const UserStatsCard: React.FC<UserStatsCardProps> = ({ stats }) => {
   );
 };
 
-export default UserStatsCard;
+export default UserStatsCard;   
