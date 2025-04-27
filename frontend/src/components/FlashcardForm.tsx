@@ -15,10 +15,11 @@ const KeyCodes = {
 };
 
 const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEditing = false }) => {
-  const [errors, setErrors] = useState<{ title?: string; description?: string }>({});
+  const [errors, setErrors] = useState<{ front?: string; back?: string }>({});
   const [title, setTitle] = useState(flashcard?.title || '');
   const [description, setDescription] = useState(flashcard?.description || '');
-  const [imagePreview, setImagePreview] = useState<string | null>(flashcard?.imageUrl || null);
+  const [frontImagePreview, setFrontImagePreview] = useState<string | null>(flashcard?.imageUrl || null);
+  const [frontImageFile, setFrontImageFile] = useState<File | null>(null);
   const formatTags = (tagsInput: any) => {
     if (!tagsInput) return [];
     if (Array.isArray(tagsInput)) {
@@ -37,7 +38,6 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
     return [];
   };
   const [tags, setTags] = useState<ReactTag[]>(formatTags(flashcard?.tags));
-  const [imageFile, setImageFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false); // NOVO estado para controle do botão
 
   const tagInputRef = useRef<HTMLInputElement>(null);
@@ -60,21 +60,16 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
     setTags(newTags);
   };
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
+  const onDropFront = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       const file = acceptedFiles[0];
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
+      setFrontImageFile(file);
+      setFrontImagePreview(URL.createObjectURL(file));
     }
   }, []);
 
-  const handleRemoveImage = () => {
-    setImageFile(null);
-    setImagePreview(null);
-  };
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
+  const { getRootProps: getRootPropsFront, getInputProps: getInputPropsFront, isDragActive: isDragActiveFront } = useDropzone({
+    onDrop: onDropFront,
     accept: {
       'image/jpeg': ['.jpg', '.jpeg'],
       'image/png': ['.png'],
@@ -84,20 +79,25 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
     multiple: false, // Garante que apenas um arquivo seja aceito
   });
 
+  const handleRemoveFrontImage = () => {
+    setFrontImageFile(null);
+    setFrontImagePreview(null);
+  };
+
   useEffect(() => {
     if (flashcard) {
       setTitle(flashcard.title || '');
       setDescription(flashcard.description || '');
-      setImagePreview(flashcard.imageUrl || null);
+      setFrontImagePreview(flashcard.imageUrl || null);
       setTags(formatTags(flashcard.tags));
-      setImageFile(null);
+      setFrontImageFile(null);
       setErrors({});
     } else {
       setTitle('');
       setDescription('');
-      setImagePreview(null);
+      setFrontImagePreview(null);
       setTags([]);
-      setImageFile(null);
+      setFrontImageFile(null);
       setErrors({});
     }
   }, [flashcard]);
@@ -122,98 +122,79 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
   }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Prevenir submissão padrão sempre
-    if (isSubmitting) return; // Evita múltiplos envios
+    e.preventDefault();
     setIsSubmitting(true);
-
-    const newErrors: { title?: string; description?: string } = {};
-
+    setErrors({});
     if (!title.trim()) {
-      newErrors.title = 'O título é obrigatório.';
+      setErrors((prev) => ({ ...prev, front: 'A frente do flashcard é obrigatória.' }));
+      setIsSubmitting(false);
+      return;
     }
     if (!description.trim()) {
-      newErrors.description = 'A descrição é obrigatória.';
+      setErrors((prev) => ({ ...prev, back: 'O verso do flashcard é obrigatório.' }));
+      setIsSubmitting(false);
+      return;
     }
-
-    setErrors(newErrors);
-
-    if (Object.keys(newErrors).length === 0) {
-      const updatedData: Partial<Flashcard> = {
+    onSubmit(
+      {
         title,
         description,
-        tags: tags.map(tag => tag.text), // Enviar apenas os textos das tags
-        ...(isEditing && flashcard?.id && { id: flashcard.id }),
-        ...(isEditing && flashcard?.userId && { userId: flashcard.userId }),
-      };
-      try {
-        await onSubmit(updatedData, imageFile); // Certifica-se de enviar o arquivo corretamente
-      } finally {
-        setIsSubmitting(false); // Libera o botão
-      }
-    } else {
-      setIsSubmitting(false); // Libera o botão em caso de erro de validação
-    }
+        tags: tags.map((t) => t.text),
+      },
+      frontImageFile
+    );
+    setIsSubmitting(false);
   };
 
   return (
     <div className="space-y-4">
       <form onSubmit={handleSubmit}>
-        {/* Campos Título, Descrição, Imagem ... */}
-        <div className="flex flex-col">
-          <label className="text-gray-700 font-medium mb-1">Título</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div className="flex flex-col">
-          <label className="text-gray-700 font-medium mb-1">Descrição</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-            className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-32"
-          />
-          {errors.description && <p className="text-red-600 text-sm">{errors.description}</p>}
-        </div>
-        <div className="flex flex-col">
-          <label className="text-gray-700 font-medium mb-1">Imagem</label>
-          <div
-            {...getRootProps()}
-            className={`p-4 border-2 border-dashed rounded-lg text-center cursor-pointer ${
-              isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
-            }`}
-          >
-            <input {...getInputProps()} />
-            {isDragActive ? (
-              <p className="text-blue-500">Solte a imagem aqui...</p>
-            ) : (
-              <p className="text-gray-500">Arraste e solte uma imagem aqui ou clique para selecionar (opcional)</p>
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Card Frente */}
+          <div className="flex-1 border rounded-lg p-4 shadow bg-white">
+            <h2 className="text-lg font-bold mb-2">Frente</h2>
+            <textarea
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Digite o conteúdo da frente do flashcard"
+              required
+              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-24"
+            />
+            {errors.front && <p className="text-red-600 text-sm">{errors.front}</p>}
+            <label className="block mt-3 font-medium">Imagem</label>
+            <div
+              {...getRootPropsFront()}
+              className={`p-4 border-2 border-dashed rounded-lg text-center cursor-pointer ${isDragActiveFront ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}`}
+            >
+              <input {...getInputPropsFront()} />
+              {isDragActiveFront ? (
+                <p className="text-blue-500">Solte a imagem aqui...</p>
+              ) : (
+                <p className="text-gray-500">Arraste e solte uma imagem aqui ou clique para selecionar (opcional)</p>
+              )}
+            </div>
+            {frontImagePreview && (
+              <div className="mt-2 relative">
+                <img src={frontImagePreview} alt="Preview Frente" className="w-full h-32 object-cover rounded-lg shadow-md" />
+                <button type="button" onClick={handleRemoveFrontImage} className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600">✖</button>
+              </div>
             )}
           </div>
-          {imagePreview && (
-            <div className="mt-2 relative">
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="w-full h-48 object-cover rounded-lg shadow-md"
-              />
-              <button
-                type="button"
-                onClick={handleRemoveImage}
-                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-              >
-                ✖
-              </button>
-            </div>
-          )}
+          {/* Card Verso */}
+          <div className="flex-1 border rounded-lg p-4 shadow bg-white">
+            <h2 className="text-lg font-bold mb-2">Verso</h2>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Digite o conteúdo do verso do flashcard"
+              required
+              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-24"
+            />
+            {errors.back && <p className="text-red-600 text-sm">{errors.back}</p>}
+          </div>
         </div>
-
-        {/* Campo de Tags */}
-        <div className="flex flex-col">
+        {/* Campo de Tags e botão (inalterados) */}
+        <div className="flex flex-col mt-6">
           <label className="text-gray-700 font-medium mb-1">Tags</label>
           {Array.isArray(tags) && (
             <ReactTags
@@ -225,20 +206,18 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
               placeholder="Adicione tags e pressione Enter ou vírgula"
               allowDragDrop
               classNames={{
-                  tags: 'flex flex-wrap gap-2',
-                  tagInput: 'flex-1',
-                  tagInputField: 'p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full',
-                  selected: 'flex flex-wrap gap-2',
-                  tag: 'bg-blue-100 text-blue-800 px-3 py-1 rounded-md text-sm flex items-center gap-1',
-                  remove: 'text-blue-500 hover:text-blue-700 cursor-pointer ps-1',
-                  suggestions: 'mt-1 border border-gray-300 rounded-lg bg-white shadow-lg',
-                  activeSuggestion: 'bg-blue-100 p-2 cursor-pointer',
+                tags: 'flex flex-wrap gap-2',
+                tagInput: 'flex-1',
+                tagInputField: 'p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full',
+                selected: 'flex flex-wrap gap-2',
+                tag: 'bg-blue-100 text-blue-800 px-3 py-1 rounded-md text-sm flex items-center gap-1',
+                remove: 'text-blue-500 hover:text-blue-700 cursor-pointer ps-1',
+                suggestions: 'mt-1 border border-gray-300 rounded-lg bg-white shadow-lg',
+                activeSuggestion: 'bg-blue-100 p-2 cursor-pointer',
               }}
             />
           )}
         </div>
-
-        {/* Botão de Submit */}
         <button
           type="submit"
           className={`mt-4 px-4 py-2 rounded-lg text-white ${isSubmitting ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}

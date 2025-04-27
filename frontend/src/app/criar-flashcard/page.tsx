@@ -8,12 +8,10 @@ import axios from "axios";
 import { Flashcard } from "../../types";
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import { Box, Typography, Card, CardContent, useTheme } from '@mui/material';
 
 const CreateFlashcard: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
-  const theme = useTheme();
 
   const handleSubmit = async (data: Partial<Flashcard>, file: File | null) => {
     try {
@@ -53,29 +51,11 @@ const CreateFlashcard: React.FC = () => {
   return (
     <>
       <Header />
-      <Box
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        minHeight="75vh"
-        sx={{
-          // Removido o background para deixar o fundo sem cor
-          py: { xs: 2, md: 4 },
-        }}
-      >
-        <Card sx={{ maxWidth: 600, width: '100%', boxShadow: 4, borderRadius: 3 }}>
-          <CardContent>
-            <Typography variant="h4" component="h1" gutterBottom align="center">
-              Criar Flashcard
-            </Typography>
-            <Typography variant="body1" color="text.secondary" align="center" mb={2}>
-              Preencha os campos abaixo para adicionar um novo flashcard à sua coleção.
-            </Typography>
-            <FlashcardForm onSubmit={handleSubmit} />
-          </CardContent>
-        </Card>
-      </Box>
+      <div className="py-8 px-2 md:px-8">
+        <h1 className="text-3xl font-bold text-center mb-4">Criar Flashcard</h1>
+        <p className="text-center text-gray-600 mb-8">Preencha os campos abaixo para adicionar um novo flashcard à sua coleção.</p>
+        <FlashcardForm onSubmit={handleSubmit} />
+      </div>
       <Footer />
     </>
   );
