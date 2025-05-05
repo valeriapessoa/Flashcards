@@ -141,10 +141,14 @@ const Flashcards: React.FC = () => {
                   <Card key={flashcard.id} sx={{ 
                     p: 2, 
                     boxShadow: 2,
-                    transition: 'transform 0.2s',
+                    border: '1px solid rgba(0,0,0,0.12)',
+                    borderRadius: 2,
+                    transition: 'all 0.2s ease-in-out',
                     '&:hover': {
                       transform: 'translateY(-2px)',
-                      boxShadow: 4
+                      boxShadow: 4,
+                      border: '1px solid rgba(0,0,0,0.2)',
+                      backgroundColor: 'rgba(0,0,0,0.02)'
                     }
                   }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
