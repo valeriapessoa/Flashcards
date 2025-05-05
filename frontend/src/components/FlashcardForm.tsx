@@ -5,7 +5,7 @@ import { WithContext as ReactTags, SEPARATORS, Tag as ReactTag } from 'react-tag
 
 interface FlashcardFormProps {
   flashcard?: Flashcard | null;
-  onSubmit: (data: Partial<Flashcard>, file: File | null) => void;
+  onSubmit: (formData: FormData) => Promise<void>;
   isEditing?: boolean;
 }
 
@@ -20,6 +20,8 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
   const [description, setDescription] = useState(flashcard?.description || '');
   const [frontImagePreview, setFrontImagePreview] = useState<string | null>(flashcard?.imageUrl || null);
   const [frontImageFile, setFrontImageFile] = useState<File | null>(null);
+  const [backImagePreview, setBackImagePreview] = useState<string | null>(flashcard?.backImageUrl || null);
+  const [backImageFile, setBackImageFile] = useState<File | null>(null);
   const formatTags = (tagsInput: any) => {
     if (!tagsInput) return [];
     if (Array.isArray(tagsInput)) {
@@ -68,6 +70,14 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
     }
   }, []);
 
+  const onDropBack = useCallback((acceptedFiles: File[]) => {
+    if (acceptedFiles.length > 0) {
+      const file = acceptedFiles[0];
+      setBackImageFile(file);
+      setBackImagePreview(URL.createObjectURL(file));
+    }
+  }, []);
+
   const { getRootProps: getRootPropsFront, getInputProps: getInputPropsFront, isDragActive: isDragActiveFront } = useDropzone({
     onDrop: onDropFront,
     accept: {
@@ -79,9 +89,25 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
     multiple: false, // Garante que apenas um arquivo seja aceito
   });
 
+  const { getRootProps: getRootPropsBack, getInputProps: getInputPropsBack, isDragActive: isDragActiveBack } = useDropzone({
+    onDrop: onDropBack,
+    accept: {
+      'image/jpeg': ['.jpg', '.jpeg'],
+      'image/png': ['.png'],
+      'image/gif': ['.gif'],
+    },
+    maxFiles: 1,
+    multiple: false,
+  });
+
   const handleRemoveFrontImage = () => {
     setFrontImageFile(null);
     setFrontImagePreview(null);
+  };
+
+  const handleRemoveBackImage = () => {
+    setBackImageFile(null);
+    setBackImagePreview(null);
   };
 
   useEffect(() => {
@@ -92,6 +118,8 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
       setTags(formatTags(flashcard.tags));
       setFrontImageFile(null);
       setErrors({});
+      setBackImagePreview(flashcard.backImageUrl || null);
+      setBackImageFile(null);
     } else {
       setTitle('');
       setDescription('');
@@ -99,6 +127,8 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
       setTags([]);
       setFrontImageFile(null);
       setErrors({});
+      setBackImagePreview(null);
+      setBackImageFile(null);
     }
   }, [flashcard]);
 
@@ -125,6 +155,7 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
     e.preventDefault();
     setIsSubmitting(true);
     setErrors({});
+    
     if (!title.trim()) {
       setErrors((prev) => ({ ...prev, front: 'A frente do flashcard é obrigatória.' }));
       setIsSubmitting(false);
@@ -135,15 +166,39 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
       setIsSubmitting(false);
       return;
     }
-    onSubmit(
-      {
-        title,
-        description,
-        tags: tags.map((t) => t.text),
-      },
-      frontImageFile
-    );
-    setIsSubmitting(false);
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('tags', JSON.stringify(tags.map((t) => t.text)));
+
+    // Adiciona os arquivos se existirem
+    if (frontImageFile) {
+      formData.append('image', frontImageFile);
+    }
+    if (backImageFile) {
+      formData.append('backImage', backImageFile);
+    }
+
+    try {
+      // Desabilita o botão durante o upload
+      setIsSubmitting(true);
+      await onSubmit(formData);
+      // Limpa o formulário após a submissão bem-sucedida
+      setTitle('');
+      setDescription('');
+      setFrontImagePreview(null);
+      setFrontImageFile(null);
+      setBackImagePreview(null);
+      setBackImageFile(null);
+      setTags([]);
+      setErrors({});
+    } catch (error) {
+      console.error('Erro ao criar flashcard:', error);
+      setErrors({ front: 'Erro ao criar flashcard. Tente novamente.' });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -191,6 +246,24 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
               className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-24"
             />
             {errors.back && <p className="text-red-600 text-sm">{errors.back}</p>}
+            <label className="block mt-3 font-medium">Imagem do Verso</label>
+            <div
+              {...getRootPropsBack()}
+              className={`p-4 border-2 border-dashed rounded-lg text-center cursor-pointer ${isDragActiveBack ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}`}
+            >
+              <input {...getInputPropsBack()} />
+              {isDragActiveBack ? (
+                <p className="text-blue-500">Solte a imagem aqui...</p>
+              ) : (
+                <p className="text-gray-500">Arraste e solte uma imagem aqui ou clique para selecionar (opcional)</p>
+              )}
+            </div>
+            {backImagePreview && (
+              <div className="mt-2 relative">
+                <img src={backImagePreview} alt="Preview Verso" className="w-full h-32 object-cover rounded-lg shadow-md" />
+                <button type="button" onClick={handleRemoveBackImage} className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600">✖</button>
+              </div>
+            )}
           </div>
         </div>
         {/* Campo de Tags e botão (inalterados) */}

@@ -2,6 +2,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import multer from 'multer';
 import * as streamifier from 'streamifier';
 import { Request, Response, NextFunction } from 'express';
+import path from 'path';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -23,41 +24,81 @@ const upload = multer({
 });
 
 const newUploadMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  upload.single('image')(req, res, async (err) => {
+  upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'backImage', maxCount: 1 },
+  ])(req, res, async (err) => {
     if (err) {
       console.error("Erro no upload:", err);
       return res.status(400).json({ message: err.message });
     }
 
     // Se um arquivo foi enviado, processa e faz upload para o Cloudinary
-    if (req.file) {
+    if (req.files) {
       try {
-        console.log("Arquivo recebido. Enviando imagem para o Cloudinary...");
-        const stream = streamifier.createReadStream(req.file.buffer);
+        const files = req.files;
 
-        const result = await new Promise((resolve, reject) => {
-          const uploadStream = cloudinary.uploader.upload_stream(
-            {
-              folder: 'uploads', // Considere tornar isso configurável ou mais específico
-              allowed_formats: ['jpg', 'png', 'jpeg', 'gif'],
-              // Usar public_id único para evitar sobrescritas acidentais, se necessário
-              public_id: `${Date.now()}-${req.file?.originalname.split('.')[0]}`, // Exemplo: remove extensão do nome original
-            },
-            (error, result) => {
-              if (error) {
-                console.error("Erro no stream de upload do Cloudinary:", error);
-                reject(error);
-              } else {
-                resolve(result);
+        const image = files.image && files.image[0];
+        const backImage = files.backImage && files.backImage[0];
+
+        if (image) {
+          console.log("Arquivo recebido. Enviando imagem para o Cloudinary...");
+          const stream = streamifier.createReadStream(image.buffer);
+
+          const result = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+              {
+                folder: 'uploads', // Considere tornar isso configurável ou mais específico
+                allowed_formats: ['jpg', 'png', 'jpeg', 'gif'],
+                // Usar public_id único para evitar sobrescritas acidentais, se necessário
+                public_id: `${Date.now()}-${image.originalname.split('.')[0]}`, // Exemplo: remove extensão do nome original
+              },
+              (error, result) => {
+                if (error) {
+                  console.error("Erro no stream de upload do Cloudinary:", error);
+                  reject(error);
+                } else {
+                  resolve(result);
+                }
               }
-            }
-          );
-          stream.pipe(uploadStream);
-        });
+            );
+            stream.pipe(uploadStream);
+          });
 
-        // Adiciona a URL segura ao objeto req.file para uso na rota
-        req.file.path = (result as any).secure_url;
-        console.log("Upload para Cloudinary finalizado. URL da imagem:", req.file.path);
+          // Adiciona a URL segura ao objeto req.file para uso na rota
+          req.body.image = (result as any).secure_url;
+          console.log("Upload para Cloudinary finalizado. URL da imagem:", req.body.image);
+        }
+
+        if (backImage) {
+          console.log("Arquivo recebido. Enviando imagem para o Cloudinary...");
+          const stream = streamifier.createReadStream(backImage.buffer);
+
+          const result = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+              {
+                folder: 'uploads', // Considere tornar isso configurável ou mais específico
+                allowed_formats: ['jpg', 'png', 'jpeg', 'gif'],
+                // Usar public_id único para evitar sobrescritas acidentais, se necessário
+                public_id: `${Date.now()}-${backImage.originalname.split('.')[0]}`, // Exemplo: remove extensão do nome original
+              },
+              (error, result) => {
+                if (error) {
+                  console.error("Erro no stream de upload do Cloudinary:", error);
+                  reject(error);
+                } else {
+                  resolve(result);
+                }
+              }
+            );
+            stream.pipe(uploadStream);
+          });
+
+          // Adiciona a URL segura ao objeto req.file para uso na rota
+          req.body.backImage = (result as any).secure_url;
+          console.log("Upload para Cloudinary finalizado. URL da imagem:", req.body.backImage);
+        }
+
         next(); // Prossegue para a rota APÓS o upload bem-sucedido
 
       } catch (error) {

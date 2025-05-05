@@ -15,7 +15,8 @@ interface AuthenticatedRequest extends Request {
 }
 
 // 📋 Listar flashcards do usuário autenticado
-router.get("/", protect, async (req: AuthenticatedRequest, res: Response) => { // Adicionado protect e AuthenticatedRequest
+router.get("/", protect, async (req: AuthenticatedRequest, res: Response) => {
+  console.log("Buscando flashcards para usuário:", req.user?.id);
   const userId = req.user?.id;
 
   if (!userId) {
@@ -35,7 +36,15 @@ router.get("/", protect, async (req: AuthenticatedRequest, res: Response) => { /
       },
       orderBy: { createdAt: "desc" },
     });
-    res.status(200).json(flashcards);
+
+    // Garantir que as URLs das imagens sejam strings válidas
+    const flashcardsWithValidUrls = flashcards.map(flashcard => ({
+      ...flashcard,
+      imageUrl: flashcard.imageUrl || null,
+      backImageUrl: flashcard.backImageUrl || null,
+    }));
+
+    res.status(200).json(flashcardsWithValidUrls);
   } catch (error: any) {
     console.error("❌ Erro ao listar flashcards:", error.message);
     res.status(500).json({
@@ -50,7 +59,7 @@ router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRe
   try {
     console.log("📥 Requisição recebida - Criar Flashcard");
     console.log("req.body:", req.body);
-    console.log("req.file:", req.file);
+    console.log("req.files:", req.files);
 
     const { title, description, tags: tagsInput } = req.body;
     const userId = req.user?.id;
@@ -59,10 +68,26 @@ router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRe
       return res.status(400).json({ message: "Título, descrição e ID do usuário são obrigatórios!" });
     }
 
-    // Se não houver imagem, ainda assim cria o flashcard (imagem opcional)
+    // Corrige tipagem do Multer para múltiplos campos nomeados
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] } | Express.Multer.File[] | undefined;
+    let frontImageFile: Express.Multer.File | undefined;
+    let backImageFile: Express.Multer.File | undefined;
+    if (files && !Array.isArray(files)) {
+      frontImageFile = files['image']?.[0];
+      backImageFile = files['backImage']?.[0];
+    }
+
+    // Imagem da frente (opcional)
     let imageUrl: string | undefined = undefined;
-    if (req.file && req.file.path) {
-      imageUrl = req.file.path;
+    if (frontImageFile) {
+      // Usa a URL do Cloudinary se disponível, senão usa o path do arquivo
+      imageUrl = req.body.image || frontImageFile.path;
+    }
+    // Imagem do verso (opcional)
+    let backImageUrl: string | undefined = undefined;
+    if (backImageFile) {
+      // Usa a URL do Cloudinary se disponível, senão usa o path do arquivo
+      backImageUrl = req.body.backImage || backImageFile.path;
     }
 
     // Processar tagsInput (esperando array de strings)
@@ -71,7 +96,6 @@ router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRe
       let tagsArray: string[] = [];
       if (typeof tagsInput === 'string') {
         try {
-          // Tenta converter de JSON string para array
           const parsed = JSON.parse(tagsInput);
           if (Array.isArray(parsed)) {
             tagsArray = parsed.map(tag => String(tag).trim()).filter(tag => tag.length > 0);
@@ -79,7 +103,6 @@ router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRe
             tagsArray = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
           }
         } catch {
-          // Não era JSON, tenta split por vírgula
           tagsArray = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
         }
       } else if (Array.isArray(tagsInput)) {
@@ -105,6 +128,7 @@ router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRe
         title,
         description,
         ...(imageUrl && { imageUrl }),
+        ...(backImageUrl && { backImageUrl }),
         userId,
         tags: {
           connect: tagsToConnect,
@@ -204,8 +228,21 @@ router.put("/:id", protect, newUploadMiddleware, async (req: AuthenticatedReques
       ...(Array.isArray(tagsToSet) ? { tags: { set: tagsToSet } } : {}),
     };
 
-    if (req.file?.path) {
-      dataToUpdate.imageUrl = req.file.path;
+    // Corrige tipagem do Multer para múltiplos campos nomeados
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] } | Express.Multer.File[] | undefined;
+    let frontImageFile: Express.Multer.File | undefined;
+    let backImageFile: Express.Multer.File | undefined;
+    if (files && !Array.isArray(files)) {
+      frontImageFile = files['image']?.[0];
+      backImageFile = files['backImage']?.[0];
+    }
+
+    if (frontImageFile) {
+      dataToUpdate.imageUrl = frontImageFile.path;
+    }
+
+    if (backImageFile) {
+      dataToUpdate.backImageUrl = backImageFile.path;
     }
 
     // LOG: Mostrar o objeto final de update

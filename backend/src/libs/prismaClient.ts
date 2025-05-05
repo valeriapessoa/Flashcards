@@ -1,22 +1,16 @@
 import { PrismaClient } from '@prisma/client';
 
-// Declaração da variável global
-const globalForPrisma = global as unknown as {
-  prisma: PrismaClient | undefined;
-};
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-// Verificar se já existe uma instância global
-if (!globalForPrisma.prisma) {
-  globalForPrisma.prisma = new PrismaClient({
+export const prisma =
+  globalForPrisma.prisma ||
+  new PrismaClient({
     log: ['error', 'warn'],
     errorFormat: 'pretty',
   });
-}
 
-// Exportar a instância global
-const prisma = globalForPrisma.prisma;
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
-// Adicionar um manipulador de eventos para desconectar ao encerrar
 process.on('beforeExit', async () => {
   await prisma.$disconnect();
 });

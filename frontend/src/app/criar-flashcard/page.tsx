@@ -13,24 +13,20 @@ const CreateFlashcard: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
 
-  const handleSubmit = async (data: Partial<Flashcard>, file: File | null) => {
+  const handleSubmit = async (formData: FormData) => {
     try {
       if (!session?.user?.id) {
         alert("Usuário não autenticado.");
         router.push("/login");
         return;
       }
-      console.log("Dados do formulário:", data);
-      const formData = new FormData();
-      formData.append("title", data.title || "");
-      formData.append("description", data.description || "");
-      formData.append("tags", JSON.stringify(data.tags || []));
-      formData.append("userId", session.user.id);
-      if (file) {
-        formData.append("image", file); // Certifica-se de anexar o arquivo corretamente
-      }
 
-      await axios.post("http://localhost:5000/api/flashcards/create", formData, {
+      // Adiciona o userId ao formData
+      formData.append("userId", session.user.id);
+
+      // Usa a variável de ambiente para a base URL da API
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+      await axios.post(`${apiBaseUrl}/api/flashcards/create`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${session?.accessToken}`,

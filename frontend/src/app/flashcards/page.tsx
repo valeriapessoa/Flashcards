@@ -37,8 +37,10 @@ interface Flashcard {
   id: number;
   title: string;
   description: string;
-  imageUrl: string;
-  tags: Tag[];
+  imageUrl?: string;
+  backImageUrl?: string;
+  tags: Array<{ id: number; text: string }>;
+  userId: number;
 }
 
 const Flashcards: React.FC = () => {
@@ -147,31 +149,52 @@ const Flashcards: React.FC = () => {
                       <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 1 }}>
                         {flashcard.description}
                       </Typography>
-                      {flashcard.imageUrl && (
-                        <CardMedia
-                          component="img"
-                          height="140"
-                          image={flashcard.imageUrl}
-                          alt={flashcard.title}
-                          style={{ cursor: 'pointer' }}
-                          onClick={() => handleImageClick(flashcard.imageUrl)}
-                        />
-                      )}
-                      <Box mt={2} display="flex" flexWrap="wrap" gap={1} alignItems="center">
-                        <Typography variant="caption" color="text.secondary">
-                          🔖 Tags:
-                        </Typography>
-                        {flashcard.tags.map((tag, index) => (
-                          <Typography
-                            key={`${tag.text}-${index}`}
-                            variant="caption"
-                            color="#fff"
-                            sx={{ backgroundColor: theme.palette.primary.light, px: 1.5, py: 0.5, borderRadius: 1, color: '#fff' }}
-                          >
-                            {tag.text}
-                          </Typography>
-                        ))}
+                      <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        {flashcard.imageUrl && (
+                          <CardMedia
+                            component="img"
+                            height="140"
+                            image={flashcard.imageUrl}
+                            alt={`${flashcard.title} - Frente`}
+                            onClick={() => handleImageClick(flashcard.imageUrl)}
+                            sx={{ 
+                              cursor: 'pointer', 
+                              borderRadius: 1,
+                              objectFit: 'cover',
+                              width: '100%',
+                            }}
+                          />
+                        )}
+                        {flashcard.backImageUrl && (
+                          <CardMedia
+                            component="img"
+                            height="140"
+                            image={flashcard.backImageUrl}
+                            alt={`${flashcard.title} - Verso`}
+                            onClick={() => handleImageClick(flashcard.backImageUrl)}
+                            sx={{ 
+                              cursor: 'pointer', 
+                              borderRadius: 1,
+                              objectFit: 'cover',
+                              width: '100%',
+                            }}
+                          />
+                        )}
                       </Box>
+                      {flashcard.tags.length > 0 && (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2 }}>
+                          {flashcard.tags.map((tag, index) => (
+                            <Button
+                              key={`${tag.id}-${index}`}
+                              variant="outlined"
+                              size="small"
+                              sx={{ textTransform: 'none' }}
+                            >
+                              {tag.text}
+                            </Button>
+                          ))}
+                        </Box>
+                      )}
                     </CardContent>
                     <CardActions sx={{ justifyContent: "space-between", px: 2 }}>
                       <Button variant="outlined" size="small" onClick={() => handleEdit(flashcard.id)}>

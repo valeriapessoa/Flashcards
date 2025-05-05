@@ -3,7 +3,8 @@ export interface Flashcard {
   title: string;
   description: string;
   imageUrl?: string;
-  tags: string[];
+  backImageUrl?: string;
+  tags: Array<{ id: number; text: string }>;
   userId: number;
 }
 
