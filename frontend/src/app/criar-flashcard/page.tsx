@@ -47,7 +47,7 @@ const CreateFlashcard: React.FC = () => {
   return (
     <>
       <Header />
-      <div className="py-8 px-2 md:px-8">
+      <div className="py-8 px-6 md:px-24">
         <h1 className="text-3xl font-bold text-center mb-4">Criar Flashcard</h1>
         <p className="text-center text-gray-600 mb-8">Preencha os campos abaixo para adicionar um novo flashcard à sua coleção.</p>
         <FlashcardForm onSubmit={handleSubmit} />

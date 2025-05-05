@@ -36,47 +36,66 @@ const EditFlashcardPage = () => {
 
   const mutation = useMutation(
     async (formData: FormData) => {
-      return await updateFlashcard(id as string, formData);
+      try {
+        const response = await updateFlashcard(id as string, formData);
+        console.log("Resposta da API:", response);
+        return response;
+      } catch (error) {
+        console.error("Erro ao atualizar o flashcard:", error);
+        throw error;
+      }
     },
     {
-      onSuccess: () => {
+      onSuccess: (data) => {
+        console.log("Flashcard atualizado com sucesso:", data);
+        queryClient.invalidateQueries({ queryKey: ["flashcards"] });
+        queryClient.invalidateQueries({ queryKey: ["flashcard", id] });
         router.push("/flashcards");
       },
       onError: (error) => {
-        console.error("Erro ao atualizar o flashcard:", error);
-        alert("Erro ao atualizar o flashcard. Tente novamente.");
+        if (error instanceof Error) {
+          alert(error.message || "Erro ao atualizar o flashcard. Tente novamente.");
+        } else {
+          alert("Erro ao atualizar o flashcard. Tente novamente.");
+        }
       },
     }
   );
 
-  const handleSubmit = (updatedFlashcardData: Partial<Flashcard>, file: File | null) => {
+  const handleSubmit = async (updatedFlashcardData: Partial<Flashcard>, file: File | null) => {
     if (!originalFlashcard) return;
 
-    const formData = new FormData();
-    let hasChanges = false;
+    try {
+      const formData = new FormData();
+      let hasChanges = false;
 
-    if (updatedFlashcardData.title !== originalFlashcard.title) {
-      formData.append("title", updatedFlashcardData.title || "");
-      hasChanges = true;
-    }
-    if (updatedFlashcardData.description !== originalFlashcard.description) {
-      formData.append("description", updatedFlashcardData.description || "");
-      hasChanges = true;
-    }
-    if (file) {
-      formData.append("image", file);
-      hasChanges = true;
-    }
-    const currentTagsString = JSON.stringify(updatedFlashcardData.tags?.sort() || []);
-    const originalTagsString = JSON.stringify(originalFlashcard.tags?.sort() || []);
-    if (currentTagsString !== originalTagsString) {
-       formData.append("tags", JSON.stringify(updatedFlashcardData.tags || []));
-       hasChanges = true;
-    }
-    if (hasChanges) {
-      mutation.mutate(formData);
-    } else {
-      alert("Nenhuma alteração foi feita.");
+      if (updatedFlashcardData.title !== originalFlashcard.title) {
+        formData.append("title", updatedFlashcardData.title || "");
+        hasChanges = true;
+      }
+      if (updatedFlashcardData.description !== originalFlashcard.description) {
+        formData.append("description", updatedFlashcardData.description || "");
+        hasChanges = true;
+      }
+      if (file) {
+        formData.append("image", file);
+        hasChanges = true;
+      }
+      const currentTagsString = JSON.stringify(updatedFlashcardData.tags?.sort() || []);
+      const originalTagsString = JSON.stringify(originalFlashcard.tags?.sort() || []);
+      if (currentTagsString !== originalTagsString) {
+        formData.append("tags", JSON.stringify(updatedFlashcardData.tags || []));
+        hasChanges = true;
+      }
+
+      if (hasChanges) {
+        await mutation.mutate(formData);
+      } else {
+        alert("Nenhuma alteração foi feita.");
+      }
+    } catch (error) {
+      console.error("Erro ao processar o formulário:", error);
+      alert("Erro ao processar o formulário. Tente novamente.");
     }
   };
 
@@ -90,55 +109,36 @@ const EditFlashcardPage = () => {
   return (
     <>
       <Header />
-      <Box
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        minHeight="75vh"
-        sx={{
-          // Removido o background para deixar o fundo sem cor
-          py: { xs: 2, md: 4 },
-        }}
-      >
-        <Card sx={{ maxWidth: 600, width: '100%', boxShadow: 4, borderRadius: 3 }}>
-          <CardContent>
-            <Typography variant="h4" component="h1" gutterBottom align="center">
-              Editar Flashcard
-            </Typography>
-            <Typography variant="body1" color="text.secondary" align="center" mb={2}>
-              Altere os campos desejados e salve as modificações do seu flashcard.
-            </Typography>
-            {isLoading ? (
-              <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" my={3}>
-                <CircularProgress color="primary" />
-                <Typography color="text.secondary" mt={2}>Carregando flashcard...</Typography>
-              </Box>
-            ) : isError ? (
-              <Typography color="error" align="center">Erro ao carregar o flashcard. Tente novamente.</Typography>
-            ) : !flashcard ? (
-              <Typography color="text.secondary" align="center">Flashcard não encontrado.</Typography>
-            ) : (
-              <>
-                <FlashcardForm
-                  flashcard={flashcard}
-                  onSubmit={handleSubmit}
-                  isEditing={true}
-                />
-                <Box display="flex" justifyContent="flex-start" mt={3}>
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => router.push("/flashcards")}
-                  >
-                    Voltar
-                  </Button>
-                </Box>
-              </>
-            )}
-          </CardContent>
-        </Card>
-      </Box>
+      <div className="py-8 px-6 md:px-24">
+        <h1 className="text-3xl font-bold text-center mb-4">Editar Flashcard</h1>
+        <p className="text-center text-gray-600 mb-8">Faça alterações nos campos abaixo para atualizar seu flashcard.</p>
+        {isLoading ? (
+          <div className="flex justify-center mt-4">
+            <CircularProgress />
+          </div>
+        ) : isError ? (
+          <p className="text-center text-red-500">Erro ao carregar o flashcard. Tente novamente.</p>
+        ) : !flashcard ? (
+          <p className="text-center text-gray-600">Flashcard não encontrado.</p>
+        ) : (
+          <>
+            <FlashcardForm
+              flashcard={flashcard}
+              onSubmit={handleSubmit}
+              isEditing={true}
+            />
+            <div className="mt-4">
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => router.push("/flashcards")}
+              >
+                Voltar
+              </Button>
+            </div>
+          </>
+        )}
+      </div>
       <Footer />
     </>
   );

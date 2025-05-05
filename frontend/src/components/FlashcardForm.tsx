@@ -5,7 +5,7 @@ import { WithContext as ReactTags, SEPARATORS, Tag as ReactTag } from 'react-tag
 
 interface FlashcardFormProps {
   flashcard?: Flashcard | null;
-  onSubmit: (formData: FormData) => Promise<void>;
+  onSubmit: (flashcardData: Partial<Flashcard>, file: File | null) => Promise<void>;
   isEditing?: boolean;
 }
 

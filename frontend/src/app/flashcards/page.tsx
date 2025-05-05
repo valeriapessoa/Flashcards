@@ -66,6 +66,7 @@ const Flashcards: React.FC = () => {
     mutationFn: (id: number) => deleteFlashcard(id.toString()),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["flashcards"] });
+      queryClient.invalidateQueries({ queryKey: ["flashcard"] });
       setDeleteId(null);
     },
   });
