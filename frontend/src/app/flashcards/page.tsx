@@ -8,7 +8,6 @@ import {
   Card,
   CardContent,
   CardActions,
-  Grid,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -17,7 +16,8 @@ import {
   Box,
   useTheme,
   IconButton,
-  CardMedia
+  CardMedia,
+  Chip
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import { useRouter } from "next/navigation";
@@ -107,22 +107,19 @@ const Flashcards: React.FC = () => {
   return (
     <>
       <Header />
-      <Box
-        minHeight="75vh"
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        sx={{
-          // Removido o background para deixar o fundo sem cor
-          py: { xs: 2, md: 4 },
-        }}
-      >
+      <Box sx={{
+        minHeight: "75vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        py: { xs: 2, md: 4 },
+      }}>
         <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
           <Typography variant="h4" gutterBottom textAlign="center">
             📚 Flashcards
           </Typography>
-          <Grid container justifyContent="flex-end" sx={{ mb: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
             {/* <Button
               variant="contained"
               color="primary"
@@ -130,89 +127,112 @@ const Flashcards: React.FC = () => {
             >
               ➕ Criar Novo Flashcard
             </Button> */}
-          </Grid>
+          </Box>
           {isLoading ? (
-            <Grid container justifyContent="center">
+            <Box sx={{ width: '100%', overflow: 'hidden' }}>
               <CircularProgress />
-            </Grid>
+            </Box>
           ) : error ? (
             <Typography color="error" align="center">Erro ao carregar flashcards: {error.message}</Typography>
           ) : flashcards.length > 0 ? (
-            <Grid container spacing={3}>
-              {flashcards.map((flashcard: Flashcard) => (
-                <Grid item xs={12} sm={6} md={4} key={flashcard.id}>
-                  <Card sx={{ boxShadow: 4, borderRadius: 3 }}>
-                    <CardContent>
-                      <Typography variant="h6" fontWeight="bold">
+            <Box sx={{ width: '100%', overflow: 'hidden' }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {flashcards.map((flashcard) => (
+                  <Card key={flashcard.id} sx={{ 
+                    p: 2, 
+                    boxShadow: 2,
+                    transition: 'transform 0.2s',
+                    '&:hover': {
+                      transform: 'translateY(-2px)',
+                      boxShadow: 4
+                    }
+                  }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                      <Typography variant="h6" gutterBottom>
                         {flashcard.title}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 1 }}>
-                        {flashcard.description}
-                      </Typography>
-                      <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        {flashcard.imageUrl && (
-                          <CardMedia
-                            component="img"
-                            height="140"
-                            image={flashcard.imageUrl}
-                            alt={`${flashcard.title} - Frente`}
-                            onClick={() => handleImageClick(flashcard.imageUrl)}
-                            sx={{ 
-                              cursor: 'pointer', 
-                              borderRadius: 1,
-                              objectFit: 'cover',
-                              width: '100%',
-                            }}
-                          />
-                        )}
-                        {flashcard.backImageUrl && (
-                          <CardMedia
-                            component="img"
-                            height="140"
-                            image={flashcard.backImageUrl}
-                            alt={`${flashcard.title} - Verso`}
-                            onClick={() => handleImageClick(flashcard.backImageUrl)}
-                            sx={{ 
-                              cursor: 'pointer', 
-                              borderRadius: 1,
-                              objectFit: 'cover',
-                              width: '100%',
-                            }}
-                          />
-                        )}
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Button
+                          size="small"
+                          onClick={() => handleEdit(flashcard.id)}
+                          sx={{
+                            backgroundColor: 'primary.main',
+                            color: 'white',
+                            '&:hover': {
+                              backgroundColor: 'primary.dark'
+                            }
+                          }}
+                        >
+                          Editar
+                        </Button>
+                        <Button
+                          size="small"
+                          color="error"
+                          onClick={() => setDeleteId(flashcard.id)}
+                          sx={{
+                            backgroundColor: 'error.main',
+                            color: 'white',
+                            '&:hover': {
+                              backgroundColor: 'error.dark'
+                            }
+                          }}
+                        >
+                          Excluir
+                        </Button>
                       </Box>
-                      {flashcard.tags.length > 0 && (
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2 }}>
-                          {flashcard.tags.map((tag, index) => (
-                            <Button
-                              key={`${tag.id}-${index}`}
-                              variant="outlined"
-                              size="small"
-                              sx={{ textTransform: 'none' }}
-                            >
-                              {tag.text}
-                            </Button>
-                          ))}
-                        </Box>
+                    </Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      {flashcard.description}
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                      {flashcard.tags.map((tag) => (
+                        <Chip
+                          key={tag.id}
+                          label={tag.text}
+                          size="small"
+                          sx={{
+                            backgroundColor: 'primary.light',
+                            color: 'primary.main',
+                            '&:hover': {
+                              backgroundColor: 'primary.main',
+                              color: 'white'
+                            }
+                          }}
+                        />
+                      ))}
+                    </Box>
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                      {flashcard.imageUrl && (
+                        <img
+                          src={flashcard.imageUrl as string}
+                          alt={flashcard.title}
+                          style={{ 
+                            maxWidth: '100px', 
+                            height: 'auto',
+                            cursor: 'pointer',
+                            borderRadius: '4px'
+                          }}
+                          onClick={() => handleImageClick(flashcard.imageUrl!)}
+                        />
                       )}
-                    </CardContent>
-                    <CardActions sx={{ justifyContent: "space-between", px: 2 }}>
-                      <Button variant="outlined" size="small" onClick={() => handleEdit(flashcard.id)}>
-                        ✏️ Editar
-                      </Button>
-                      <Button
-                        variant="contained"
-                        size="small"
-                        color="error"
-                        onClick={() => setDeleteId(flashcard.id)}
-                      >
-                        🗑️ Excluir
-                      </Button>
-                    </CardActions>
+                      {flashcard.backImageUrl && (
+                        <img
+                          src={flashcard.backImageUrl as string}
+                          alt={`${flashcard.title} - verso`}
+                          style={{ 
+                            maxWidth: '100px', 
+                            height: 'auto',
+                            cursor: 'pointer',
+                            borderRadius: '4px'
+                          }}
+                          onClick={() => handleImageClick(flashcard.backImageUrl!)}
+                        />
+                      )}
+                    </Box>
                   </Card>
-                </Grid>
-              ))}
-            </Grid>
+                ))}
+              </Box>
+            </Box>
           ) : (
             <EmptyState
               icon="⚠️"
