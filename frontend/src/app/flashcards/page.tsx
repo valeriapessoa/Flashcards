@@ -153,50 +153,54 @@ const Flashcards: React.FC = () => {
                       </Typography>
                       <Box sx={{ display: 'flex', gap: 1 }}>
                         <Button
+                          variant="outlined"
                           size="small"
                           onClick={() => handleEdit(flashcard.id)}
-                          sx={{
-                            backgroundColor: 'primary.main',
-                            color: 'white',
-                            '&:hover': {
-                              backgroundColor: 'primary.dark'
-                            }
-                          }}
+                          sx={{ textTransform: 'none' }}
                         >
-                          Editar
+                          ✏️ Editar
                         </Button>
                         <Button
+                          variant="contained"
                           size="small"
                           color="error"
                           onClick={() => setDeleteId(flashcard.id)}
-                          sx={{
-                            backgroundColor: 'error.main',
-                            color: 'white',
-                            '&:hover': {
-                              backgroundColor: 'error.dark'
-                            }
-                          }}
                         >
-                          Excluir
+                          🗑️ Excluir
                         </Button>
                       </Box>
                     </Box>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      {flashcard.description}
-                    </Typography>
+                    <Box sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      mb: 2
+                    }}>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                          display: '-webkit-box',
+                          WebkitBoxOrient: 'vertical',
+                          WebkitLineClamp: 3,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          mb: 0
+                        }}
+                      >
+                        {flashcard.description}
+                      </Typography>
+                    </Box>
                     <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
                       {flashcard.tags.map((tag) => (
                         <Chip
                           key={tag.id}
                           label={tag.text}
-                          size="small"
-                          sx={{
-                            backgroundColor: 'primary.light',
-                            color: 'primary.main',
-                            '&:hover': {
-                              backgroundColor: 'primary.main',
-                              color: 'white'
-                            }
+                          sx={{ 
+                            backgroundColor: theme.palette.primary.light,
+                            px: 1.5,
+                            py: 0.5,
+                            borderRadius: 1,
+                            color: '#fff'
                           }}
                         />
                       ))}
