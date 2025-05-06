@@ -94,8 +94,8 @@ const StudyMode: React.FC<StudyModeProps> = ({ flashcards }) => {
             <Typography variant="h5" component="div">
               {isFront ? currentFlashcard.title : currentFlashcard.description}
             </Typography>
-            {/* Exibe a imagem apenas no verso (resposta) */}
-            {!isFront && currentFlashcard.imageUrl && (
+            {/* Exibe a imagem da frente do flashcard */}
+            {isFront && currentFlashcard.imageUrl && (
               <Box
                 sx={{
                   width: '100%',
@@ -108,7 +108,7 @@ const StudyMode: React.FC<StudyModeProps> = ({ flashcards }) => {
               >
                 <img
                   src={currentFlashcard.imageUrl}
-                  alt="Imagem da resposta"
+                  alt="Imagem da frente"
                   style={{
                     width: '100%',
                     maxHeight: 300,
@@ -119,6 +119,34 @@ const StudyMode: React.FC<StudyModeProps> = ({ flashcards }) => {
                     display: 'block',
                   }}
                   onClick={() => handleImageClick(currentFlashcard.imageUrl!)}
+                />
+              </Box>
+            )}
+            {/* Exibe a imagem do verso do flashcard */}
+            {!isFront && currentFlashcard.backImageUrl && (
+              <Box
+                sx={{
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  mt: 2,
+                  mb: 2,
+                }}
+              >
+                <img
+                  src={currentFlashcard.backImageUrl}
+                  alt="Imagem da resposta"
+                  style={{
+                    width: '100%',
+                    maxHeight: 300,
+                    objectFit: 'contain',
+                    borderRadius: 8,
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+                    background: '#f5f5f5',
+                    display: 'block',
+                  }}
+                  onClick={() => handleImageClick(currentFlashcard.backImageUrl!)}
                 />
               </Box>
             )}
