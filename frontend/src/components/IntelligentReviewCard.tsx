@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardMedia, Typography, Button, Dialog, DialogContent, IconButton, useTheme, Box, Chip } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -7,27 +9,25 @@ import FlipIcon from '@mui/icons-material/Flip';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
-interface FlashcardProps {
+interface IntelligentReviewCardProps {
   id: number;
-  title: string; // Frente do card
-  description: string; // Verso do card
-  imageUrl?: string; // Imagem da frente
-  backImageUrl?: string; // Imagem do verso
+  title: string;
+  description: string;
+  imageUrl?: string;
   tags?: string[];
-  onCorrect: (id: number) => void; // Callback para acerto
-  onIncorrect: (id: number) => void; // Callback para erro
+  onCorrect: (id: number) => void;
+  onIncorrect: (id: number) => void;
   currentCardIndex: number;
   totalCards: number;
   onPrevious: () => void;
   onNext: () => void;
 }
 
-const Flashcard: React.FC<FlashcardProps> = ({
+const IntelligentReviewCard: React.FC<IntelligentReviewCardProps> = ({
   id,
   title,
   description,
   imageUrl,
-  backImageUrl,
   tags,
   onCorrect,
   onIncorrect,
@@ -57,18 +57,25 @@ const Flashcard: React.FC<FlashcardProps> = ({
 
   const handleCorrect = () => {
     onCorrect(id);
-    setIsFlipped(false); // Reseta o card para a próxima vez
+    setIsFlipped(false);
   };
 
   const handleIncorrect = () => {
     onIncorrect(id);
-    setIsFlipped(false); // Reseta o card para a próxima vez
+    setIsFlipped(false);
   };
 
   return (
     <Card sx={{ display: 'flex', flexDirection: 'column', minHeight: 250, justifyContent: 'space-between' }}>
       {/* Frente do Card */}
       <CardContent sx={{ flexGrow: 1, display: isFlipped ? 'none' : 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+        <Typography variant="h5" component="div">
+          {title}
+        </Typography>
+      </CardContent>
+
+      {/* Verso do Card */}
+      <CardContent sx={{ flexGrow: 1, display: isFlipped ? 'block' : 'none' }}>
         {imageUrl && (
           <CardMedia
             component="img"
@@ -88,40 +95,14 @@ const Flashcard: React.FC<FlashcardProps> = ({
             onClick={() => handleImageClick(imageUrl)}
           />
         )}
-        <Typography variant="h5" component="div">
-          {title}
-        </Typography>
-      </CardContent>
-
-      {/* Verso do Card */}
-      <CardContent sx={{ flexGrow: 1, display: isFlipped ? 'block' : 'none' }}>
-        {backImageUrl && (
-          <CardMedia
-            component="img"
-            image={backImageUrl}
-            alt={title}
-            sx={{
-              cursor: 'pointer',
-              mb: 2,
-              objectFit: 'contain',
-              maxWidth: '100%',
-              maxHeight: 200,
-              transition: 'transform 0.2s ease-in-out',
-              '&:hover': {
-                transform: 'scale(1.02)',
-              }
-            }}
-            onClick={() => handleImageClick(backImageUrl)}
-          />
-        )}
         <Typography variant="body1" color="text.secondary" paragraph>
           {description}
         </Typography>
         {tags && tags.length > 0 && (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>
-             <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5, alignSelf: 'center' }}>
-               🔖 Tags:
-             </Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5, alignSelf: 'center' }}>
+              🔖 Tags:
+            </Typography>
             {tags.map((tag, idx) => (
               <Chip key={idx} label={tag} size="small" color="primary" variant="outlined" />
             ))}
@@ -192,30 +173,30 @@ const Flashcard: React.FC<FlashcardProps> = ({
 
       {/* Modal de imagem ampliada */}
       <Dialog open={imageDialogOpen} onClose={handleDialogClose} maxWidth="md" fullScreen>
-         <DialogContent sx={{ position: 'relative', p: 0, bgcolor: 'rgba(0, 0, 0, 0.85)', width: '100vw', height: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-           <IconButton
-             aria-label="Fechar"
-             onClick={handleDialogClose}
-             sx={{ position: 'absolute', top: 16, right: 16, color: 'white', zIndex: 1, bgcolor: 'rgba(0, 0, 0, 0.5)', '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.7)'} }}
-           >
-             <CloseIcon fontSize="large" />
-           </IconButton>
-           {dialogImageUrl && (
-             <img
-               src={dialogImageUrl}
-               alt="Imagem ampliada"
-               style={{
-                 maxWidth: '95vw', // Max width
-                 maxHeight: '95vh', // Max height
-                 objectFit: 'contain',
-                 display: 'block',
-               }}
-             />
-           )}
-         </DialogContent>
-       </Dialog>
+        <DialogContent sx={{ position: 'relative', p: 0, bgcolor: 'rgba(0, 0, 0, 0.85)', width: '100vw', height: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <IconButton
+            aria-label="Fechar"
+            onClick={handleDialogClose}
+            sx={{ position: 'absolute', top: 16, right: 16, color: 'white', zIndex: 1, bgcolor: 'rgba(0, 0, 0, 0.5)', '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.7)'} }}
+          >
+            <CloseIcon fontSize="large" />
+          </IconButton>
+          {dialogImageUrl && (
+            <img
+              src={dialogImageUrl}
+              alt="Imagem ampliada"
+              style={{
+                maxWidth: '95vw',
+                maxHeight: '95vh',
+                objectFit: 'contain',
+                display: 'block',
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };
 
-export default Flashcard;
+export default IntelligentReviewCard;

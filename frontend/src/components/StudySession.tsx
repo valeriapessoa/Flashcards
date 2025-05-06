@@ -16,6 +16,7 @@ import { useSession } from 'next-auth/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchFlashcards, incrementErrorCount } from '../lib/api'; // Precisaremos criar incrementErrorCount
 import Flashcard from './Flashcard';
+import IntelligentReviewCard from './IntelligentReviewCard';
 import EmptyState from './EmptyState';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'; // Ícone para sucesso
 import ReplayIcon from '@mui/icons-material/Replay'; // Ícone para repetir
@@ -27,15 +28,29 @@ interface FlashcardData {
   title: string;
   description: string;
   imageUrl?: string;
+  backImageUrl?: string;
   tags?: { id: number; text: string }[];
   errorCount?: number;
 }
 
 interface StudySessionProps {
   fetchPath?: string;
+  cardComponent?: React.ComponentType<{
+    id: number;
+    title: string;
+    description: string;
+    imageUrl?: string;
+    tags?: string[];
+    onCorrect: (id: number) => void;
+    onIncorrect: (id: number) => void;
+    currentCardIndex: number;
+    totalCards: number;
+    onPrevious: () => void;
+    onNext: () => void;
+  }>;
 }
 
-const StudySession: React.FC<StudySessionProps> = ({ fetchPath = '/api/flashcards' }) => {
+const StudySession: React.FC<StudySessionProps> = ({ fetchPath = '/api/flashcards', cardComponent = Flashcard }) => {
   const { data: session, status } = useSession();
   const isAuthenticated = status === 'authenticated';
   const queryClient = useQueryClient();
@@ -142,7 +157,12 @@ const StudySession: React.FC<StudySessionProps> = ({ fetchPath = '/api/flashcard
   };
 
   const handleRestartSession = () => {
-    // Reinicia buscando os dados novamente
+    // Reseta todos os estados
+    setCurrentCardIndex(0);
+    setSessionComplete(false);
+    setCorrectCount(0);
+    setIncorrectCount(0);
+    // Invalida as queries e refetch
     queryClient.invalidateQueries({ queryKey: ['studySessionFlashcards', fetchPath] });
     refetch();
   };
@@ -167,7 +187,7 @@ const StudySession: React.FC<StudySessionProps> = ({ fetchPath = '/api/flashcard
   }
 
   // Estado Vazio (após carregamento, sem erro, mas sem cards)
-  if (!isLoading && localFlashcards.length === 0) {
+  if (!isLoading && !sessionComplete && localFlashcards.length === 0) {
      return (
         <EmptyState
           icon="🎉"
@@ -179,10 +199,10 @@ const StudySession: React.FC<StudySessionProps> = ({ fetchPath = '/api/flashcard
       );
   }
 
-
-
   // Sessão em Andamento
   const currentCard = localFlashcards[currentCardIndex];
+
+  const progress = ((currentCardIndex + 1) / localFlashcards.length) * 100;
 
   // Quando terminar de estudar todos os cards
   if (currentCardIndex === localFlashcards.length - 1) {
@@ -228,21 +248,23 @@ const StudySession: React.FC<StudySessionProps> = ({ fetchPath = '/api/flashcard
             >
               Revisão Inteligente
             </Button>
+            <Box sx={{ mt: 4 }}>
+              <StudySession fetchPath="/api/flashcards/revisao-inteligente" cardComponent={IntelligentReviewCard} />
+            </Box>
           </Box>
         </Box>
       </Container>
     );
   }
-  const progress = ((currentCardIndex + 1) / localFlashcards.length) * 100;
 
   return (
     <Container maxWidth="md">
-       <Box sx={{ width: '100%', mb: 2 }}>
-         <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 0.5 }}>
-           Card {currentCardIndex + 1} de {localFlashcards.length}
-         </Typography>
-         <LinearProgress variant="determinate" value={progress} />
-       </Box>
+      <Box sx={{ width: '100%', mb: 2 }}>
+        <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 0.5 }}>
+          Card {currentCardIndex + 1} de {localFlashcards.length}
+        </Typography>
+        <LinearProgress variant="determinate" value={progress} />
+      </Box>
       {currentCard && (
         <Flashcard
           key={currentCard.id}
@@ -250,17 +272,26 @@ const StudySession: React.FC<StudySessionProps> = ({ fetchPath = '/api/flashcard
           title={currentCard.title}
           description={currentCard.description}
           imageUrl={currentCard.imageUrl}
-          tags={currentCard.tags?.map(tag => tag.text)}
+          backImageUrl={currentCard.backImageUrl}
+          tags={currentCard.tags?.map(tag => tag.text) || []}
           onCorrect={handleCorrect}
           onIncorrect={handleIncorrect}
           currentCardIndex={currentCardIndex}
           totalCards={localFlashcards.length}
-          onPrevious={() => setCurrentCardIndex(currentCardIndex - 1)}
-          onNext={() => setCurrentCardIndex(currentCardIndex + 1)}
+          onPrevious={() => {
+            if (currentCardIndex > 0) {
+              setCurrentCardIndex(currentCardIndex - 1);
+            }
+          }}
+          onNext={() => {
+            if (currentCardIndex < localFlashcards.length - 1) {
+              setCurrentCardIndex(currentCardIndex + 1);
+            }
+          }}
         />
       )}
     </Container>
   );
-};
+}
 
 export default StudySession;

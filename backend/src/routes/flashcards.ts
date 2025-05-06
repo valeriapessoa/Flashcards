@@ -54,6 +54,49 @@ router.get("/", protect, async (req: AuthenticatedRequest, res: Response) => {
   }
 });
 
+// 🔄 Listar flashcards para revisão inteligente
+router.get("/revisao-inteligente", protect, async (req: AuthenticatedRequest, res: Response) => {
+  console.log("Buscando flashcards para revisão inteligente para usuário:", req.user?.id);
+  const userId = req.user?.id;
+
+  if (!userId) {
+    return res.status(401).json({ message: "Usuário não autenticado." });
+  }
+
+  try {
+    const flashcards = await prisma.flashcard.findMany({
+      where: { userId: userId },
+      include: {
+        categories: true,
+        tags: true,
+        user: {
+          select: { id: true, name: true, email: true, image: true },
+        },
+      },
+      orderBy: {
+        errorCount: "desc", // Ordena pelo número de erros (maior primeiro)
+        createdAt: "desc", // Se tiverem mesmo número de erros, ordena pela data de criação
+      },
+      take: 10 // Limita a 10 flashcards para revisão
+    });
+
+    // Garantir que as URLs das imagens sejam strings válidas
+    const flashcardsWithValidUrls = flashcards.map(flashcard => ({
+      ...flashcard,
+      imageUrl: flashcard.imageUrl || null,
+      backImageUrl: flashcard.backImageUrl || null,
+    }));
+
+    res.status(200).json(flashcardsWithValidUrls);
+  } catch (error: any) {
+    console.error("❌ Erro ao listar flashcards para revisão inteligente:", error.message);
+    res.status(500).json({
+      message: "Erro ao listar flashcards para revisão inteligente",
+      details: error.message,
+    });
+  }
+});
+
 // 📌 Criar flashcard
 router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRequest, res: Response) => {
   try {
