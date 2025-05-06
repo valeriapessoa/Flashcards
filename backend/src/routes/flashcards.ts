@@ -307,6 +307,49 @@ router.delete("/:id", protect, async (req: AuthenticatedRequest, res: Response) 
   }
 });
 
+// 📊 Listar flashcards para o modo de estudo (requer autenticação)
+router.get('/estudar', protect, async (req: AuthenticatedRequest, res: Response) => {
+ try {
+   const userId = req.user?.id;
+   console.log("🔍 Buscando flashcards para o modo de estudo do usuário:", userId);
+
+   if (!userId) {
+     return res.status(401).json({ message: "Usuário não autenticado." });
+   }
+
+   // Buscar todos os flashcards do usuário
+   const flashcards = await prisma.flashcard.findMany({
+     where: { userId: userId },
+     include: {
+       tags: true,
+       user: {
+         select: {
+           id: true,
+           name: true,
+           email: true,
+           image: true
+         }
+       }
+     }
+   });
+
+   console.log("🔢 Total de flashcards para o modo de estudo:", flashcards.length);
+   // Garantir que as URLs das imagens sejam strings válidas ou null
+   const flashcardsWithValidUrls = flashcards.map(flashcard => ({
+     ...flashcard,
+     imageUrl: flashcard.imageUrl || null,
+     backImageUrl: flashcard.backImageUrl || null,
+   }));
+   res.status(200).json(flashcardsWithValidUrls);
+ } catch (error: any) {
+   console.error("❌ Erro ao listar flashcards para o modo de estudo:", error.message);
+   res.status(500).json({
+     message: "Erro ao listar flashcards para o modo de estudo",
+     details: error.message,
+   });
+ }
+});
+
 // 📊 Listar flashcards para revisão inteligente (requer autenticação)
 router.get('/revisao-inteligente', protect, async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -343,12 +386,19 @@ router.get('/revisao-inteligente', protect, async (req: AuthenticatedRequest, re
     });
 
     console.log("🔢 Total de flashcards para revisão inteligente:", flashcards.length);
-    if (flashcards.length > 0) {
-      console.log("📋 Primeiro flashcard:", JSON.stringify(flashcards[0], null, 2));
+    // Garantir que as URLs das imagens sejam strings válidas ou null
+    const flashcardsWithValidUrls = flashcards.map(flashcard => ({
+      ...flashcard,
+      imageUrl: flashcard.imageUrl || null,
+      backImageUrl: flashcard.backImageUrl || null,
+    }));
+
+    if (flashcardsWithValidUrls.length > 0) {
+      console.log("📋 Primeiro flashcard:", JSON.stringify(flashcardsWithValidUrls[0], null, 2));
     } else {
       console.log("❌ Nenhum flashcard com erros encontrado para o usuário:", userId);
     }
-    res.status(200).json(flashcards);
+    res.status(200).json(flashcardsWithValidUrls);
   } catch (error: any) {
     console.error("❌ Erro ao listar flashcards para revisão inteligente:", error.message);
     res.status(500).json({
