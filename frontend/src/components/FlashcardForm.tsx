@@ -5,7 +5,7 @@ import { WithContext as ReactTags, SEPARATORS, Tag as ReactTag } from 'react-tag
 
 interface FlashcardFormProps {
   flashcard?: Flashcard | null;
-  onSubmit: (flashcardData: Partial<Flashcard>, file: File | null) => Promise<void>;
+  onSubmit: (formData: FormData) => Promise<void>;
   isEditing?: boolean;
 }
 
@@ -155,7 +155,7 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
     e.preventDefault();
     setIsSubmitting(true);
     setErrors({});
-    
+
     if (!title.trim()) {
       setErrors((prev) => ({ ...prev, front: 'A frente do flashcard é obrigatória.' }));
       setIsSubmitting(false);
@@ -170,14 +170,25 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
     const formData = new FormData();
     formData.append('title', title);
     formData.append('description', description);
-    formData.append('tags', JSON.stringify(tags.map((t) => t.text)));
+    formData.append('tags', JSON.stringify(tags.map((t) => ({ id: Date.now(), text: t.text }))));
 
-    // Adiciona os arquivos se existirem
+    // Adiciona a imagem se existir
     if (frontImageFile) {
-      formData.append('image', frontImageFile);
+      formData.append('image', frontImageFile, frontImageFile.name);
     }
+    // Adiciona a imagem do verso se existir
     if (backImageFile) {
-      formData.append('backImage', backImageFile);
+      formData.append('backImage', backImageFile, backImageFile.name);
+    }
+
+    // Sinaliza remoção de imagem (se aplicável na edição)
+    if (isEditing) {
+      if (flashcard?.imageUrl && !frontImagePreview && !frontImageFile) {
+        formData.append('removeFrontImage', 'true');
+      }
+      if (flashcard?.backImageUrl && !backImagePreview && !backImageFile) {
+        formData.append('removeBackImage', 'true');
+      }
     }
 
     try {

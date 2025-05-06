@@ -62,37 +62,12 @@ const EditFlashcardPage = () => {
     }
   );
 
-  const handleSubmit = async (updatedFlashcardData: Partial<Flashcard>, file: File | null) => {
+  const handleSubmit = async (formData: FormData) => {
     if (!originalFlashcard) return;
 
     try {
-      const formData = new FormData();
-      let hasChanges = false;
-
-      if (updatedFlashcardData.title !== originalFlashcard.title) {
-        formData.append("title", updatedFlashcardData.title || "");
-        hasChanges = true;
-      }
-      if (updatedFlashcardData.description !== originalFlashcard.description) {
-        formData.append("description", updatedFlashcardData.description || "");
-        hasChanges = true;
-      }
-      if (file) {
-        formData.append("image", file);
-        hasChanges = true;
-      }
-      const currentTagsString = JSON.stringify(updatedFlashcardData.tags?.sort() || []);
-      const originalTagsString = JSON.stringify(originalFlashcard.tags?.sort() || []);
-      if (currentTagsString !== originalTagsString) {
-        formData.append("tags", JSON.stringify(updatedFlashcardData.tags || []));
-        hasChanges = true;
-      }
-
-      if (hasChanges) {
-        await mutation.mutate(formData);
-      } else {
-        alert("Nenhuma alteração foi feita.");
-      }
+      // Sempre envia o formulário, pois o FormData já contém todas as mudanças
+      await mutation.mutate(formData);
     } catch (error) {
       console.error("Erro ao processar o formulário:", error);
       alert("Erro ao processar o formulário. Tente novamente.");

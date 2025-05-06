@@ -94,9 +94,8 @@ export const incrementErrorCount = async (id: number | string) => {
 // Aceita ID e FormData
 export const updateFlashcard = async (id: string, formData: FormData) => {
   const response = await apiClient.put(`/api/flashcards/${id}`, formData, {
-     headers: {
-      // Deixe o Axios definir o Content-Type para multipart/form-data
-      // 'Content-Type': 'multipart/form-data', // Não é necessário definir manualmente
+    headers: {
+      'Content-Type': 'multipart/form-data',
     },
   });
   return response.data;

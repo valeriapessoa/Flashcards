@@ -24,6 +24,10 @@ const upload = multer({
 });
 
 const newUploadMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  console.log('[DEBUG][UPLOAD] Iniciando middleware de upload');
+  console.log('[DEBUG][UPLOAD] Headers:', req.headers);
+  console.log('[DEBUG][UPLOAD] Content-Type:', req.headers['content-type']);
+  
   upload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'backImage', maxCount: 1 },
@@ -31,6 +35,12 @@ const newUploadMiddleware = (req: Request, res: Response, next: NextFunction) =>
     if (err) {
       console.error("Erro no upload:", err);
       return res.status(400).json({ message: err.message });
+    }
+    
+    if (req.files) {
+      console.log('[DEBUG][UPLOAD] Arquivos recebidos:', req.files);
+    } else {
+      console.log('[DEBUG][UPLOAD] Nenhum arquivo recebido');
     }
 
     // Se um arquivo foi enviado, processa e faz upload para o Cloudinary

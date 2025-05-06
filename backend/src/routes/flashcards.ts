@@ -183,6 +183,7 @@ router.put("/:id", protect, newUploadMiddleware, async (req: AuthenticatedReques
 
     // LOG: Mostrar o payload recebido
     console.log('[DEBUG][EDIT] req.body:', req.body);
+    console.log('[DEBUG][EDIT] req.files:', req.files);
 
     if (tagsInput !== undefined) {
         let tagsArray: string[] = [];
@@ -228,21 +229,22 @@ router.put("/:id", protect, newUploadMiddleware, async (req: AuthenticatedReques
       ...(Array.isArray(tagsToSet) ? { tags: { set: tagsToSet } } : {}),
     };
 
-    // Corrige tipagem do Multer para múltiplos campos nomeados
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] } | Express.Multer.File[] | undefined;
-    let frontImageFile: Express.Multer.File | undefined;
-    let backImageFile: Express.Multer.File | undefined;
-    if (files && !Array.isArray(files)) {
-      frontImageFile = files['image']?.[0];
-      backImageFile = files['backImage']?.[0];
+    // Adicionar URLs das imagens (se o middleware as colocou no body)
+    if (req.body.image) {
+      dataToUpdate.imageUrl = req.body.image;
+      console.log('[DEBUG][EDIT] Usando nova imageUrl do req.body:', req.body.image);
+    }
+    if (req.body.backImage) {
+      dataToUpdate.backImageUrl = req.body.backImage;
+      console.log('[DEBUG][EDIT] Usando nova backImageUrl do req.body:', req.body.backImage);
     }
 
-    if (frontImageFile) {
-      dataToUpdate.imageUrl = frontImageFile.path;
+    // Verificar se é para remover as imagens (sobrescreve se necessário)
+    if (req.body.removeFrontImage === 'true') {
+      dataToUpdate.imageUrl = null;
     }
-
-    if (backImageFile) {
-      dataToUpdate.backImageUrl = backImageFile.path;
+    if (req.body.removeBackImage === 'true') {
+      dataToUpdate.backImageUrl = null;
     }
 
     // LOG: Mostrar o objeto final de update
