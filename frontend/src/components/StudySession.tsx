@@ -123,7 +123,8 @@ const StudySession: React.FC<StudySessionProps> = ({ fetchPath = '/api/flashcard
       setSessionComplete(true);
       // Garante que a soma de acertos e erros seja igual ao total de cards
       const totalCards = localFlashcards.length;
-      setIncorrectCount(totalCards - correctCount - 1); // -1 porque já contamos o acerto atual
+      // O último card já foi contado como acerto, então não precisamos ajustar
+      setIncorrectCount(totalCards - correctCount);
     }
   };
 
@@ -135,7 +136,8 @@ const StudySession: React.FC<StudySessionProps> = ({ fetchPath = '/api/flashcard
       setSessionComplete(true);
       // Garante que a soma de acertos e erros seja igual ao total de cards
       const totalCards = localFlashcards.length;
-      setCorrectCount(totalCards - incorrectCount - 1); // -1 porque já contamos o erro atual
+      // O último card já foi contado como erro, então não precisamos ajustar
+      setCorrectCount(totalCards - incorrectCount);
     }
   };
 
@@ -186,14 +188,24 @@ const StudySession: React.FC<StudySessionProps> = ({ fetchPath = '/api/flashcard
   if (currentCardIndex === localFlashcards.length - 1) {
     return (
       <Container maxWidth="md">
-        <Box sx={{ textAlign: 'center', mt: 4 }}>
-          <Typography variant="h5" gutterBottom>
+        <Box
+          sx={{
+            textAlign: 'center',
+            mt: 8, // Espaço maior do topo
+            mb: 8, // Espaço maior na base
+            p: 4, // Padding interno
+            borderRadius: 2,
+            bgcolor: 'background.paper',
+            boxShadow: 2,
+          }}
+        >
+          <Typography variant="h4" component="h2" gutterBottom>
             🎉 Parabéns! Você terminou de estudar todos os flashcards.
           </Typography>
-          <Typography variant="body1" sx={{ mb: 2 }}>
+          <Typography variant="h6" sx={{ mb: 2, color: 'success.main' }}>
             ✅ Acertos: {correctCount}
           </Typography>
-          <Typography variant="body1" sx={{ mb: 2 }}>
+          <Typography variant="h6" sx={{ mb: 4, color: 'error.main' }}>
             ❌ Erros: {incorrectCount}
           </Typography>
           <Typography variant="body1" sx={{ mb: 4 }}>
