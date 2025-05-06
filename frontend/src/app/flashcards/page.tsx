@@ -98,10 +98,15 @@ const Flashcards: React.FC = () => {
       </Box>
     );
   }
-  if (status === "unauthenticated") {
-    if (typeof window !== "undefined") {
+
+  // Efeito para redirecionar para login quando não autenticado
+  React.useEffect(() => {
+    if (status === "unauthenticated") {
       router.push("/login");
     }
+  }, [status, router]);
+
+  if (status === "unauthenticated") {
     return null;
   }
 

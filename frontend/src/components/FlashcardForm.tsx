@@ -7,6 +7,7 @@ interface FlashcardFormProps {
   flashcard?: Flashcard | null;
   onSubmit: (formData: FormData) => Promise<void>;
   isEditing?: boolean;
+  onCreated?: () => void; // Callback para quando o flashcard é criado
 }
 
 const KeyCodes = {
@@ -14,7 +15,7 @@ const KeyCodes = {
   enter: 'Enter', // Usar strings para representar as teclas
 };
 
-const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEditing = false }) => {
+const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEditing = false, onCreated }) => {
   const [errors, setErrors] = useState<{ front?: string; back?: string }>({});
   const [title, setTitle] = useState(flashcard?.title || '');
   const [description, setDescription] = useState(flashcard?.description || '');
@@ -221,6 +222,10 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
       setBackImageFile(null);
       setTags([]);
       setErrors({});
+      // Chama o callback de criação se existir
+      if (onCreated) {
+        onCreated();
+      }
     } catch (error) {
       console.error('Erro ao criar flashcard:', error);
       setErrors({ front: 'Erro ao criar flashcard. Tente novamente.' });

@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import FlashcardForm from "../../components/FlashcardForm";
 import axios from "axios";
@@ -12,6 +13,7 @@ import Footer from '../../components/Footer';
 const CreateFlashcard: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
+  const queryClient = useQueryClient();
 
   const handleSubmit = async (formData: FormData) => {
     try {
@@ -32,6 +34,8 @@ const CreateFlashcard: React.FC = () => {
           Authorization: `Bearer ${session?.accessToken}`,
         },
       });
+      // Invalida as queries relacionadas aos flashcards para atualizar os dados
+      queryClient.invalidateQueries({ queryKey: ['studySessionFlashcards'] });
       router.push("/flashcards");
     } catch (error) {
       console.error("Erro ao criar o flashcard:", error);
@@ -39,8 +43,14 @@ const CreateFlashcard: React.FC = () => {
     }
   };
 
+  // Efeito para redirecionar para login quando não autenticado
+  React.useEffect(() => {
+    if (!session) {
+      router.push("/login");
+    }
+  }, [session, router]);
+
   if (!session) {
-    router.push("/login");
     return null;
   }
 
@@ -50,7 +60,9 @@ const CreateFlashcard: React.FC = () => {
       <div className="py-8 px-6 md:px-24">
         <h1 className="text-3xl font-bold text-center mb-4">Criar Flashcard</h1>
         <p className="text-center text-gray-600 mb-8">Preencha os campos abaixo para adicionar um novo flashcard à sua coleção.</p>
-        <FlashcardForm onSubmit={handleSubmit} />
+        <FlashcardForm onSubmit={handleSubmit} onCreated={() => {
+          queryClient.invalidateQueries({ queryKey: ['studySessionFlashcards'] });
+        }} />
       </div>
       <Footer />
     </>
@@ -62,8 +74,15 @@ export default function Page() {
   const router = useRouter();
 
   if (status === "loading") return null;
+
+  // Efeito para redirecionar para login quando não autenticado
+  React.useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
+
   if (status === "unauthenticated") {
-    router.push("/login");
     return null;
   }
 

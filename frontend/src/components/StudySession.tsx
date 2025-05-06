@@ -60,11 +60,15 @@ const StudySession: React.FC<StudySessionProps> = ({ fetchPath = '/api/flashcard
     queryFn: () => fetchFlashcards(fetchPath),
     enabled: isAuthenticated,
     retry: 1,
-    // Não queremos refetch automático aqui, controlaremos manualmente
     refetchOnWindowFocus: false,
-    refetchOnMount: true, // Garante que busca ao montar
-    staleTime: Infinity, // Considera os dados frescos até invalidarmos manualmente
+    refetchOnMount: true,
+    staleTime: 0, // Atualiza dados automaticamente quando necessário
   });
+
+  // Função para atualizar a sessão quando novos flashcards são criados
+  const updateSession = () => {
+    refetch();
+  };
 
   // Mutation para incrementar o contador de erros
   const incrementErrorMutation = useMutation({
@@ -99,6 +103,15 @@ const StudySession: React.FC<StudySessionProps> = ({ fetchPath = '/api/flashcard
   const goToNextCard = () => {
     if (currentCardIndex < localFlashcards.length - 1) {
       setCurrentCardIndex(currentCardIndex + 1);
+      // Atualiza o contador de cards restantes
+      const remainingCards = localFlashcards.length - (currentCardIndex + 1);
+      queryClient.setQueryData(['studySessionFlashcards', fetchPath], (oldData: any) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          remainingCards
+        };
+      });
     } else {
       setSessionComplete(true);
     }
