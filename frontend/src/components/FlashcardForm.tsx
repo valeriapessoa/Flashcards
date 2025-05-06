@@ -24,22 +24,39 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
   const [backImageFile, setBackImageFile] = useState<File | null>(null);
   const formatTags = (tagsInput: any) => {
     if (!tagsInput) return [];
-    if (Array.isArray(tagsInput)) {
-      // Se for array de objetos {id, text}
-      if (tagsInput.length > 0 && typeof tagsInput[0] === 'object' && 'text' in tagsInput[0]) {
-        // Garante que id e text sejam sempre string
-        return tagsInput.map((tag, index) => ({
-          id: String(tag.id ?? index),
-          text: String(tag.text ?? ''),
-          className: tag.className || '',
-        }));
-      }
-      // Se for array de strings
-      return tagsInput.map((tag, index) => ({ id: `${index}`, text: String(tag), className: '' }));
+
+    // Se for array de objetos {id, text}
+    if (Array.isArray(tagsInput) && tagsInput.length > 0 && typeof tagsInput[0] === 'object' && 'text' in tagsInput[0]) {
+      return tagsInput.map((tag: { id: number; text: string }) => ({
+        id: String(tag.id),
+        text: tag.text,
+        className: ''
+      }));
     }
+
+    // Se for array de strings
+    if (Array.isArray(tagsInput)) {
+      return tagsInput.map((tag: string, index: number) => ({
+        id: `${index}`,
+        text: tag,
+        className: ''
+      }));
+    }
+
+    // Se for um objeto único
+    if (typeof tagsInput === 'object' && 'text' in tagsInput) {
+      return [{
+        id: '0',
+        text: tagsInput.text,
+        className: ''
+      }];
+    }
+
     return [];
   };
-  const [tags, setTags] = useState<ReactTag[]>(formatTags(flashcard?.tags));
+  const [tags, setTags] = useState<ReactTag[]>(
+    flashcard?.tags ? formatTags(flashcard.tags) : []
+  );
   const [isSubmitting, setIsSubmitting] = useState(false); // NOVO estado para controle do botão
 
   const tagInputRef = useRef<HTMLInputElement>(null);
@@ -50,8 +67,13 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
 
   const handleAddition = (tag: ReactTag) => {
     // Adiciona a tag apenas se o texto não estiver vazio
-    if (tag.text.trim()) {
-        setTags([...tags, tag]);
+    if (tag.text && tag.text.trim()) {
+      const newTag = {
+        id: String(Date.now()), // Gera um ID único
+        text: tag.text.trim(),
+        className: ''
+      };
+      setTags([...tags, newTag]);
     }
   };
 
@@ -170,7 +192,8 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
     const formData = new FormData();
     formData.append('title', title);
     formData.append('description', description);
-    formData.append('tags', JSON.stringify(tags.map((t) => ({ id: Date.now(), text: t.text }))));
+    // Envia apenas o texto das tags, que é o formato mais provável esperado pelo backend
+    formData.append('tags', JSON.stringify(tags.map((t) => t.text)));
 
     // Adiciona a imagem se existir
     if (frontImageFile) {
@@ -280,27 +303,29 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
         {/* Campo de Tags e botão (inalterados) */}
         <div className="flex flex-col mt-6">
           <label className="text-gray-700 font-medium mb-1">Tags</label>
-          {Array.isArray(tags) && (
-            <ReactTags
-              tags={tags}
-              handleDelete={handleDelete}
-              handleAddition={handleAddition}
-              handleDrag={handleDrag}
-              separators={[KeyCodes.comma, KeyCodes.enter]}
-              placeholder="Adicione tags e pressione Enter ou vírgula"
-              allowDragDrop
-              classNames={{
-                tags: 'flex flex-wrap gap-2',
-                tagInput: 'flex-1',
-                tagInputField: 'p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full',
-                selected: 'flex flex-wrap gap-2',
-                tag: 'bg-blue-100 text-blue-800 px-3 py-1 rounded-md text-sm flex items-center gap-1',
-                remove: 'text-blue-500 hover:text-blue-700 cursor-pointer ps-1',
-                suggestions: 'mt-1 border border-gray-300 rounded-lg bg-white shadow-lg',
-                activeSuggestion: 'bg-blue-100 p-2 cursor-pointer',
-              }}
-            />
-          )}
+          <ReactTags
+            tags={tags}
+            handleDelete={handleDelete}
+            handleAddition={handleAddition}
+            handleDrag={handleDrag}
+            separators={[KeyCodes.comma, KeyCodes.enter]}
+            placeholder="Adicione tags e pressione Enter ou vírgula"
+            allowDragDrop
+            classNames={{
+              tags: 'flex flex-wrap gap-2',
+              tagInput: 'flex-1',
+              tagInputField: 'p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full',
+              selected: 'flex flex-wrap gap-2',
+              // Estilos aplicados pelo componente CustomTag
+              tag: 'bg-blue-100 text-blue-800 px-3 py-1 rounded-md text-sm flex items-center gap-1',
+              // tagLabel removido pois não é uma chave válida aqui
+              remove: 'text-blue-500 hover:text-blue-700 cursor-pointer ps-1',
+              suggestions: 'mt-1 border border-gray-300 rounded-lg bg-white shadow-lg',
+              activeSuggestion: 'bg-blue-100 p-2 cursor-pointer',
+            }}
+          // Removida a tentativa de customização via tagComponent/components/renderTag
+          // A biblioteca usará sua renderização padrão para as tags
+          />
         </div>
         <button
           type="submit"
