@@ -59,8 +59,6 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
   );
   const [isSubmitting, setIsSubmitting] = useState(false); // NOVO estado para controle do botão
 
-  const tagInputRef = useRef<HTMLInputElement>(null);
-
   const handleDelete = (index: number) => {
     setTags(tags.filter((_, i) => i !== index));
   };
@@ -156,20 +154,16 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === KeyCodes.enter && document.activeElement === tagInputRef.current) {
+      if (e.key === KeyCodes.enter) {
         e.preventDefault(); // Impede a submissão do formulário
       }
     };
 
-    const inputElement = tagInputRef.current;
-    if (inputElement) {
-      inputElement.addEventListener('keydown', handleKeyDown);
-    }
+    // Removido a lógica de ref, usando apenas o handleKeyDown direto
+    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      if (inputElement) {
-        inputElement.removeEventListener('keydown', handleKeyDown);
-      }
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
