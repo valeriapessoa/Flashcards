@@ -19,7 +19,7 @@ import Flashcard from './Flashcard';
 import EmptyState from './EmptyState';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'; // Ícone para sucesso
 import ReplayIcon from '@mui/icons-material/Replay'; // Ícone para repetir
-import HomeIcon from '@mui/icons-material/Home'; // Ícone para voltar
+import AssessmentIcon from '@mui/icons-material/Assessment'; // Ícone para revisão inteligente
 import { useRouter } from 'next/navigation'; // Para navegação
 
 interface FlashcardData {
@@ -35,7 +35,7 @@ interface StudySessionProps {
   fetchPath?: string;
 }
 
-const StudySession: React.FC<StudySessionProps> = ({ fetchPath = '/api/flashcards/revisao-inteligente' }) => {
+const StudySession: React.FC<StudySessionProps> = ({ fetchPath = '/api/flashcards' }) => {
   const { data: session, status } = useSession();
   const isAuthenticated = status === 'authenticated';
   const queryClient = useQueryClient();
@@ -112,21 +112,31 @@ const StudySession: React.FC<StudySessionProps> = ({ fetchPath = '/api/flashcard
           remainingCards
         };
       });
-    } else {
-      setSessionComplete(true);
     }
   };
 
-  const handleCorrect = (id: number) => {
+  const handleCorrect = () => {
     setCorrectCount(correctCount + 1);
-    // Poderíamos adicionar lógica para marcar como 'menos prioritário' no futuro
-    goToNextCard();
+    if (currentCardIndex < localFlashcards.length - 1) {
+      goToNextCard();
+    } else {
+      setSessionComplete(true);
+      // Garante que a soma de acertos e erros seja igual ao total de cards
+      const totalCards = localFlashcards.length;
+      setIncorrectCount(totalCards - correctCount - 1); // -1 porque já contamos o acerto atual
+    }
   };
 
-  const handleIncorrect = (id: number) => {
+  const handleIncorrect = () => {
     setIncorrectCount(incorrectCount + 1);
-    incrementErrorMutation.mutate(id); // Chama a API para incrementar o erro
-    goToNextCard();
+    if (currentCardIndex < localFlashcards.length - 1) {
+      goToNextCard();
+    } else {
+      setSessionComplete(true);
+      // Garante que a soma de acertos e erros seja igual ao total de cards
+      const totalCards = localFlashcards.length;
+      setCorrectCount(totalCards - incorrectCount - 1); // -1 porque já contamos o erro atual
+    }
   };
 
   const handleRestartSession = () => {
@@ -155,51 +165,62 @@ const StudySession: React.FC<StudySessionProps> = ({ fetchPath = '/api/flashcard
   }
 
   // Estado Vazio (após carregamento, sem erro, mas sem cards)
-  if (!isLoading && localFlashcards.length === 0 && !sessionComplete) {
+  if (!isLoading && localFlashcards.length === 0) {
      return (
         <EmptyState
           icon="🎉"
-          title="Nenhum flashcard para revisar agora!"
-          subtitle="Você está em dia com seus estudos ou não errou nenhum card recentemente. Continue assim!"
+          title="Nenhum flashcard disponível para estudar"
+          subtitle="Você ainda não criou nenhum flashcard. Comece criando seus primeiros cards!"
           buttonText="Criar mais Flashcards"
           buttonHref="/criar-flashcard"
         />
       );
   }
 
-  // Sessão Completa
-  if (sessionComplete) {
+
+
+  // Sessão em Andamento
+  const currentCard = localFlashcards[currentCardIndex];
+
+  // Quando terminar de estudar todos os cards
+  if (currentCardIndex === localFlashcards.length - 1) {
     return (
-      <Container maxWidth="sm">
-        <Paper elevation={3} sx={{ p: { xs: 2, md: 4 }, mt: 4, textAlign: 'center' }}>
-          <CheckCircleIcon color="success" sx={{ fontSize: 60, mb: 2 }} />
-          <Typography variant="h4" gutterBottom>Revisão Concluída!</Typography>
-          <Typography variant="h6" gutterBottom>Resumo:</Typography>
-          <Typography>✅ Acertos: {correctCount}</Typography>
-          <Typography>❌ Erros: {incorrectCount}</Typography>
-          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-around', gap: 2, flexDirection: { xs: 'column', sm: 'row'} }}>
+      <Container maxWidth="md">
+        <Box sx={{ textAlign: 'center', mt: 4 }}>
+          <Typography variant="h5" gutterBottom>
+            🎉 Parabéns! Você terminou de estudar todos os flashcards.
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            ✅ Acertos: {correctCount}
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            ❌ Erros: {incorrectCount}
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 4 }}>
+            O que você gostaria de fazer agora?
+          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
             <Button
               variant="contained"
               onClick={handleRestartSession}
               startIcon={<ReplayIcon />}
+              sx={{ mb: 1 }}
             >
-              Revisar Novamente
+              Estudar Novamente
             </Button>
             <Button
               variant="outlined"
-              onClick={() => router.push('/')} // Volta para a home ou outra página
-              startIcon={<HomeIcon />}
+              onClick={() => router.push('/revisao-inteligente')}
+              startIcon={<AssessmentIcon />}
+              sx={{ mb: 1 }}
             >
-              Voltar ao Início
+              Revisão Inteligente
             </Button>
           </Box>
-        </Paper>
+        </Box>
       </Container>
     );
   }
-
-  // Sessão em Andamento
-  const currentCard = localFlashcards[currentCardIndex];
   const progress = ((currentCardIndex + 1) / localFlashcards.length) * 100;
 
   return (

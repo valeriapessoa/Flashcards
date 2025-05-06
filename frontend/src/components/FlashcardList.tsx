@@ -93,15 +93,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ fetchPath = '/api/flashca
 
   if (visibleFlashcards.length === 0 && !isLoading) {
     console.log('❌ Nenhum flashcard visível encontrado');
-    // Ajuste para mensagem de revisão inteligente
-    if (fetchPath === '/api/flashcards/revisao-inteligente') {
-      return (
-        <EmptyState
-          title="Nenhum flashcard para revisão."
-          subtitle="Você está indo muito bem! Volte mais tarde ou continue estudando para aparecerem novos cards aqui."
-        />
-      );
-    }
+
     return (
       <EmptyState
         icon="⚠️"
@@ -122,9 +114,13 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ fetchPath = '/api/flashca
             title={flashcard.title}
             description={flashcard.description}
             imageUrl={flashcard.imageUrl}
-            tags={flashcard.tags?.map((tag: { id: number; text: string }) => tag.text)} // Adiciona tipo para tag
-            onMarkAsReviewed={() => handleMarkAsReviewed(flashcard.id)} // Usa a nova função
-            showReviewButton={true} // Mantém o botão de revisão
+            tags={flashcard.tags?.map((tag: { id: number; text: string }) => tag.text)}
+            onCorrect={() => handleMarkAsReviewed(flashcard.id)}
+            onIncorrect={() => handleMarkAsReviewed(flashcard.id)}
+            currentCardIndex={visibleFlashcards.indexOf(flashcard)}
+            totalCards={visibleFlashcards.length}
+            onPrevious={() => {}}
+            onNext={() => {}}
           />
         </Grid>
       ))}
