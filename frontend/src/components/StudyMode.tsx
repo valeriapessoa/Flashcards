@@ -12,10 +12,12 @@ interface StudyModeProps {
 }
 
 const StudyMode: React.FC<StudyModeProps> = ({ flashcards }) => {
+  const queryClient = useQueryClient(); 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFront, setIsFront] = useState(true);
   const [finished, setFinished] = useState(false);
-  const queryClient = useQueryClient(); 
+  const [imageDialogOpen, setImageDialogOpen] = useState(false);
+  const [dialogImageUrl, setDialogImageUrl] = useState<string | null>(null);
 
   const mutation = useMutation({
     mutationFn: incrementErrorCount,
@@ -26,6 +28,19 @@ const StudyMode: React.FC<StudyModeProps> = ({ flashcards }) => {
       console.error("Erro ao incrementar contador de erro:", error);
     },
   });
+
+  const currentFlashcard = flashcards[currentIndex];
+
+  // Verifica se há flashcards disponíveis
+  if (!flashcards || flashcards.length === 0) {
+    return (
+      <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="100%">
+        <Typography variant="h6" color="text.secondary">
+          Nenhum flashcard encontrado
+        </Typography>
+      </Box>
+    );
+  }
 
   const handleNext = () => {
     if (currentIndex < flashcards.length - 1) {
@@ -58,9 +73,6 @@ const StudyMode: React.FC<StudyModeProps> = ({ flashcards }) => {
     handleNext();
   };
 
-  const [imageDialogOpen, setImageDialogOpen] = useState(false);
-  const [dialogImageUrl, setDialogImageUrl] = useState<string | null>(null);
-
   const handleImageClick = (url: string) => {
     setDialogImageUrl(url);
     setImageDialogOpen(true);
@@ -70,8 +82,6 @@ const StudyMode: React.FC<StudyModeProps> = ({ flashcards }) => {
     setImageDialogOpen(false);
     setDialogImageUrl(null);
   }
-
-  const currentFlashcard = flashcards[currentIndex];
 
   return (
     <>
