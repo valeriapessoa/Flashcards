@@ -3,7 +3,9 @@ import { Card, CardContent, CardMedia, Typography, Button, Dialog, DialogContent
 import CloseIcon from '@mui/icons-material/Close';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import FlipIcon from '@mui/icons-material/Flip'; // Ícone para virar
+import FlipIcon from '@mui/icons-material/Flip';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 interface FlashcardProps {
   id: number;
@@ -13,6 +15,10 @@ interface FlashcardProps {
   tags?: string[];
   onCorrect: (id: number) => void; // Callback para acerto
   onIncorrect: (id: number) => void; // Callback para erro
+  currentCardIndex: number;
+  totalCards: number;
+  onPrevious: () => void;
+  onNext: () => void;
 }
 
 const Flashcard: React.FC<FlashcardProps> = ({
@@ -23,6 +29,10 @@ const Flashcard: React.FC<FlashcardProps> = ({
   tags,
   onCorrect,
   onIncorrect,
+  currentCardIndex,
+  totalCards,
+  onPrevious,
+  onNext,
 }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
@@ -90,37 +100,64 @@ const Flashcard: React.FC<FlashcardProps> = ({
       </CardContent>
 
       {/* Ações */}
-      <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-around', borderTop: `1px solid ${theme.palette.divider}` }}>
-        {!isFlipped ? (
-          <Button
-            variant="contained"
-            onClick={handleFlip}
-            startIcon={<FlipIcon />}
-            fullWidth
-          >
-            Mostrar Resposta
-          </Button>
-        ) : (
-          <>
+      <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', borderTop: `1px solid ${theme.palette.divider}` }}>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            if (currentCardIndex > 0) {
+              onPrevious();
+              setIsFlipped(false);
+            }
+          }}
+          disabled={currentCardIndex === 0}
+          startIcon={<ArrowBackIcon />}
+        >
+          Anterior
+        </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          {!isFlipped ? (
             <Button
               variant="contained"
-              color="error"
-              onClick={handleIncorrect}
-              startIcon={<HighlightOffIcon />}
-              sx={{ mr: 1 }} // Margin right
+              onClick={handleFlip}
+              startIcon={<FlipIcon />}
+              fullWidth
             >
-              Errei
+              Ver Resposta
             </Button>
-            <Button
-              variant="contained"
-              color="success"
-              onClick={handleCorrect}
-              startIcon={<CheckCircleOutlineIcon />}
-            >
-              Acertei
-            </Button>
-          </>
-        )}
+          ) : (
+            <>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={handleIncorrect}
+                startIcon={<HighlightOffIcon />}
+              >
+                Errei
+              </Button>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handleCorrect}
+                startIcon={<CheckCircleOutlineIcon />}
+              >
+                Acertei
+              </Button>
+            </>
+          )}
+        </Box>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            if (currentCardIndex < totalCards - 1) {
+              onNext();
+              setIsFlipped(false);
+            }
+          }}
+          disabled={currentCardIndex === totalCards - 1}
+          startIcon={<ArrowForwardIcon />}
+        >
+          Próximo
+        </Button>
       </Box>
 
       {/* Modal de imagem ampliada */}

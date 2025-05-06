@@ -1,14 +1,12 @@
 'use client';
 
 import React from 'react';
-import { Typography, Container, Box, useTheme } from '@mui/material'; // Removido Button não utilizado aqui
+import { Typography, Container, Box, useTheme } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { useRouter } from 'next/navigation';
-import StudySession from '../../components/StudySession'; // Importa o novo componente
-
-// Removido import de EmptyState, pois StudySession lida com isso
+import StudySession from '../../components/StudySession';
 
 const RevisaoInteligentePage = () => {
   const { status, data: session } = useSession();
@@ -25,11 +23,9 @@ const RevisaoInteligentePage = () => {
     <>
       <Header />
       <Box
-        minHeight="75vh"
+        minHeight="100vh"
         display="flex"
         flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
         sx={{
           py: { xs: 2, md: 4 },
         }}
@@ -43,8 +39,9 @@ const RevisaoInteligentePage = () => {
               <Typography variant="body1" paragraph textAlign="center">
                 Aqui estão os flashcards que você mais errou e precisa revisar. Foco total! 🚀
               </Typography>
-              {/* Renderiza o componente de sessão de estudo */}
-              <StudySession fetchPath="/api/flashcards/revisao-inteligente" />
+              <Box sx={{ mt: 4 }}>
+                <StudySession fetchPath="/api/flashcards/revisao-inteligente" />
+              </Box>
             </>
           ) : null}
         </Container>

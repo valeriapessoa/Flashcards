@@ -199,7 +199,7 @@ const StudySession: React.FC<StudySessionProps> = ({ fetchPath = '/api/flashcard
        </Box>
       {currentCard && (
         <Flashcard
-          key={currentCard.id} // Key para garantir re-renderização ao mudar de card
+          key={currentCard.id}
           id={currentCard.id}
           title={currentCard.title}
           description={currentCard.description}
@@ -207,6 +207,10 @@ const StudySession: React.FC<StudySessionProps> = ({ fetchPath = '/api/flashcard
           tags={currentCard.tags?.map(tag => tag.text)}
           onCorrect={handleCorrect}
           onIncorrect={handleIncorrect}
+          currentCardIndex={currentCardIndex}
+          totalCards={localFlashcards.length}
+          onPrevious={() => setCurrentCardIndex(currentCardIndex - 1)}
+          onNext={() => setCurrentCardIndex(currentCardIndex + 1)}
         />
       )}
     </Container>
