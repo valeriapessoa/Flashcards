@@ -15,19 +15,27 @@ const apiClient = axios.create({
 // Adiciona um interceptor para incluir o token JWT em todas as requisições
 apiClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
-    const session = await getSession(); // Obtém a sessão do NextAuth
-    console.log('Session:', session); // Log da sessão para depuração
-    if (session?.accessToken) {
-      config.headers.Authorization = `Bearer ${session.accessToken}`;
+    try {
+      const session = await getSession(); // Obtém a sessão do NextAuth
+      
+      // Se não houver sessão, não faça nada
+      if (!session?.user?.id) {
+        return config;
+      }
+
+      // Se houver token, inclua no header
+      if (session?.accessToken) {
+        config.headers.Authorization = `Bearer ${session.accessToken}`;
+      }
+
+      return config;
+    } catch (error) {
+      console.error('Erro no interceptor:', error);
+      return config; // Continua a requisição mesmo com erro
     }
-    // Não definir Content-Type aqui se for FormData, Axios faz isso.
-    // Se o dado for FormData, o Axios definirá Content-Type como multipart/form-data
-    // Se não for, manterá o padrão ou o que foi definido na criação da instância (se houver)
-    // No nosso caso, como removemos o padrão, ele tentará detectar ou usar 'application/json' por padrão se não for FormData.
-    return config;
   },
   (error) => {
-    // Faz algo com o erro da requisição
+    console.error('Erro na requisição:', error);
     return Promise.reject(error);
   }
 );
@@ -47,19 +55,8 @@ export const fetchFlashcards = async (path: string | object = '/api/flashcards')
   console.log('apiClient baseURL:', apiClient.defaults.baseURL);
   
   try {
-    // Verificar se o usuário está autenticado
-    const session = await getSession();
-    if (!session?.accessToken) {
-      console.error('Usuário não autenticado ao tentar buscar flashcards');
-      throw new Error('Usuário não autenticado');
-    }
-    
-    // Fazer a requisição com o token de autenticação
-    const response = await apiClient.get(apiPath, {
-      headers: {
-        Authorization: `Bearer ${session.accessToken}`
-      }
-    });
+    // Fazer a requisição - o token será adicionado pelo interceptor
+    const response = await apiClient.get(apiPath);
     
     console.log('Resposta da API:', response.status, response.statusText);
     console.log('Dados recebidos:', response.data);

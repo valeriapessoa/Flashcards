@@ -41,6 +41,7 @@ model Flashcard {
   tags         Tag[]         @relation("FlashcardTags")
   errorCount   Int           @default(0) // Campo para contar erros
   reviewed     Boolean       @default(false) // Campo para indicar se o flashcard foi revisado
+  lastReviewedAt DateTime?    // Data da última revisão
 }
 
 model Category {

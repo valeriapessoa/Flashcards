@@ -8,8 +8,13 @@ export async function incrementFlashcardError(flashcardId: number) {
 }
 
 export async function markFlashcardAsReviewed(flashcardId: number) {
-  await prisma.flashcard.update({
+  const flashcard = await prisma.flashcard.update({
     where: { id: flashcardId },
-    data: { reviewed: true },
+    data: {
+      reviewed: true,
+      errorCount: 0, // Resetar o contador de erros
+      lastReviewedAt: new Date(), // Registrar a data da última revisão
+    },
   });
+  return flashcard;
 }

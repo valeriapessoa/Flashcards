@@ -36,19 +36,22 @@ interface FlashcardData {
 interface StudySessionProps {
   fetchPath?: string;
   cardComponent?: React.ComponentType<FlashcardType>;
-  id: number;
-  title: string;
-  description: string;
+  id?: number;
+  title?: string;
+  description?: string;
   imageUrl?: string;
   backImageUrl?: string;
   tags?: string[];
-  onCorrect: (id: number) => void;
-  onIncorrect: (id: number) => void;
-  currentCardIndex: number;
-  totalCards: number;
-  onPrevious: () => void;
-  onNext: () => void;
+  onCorrect?: (id: number) => void;
+  onIncorrect?: (id: number) => void;
+  currentCardIndex?: number;
+  totalCards?: number;
+  onPrevious?: () => void;
+  onNext?: () => void;
 }
+
+// Exportar o componente Card para uso externo
+export const Card = Flashcard;
 
 export default function StudySession({
   fetchPath = '/api/flashcards',
@@ -111,7 +114,11 @@ export default function StudySession({
     handleNext();
   };
 
-  const handleIncorrect = () => {
+  const handleIncorrect = async () => {
+    const currentCard = localFlashcards[currentCardIndex];
+    if (currentCard) {
+      await incrementErrorMutation.mutateAsync(currentCard.id);
+    }
     setIncorrectCount((prev) => prev + 1);
     handleNext();
   };
