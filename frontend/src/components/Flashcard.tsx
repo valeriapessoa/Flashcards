@@ -69,6 +69,9 @@ const Flashcard: React.FC<FlashcardProps> = ({
     <Card sx={{ display: 'flex', flexDirection: 'column', minHeight: 250, justifyContent: 'space-between' }}>
       {/* Frente do Card */}
       <CardContent sx={{ flexGrow: 1, display: isFlipped ? 'none' : 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+        <Typography variant="h5" component="div" sx={{ mb: 2 }}>
+          {title}
+        </Typography>
         {imageUrl && (
           <CardMedia
             component="img"
@@ -76,7 +79,6 @@ const Flashcard: React.FC<FlashcardProps> = ({
             alt={title}
             sx={{
               cursor: 'pointer',
-              mb: 2,
               objectFit: 'contain',
               maxWidth: '100%',
               maxHeight: 200,
@@ -88,21 +90,20 @@ const Flashcard: React.FC<FlashcardProps> = ({
             onClick={() => handleImageClick(imageUrl)}
           />
         )}
-        <Typography variant="h5" component="div">
-          {title}
-        </Typography>
       </CardContent>
 
       {/* Verso do Card */}
       <CardContent sx={{ flexGrow: 1, display: isFlipped ? 'block' : 'none' }}>
+        <Typography variant="body1" component="div" sx={{ mb: 2 }}>
+          {description}
+        </Typography>
         {backImageUrl && (
           <CardMedia
             component="img"
             image={backImageUrl}
-            alt={title}
+            alt={description}
             sx={{
               cursor: 'pointer',
-              mb: 2,
               objectFit: 'contain',
               maxWidth: '100%',
               maxHeight: 200,
@@ -114,9 +115,6 @@ const Flashcard: React.FC<FlashcardProps> = ({
             onClick={() => handleImageClick(backImageUrl)}
           />
         )}
-        <Typography variant="body1" color="text.secondary" paragraph>
-          {description}
-        </Typography>
         {tags && tags.length > 0 && (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>
              <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5, alignSelf: 'center' }}>
