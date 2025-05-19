@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQuery, QueryClient, QueryClientProvider } from "react-query";
 import { Flashcard } from "../../types";
@@ -76,8 +76,13 @@ const EditFlashcardPage = () => {
 
   const theme = useTheme();
 
+  useEffect(() => {
+    if (!session) {
+      router.push("/login");
+    }
+  }, [session, router]);
+
   if (!session) {
-    router.push("/login");
     return null;
   }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Typography, Container, Box, useTheme } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import Header from '../../components/Header';
@@ -14,10 +14,14 @@ const StudyPage = () => {
   const theme = useTheme();
   const router = useRouter();
 
-  if (status === 'loading') return null;
-  if (status === 'unauthenticated') {
-    router.push('/login');
-    return null;
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    }
+  }, [status, router]);
+
+  if (status !== 'authenticated') {
+    return null; // ou um componente de carregamento
   }
 
   return (
@@ -35,9 +39,9 @@ const StudyPage = () => {
           {session ? (
             <>
               <Typography variant="h4" gutterBottom textAlign="center">
-Modo de Estudo
+                Modo de Estudo
               </Typography>
-              <Typography variant="body1" paragraph textAlign="center">
+              <Typography variant="body1" textAlign="center">
                 Pratique seus flashcards aqui! 🚀
               </Typography>
               <Box sx={{ mt: 4 }}>
