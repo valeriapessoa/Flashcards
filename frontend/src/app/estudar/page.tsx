@@ -41,7 +41,13 @@ const StudyPage = () => {
                 Pratique seus flashcards aqui! 🚀
               </Typography>
               <Box sx={{ mt: 4 }}>
-                <StudySession fetchPath="/api/flashcards" />
+                <StudySession 
+                  fetchPath="/api/flashcards"
+                  emptyStateTitle="Nenhum flashcard disponível para estudo"
+                  emptyStateSubtitle="Você ainda não criou nenhum flashcard. Comece criando seus primeiros cards!"
+                  emptyStateButtonText="Criar Flashcards"
+                  emptyStateButtonHref="/criar-flashcard"
+                />
               </Box>
             </>
           ) : null}

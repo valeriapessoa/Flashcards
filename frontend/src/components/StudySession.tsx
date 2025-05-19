@@ -48,6 +48,10 @@ interface StudySessionProps {
   totalCards?: number;
   onPrevious?: () => void;
   onNext?: () => void;
+  emptyStateTitle?: string;
+  emptyStateSubtitle?: string;
+  emptyStateButtonText?: string;
+  emptyStateButtonHref?: string;
 }
 
 // Exportar o componente Card para uso externo
@@ -56,6 +60,11 @@ export const Card = Flashcard;
 export default function StudySession({
   fetchPath = '/api/flashcards',
   cardComponent = Flashcard,
+  emptyStateTitle,
+  emptyStateSubtitle,
+  emptyStateButtonText,
+  emptyStateButtonHref,
+  ...props
 }: StudySessionProps) {
   const { data: session, status } = useSession();
   const isAuthenticated = status === 'authenticated';
@@ -180,11 +189,19 @@ export default function StudySession({
   if (!isLoading && localFlashcards.length === 0) {
     return (
       <EmptyState
-        icon="🎉"
-        title="Nenhum flashcard disponível para estudar"
-        subtitle="Você ainda não criou nenhum flashcard. Comece criando seus primeiros cards!"
-        buttonText="Criar mais Flashcards"
-        buttonHref="/criar-flashcard"
+        icon={fetchPath.includes('revisao-inteligente') ? "🎯" : "📚"}
+        title={fetchPath.includes('revisao-inteligente') 
+          ? "Nenhum flashcard precisa de revisão neste momento"
+          : (emptyStateTitle || "Nenhum flashcard disponível para estudo")}
+        subtitle={fetchPath.includes('revisao-inteligente')
+          ? "Parabéns! Você não tem nenhum flashcard com erros para revisar. Continue estudando ou crie novos flashcards para melhorar seu aprendizado."
+          : (emptyStateSubtitle || "Você ainda não criou nenhum flashcard. Comece criando seus primeiros cards!")}
+        buttonText={fetchPath.includes('revisao-inteligente')
+          ? "Estudar Flashcards"
+          : (emptyStateButtonText || "Criar Flashcards")}
+        buttonHref={fetchPath.includes('revisao-inteligente')
+          ? "/estudar"
+          : (emptyStateButtonHref || "/criar-flashcard")}
       />
     );
   }
