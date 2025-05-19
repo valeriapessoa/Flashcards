@@ -28,10 +28,14 @@ const RevisaoInteligentePage = () => {
     },
   });
 
-  if (status === 'loading') return null;
-  if (status === 'unauthenticated') {
-    router.push('/login');
-    return null;
+  React.useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    }
+  }, [status, router]);
+
+  if (status !== 'authenticated') {
+    return null; // ou um componente de carregamento
   }
 
   return (
