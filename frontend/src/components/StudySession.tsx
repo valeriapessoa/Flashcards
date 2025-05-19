@@ -240,16 +240,15 @@ export default function StudySession({
               📚 Total de Cards: {localFlashcards.length}
             </Typography>
           </Box>
-          <Typography variant="body1" sx={{ mb: 4 }}>
-            O que você gostaria de fazer agora?
-          </Typography>
-          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap', mt: 4 }}>
             <Button variant="contained" onClick={handleRestartSession} startIcon={<ReplayIcon />}>
               Estudar Novamente
             </Button>
-            <Button variant="outlined" onClick={() => router.push('/revisao-inteligente')} startIcon={<AssessmentIcon />}>
-              Revisão Inteligente
-            </Button>
+            {!fetchPath.includes('revisao-inteligente') && (
+              <Button variant="outlined" onClick={() => router.push('/revisao-inteligente')} startIcon={<AssessmentIcon />}>
+                Revisão Inteligente
+              </Button>
+            )}
           </Box>
         </Box>
       </Container>
