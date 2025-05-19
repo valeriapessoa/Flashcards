@@ -35,7 +35,7 @@ const StudyPage = () => {
           {session ? (
             <>
               <Typography variant="h4" gutterBottom textAlign="center">
-                📚 Modo de Estudo
+Modo de Estudo
               </Typography>
               <Typography variant="body1" paragraph textAlign="center">
                 Pratique seus flashcards aqui! 🚀

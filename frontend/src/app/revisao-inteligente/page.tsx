@@ -49,7 +49,7 @@ const RevisaoInteligentePage = () => {
           {session ? (
             <>
               <Typography variant="h4" gutterBottom textAlign="center">
-                🧠 Revisão Inteligente
+Revisão Inteligente
               </Typography>
               <Typography variant="body1" paragraph textAlign="center">
                 Aqui estão os flashcards que você mais errou e precisa revisar. Foco total! 🚀

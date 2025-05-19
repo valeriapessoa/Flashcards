@@ -7,7 +7,7 @@ import FlipIcon from '@mui/icons-material/Flip';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
-interface FlashcardProps {
+export interface FlashcardProps {
   id: number;
   title: string; // Frente do card
   description: string; // Verso do card

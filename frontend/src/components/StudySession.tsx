@@ -18,8 +18,7 @@ import {
   Replay as ReplayIcon,
   Assessment as AssessmentIcon,
 } from '@mui/icons-material';
-import Flashcard from './Flashcard';
-import type { FlashcardProps as FlashcardType } from './Flashcard';
+import Flashcard, { FlashcardProps } from './Flashcard';
 import EmptyState from './EmptyState';
 import { useRouter } from 'next/navigation';
 
@@ -35,7 +34,7 @@ interface FlashcardData {
 
 interface StudySessionProps {
   fetchPath?: string;
-  cardComponent?: React.ComponentType<FlashcardType>;
+  cardComponent?: React.ComponentType<FlashcardProps>;
   id?: number;
   title?: string;
   description?: string;
@@ -130,8 +129,11 @@ export default function StudySession({
     const currentCard = localFlashcards[currentCardIndex];
     if (!currentCard) return;
     
-    const newAnswers = { ...answeredCards, [currentCard.id]: 'correct' };
-    setAnsweredCards(newAnswers);
+    const newAnswers = { ...answeredCards, [currentCard.id]: 'correct' as const };
+    setAnsweredCards(prev => ({
+      ...prev,
+      [currentCard.id]: 'correct' as const
+    }));
     updateCounts(newAnswers);
     handleNext();
   };
@@ -144,8 +146,11 @@ export default function StudySession({
     await incrementErrorMutation.mutateAsync(currentCard.id);
     
     // Atualiza o estado local das respostas
-    const newAnswers = { ...answeredCards, [currentCard.id]: 'incorrect' };
-    setAnsweredCards(newAnswers);
+    const newAnswers = { ...answeredCards, [currentCard.id]: 'incorrect' as const };
+    setAnsweredCards(prev => ({
+      ...prev,
+      [currentCard.id]: 'incorrect' as const
+    }));
     updateCounts(newAnswers);
     handleNext();
   };

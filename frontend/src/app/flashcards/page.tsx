@@ -123,7 +123,7 @@ const Flashcards: React.FC = () => {
       }}>
         <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
           <Typography variant="h4" gutterBottom textAlign="center">
-            📚 Flashcards
+Flashcards
           </Typography>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
             {/* <Button
