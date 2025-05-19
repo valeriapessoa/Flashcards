@@ -67,6 +67,7 @@ export default function StudySession({
   const [correctCount, setCorrectCount] = useState(0);
   const [incorrectCount, setIncorrectCount] = useState(0);
   const [localFlashcards, setLocalFlashcards] = useState<FlashcardData[]>([]);
+  const [answeredCards, setAnsweredCards] = useState<Record<number, 'correct' | 'incorrect'>>({});
 
   const {
     data: initialFlashcards = [],
@@ -109,17 +110,34 @@ export default function StudySession({
     if (incorrectCount > totalCards) setIncorrectCount(totalCards);
   }, [correctCount, incorrectCount, localFlashcards.length]);
 
+  const updateCounts = (answers: Record<number, 'correct' | 'incorrect'>) => {
+    const correct = Object.values(answers).filter(v => v === 'correct').length;
+    const incorrect = Object.values(answers).filter(v => v === 'incorrect').length;
+    setCorrectCount(correct);
+    setIncorrectCount(incorrect);
+  };
+
   const handleCorrect = () => {
-    setCorrectCount((prev) => prev + 1);
+    const currentCard = localFlashcards[currentCardIndex];
+    if (!currentCard) return;
+    
+    const newAnswers = { ...answeredCards, [currentCard.id]: 'correct' };
+    setAnsweredCards(newAnswers);
+    updateCounts(newAnswers);
     handleNext();
   };
 
   const handleIncorrect = async () => {
     const currentCard = localFlashcards[currentCardIndex];
-    if (currentCard) {
-      await incrementErrorMutation.mutateAsync(currentCard.id);
-    }
-    setIncorrectCount((prev) => prev + 1);
+    if (!currentCard) return;
+    
+    // Incrementa o contador de erros no servidor
+    await incrementErrorMutation.mutateAsync(currentCard.id);
+    
+    // Atualiza o estado local das respostas
+    const newAnswers = { ...answeredCards, [currentCard.id]: 'incorrect' };
+    setAnsweredCards(newAnswers);
+    updateCounts(newAnswers);
     handleNext();
   };
 
@@ -137,6 +155,7 @@ export default function StudySession({
     setSessionComplete(false);
     setCorrectCount(0);
     setIncorrectCount(0);
+    setAnsweredCards({});
     queryClient.invalidateQueries({ queryKey: ['studySessionFlashcards', fetchPath] });
     refetch();
   };
