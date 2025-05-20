@@ -73,8 +73,6 @@ export default function Page() {
   const { status } = useSession();
   const router = useRouter();
 
-  if (status === "loading") return null;
-
   // Efeito para redirecionar para login quando não autenticado
   React.useEffect(() => {
     if (status === "unauthenticated") {
@@ -82,6 +80,7 @@ export default function Page() {
     }
   }, [status, router]);
 
+  if (status === "loading") return null;
   if (status === "unauthenticated") {
     return null;
   }

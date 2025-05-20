@@ -32,33 +32,51 @@ export default function Home() {
         sx={{
           width: '100%',
           bgcolor: 'linear-gradient(135deg, #e3f2fd 60%, #fff 100%)',
-          pt: { xs: 8, md: 12 },
+          pt: { xs: 4, md: 8 },
           pb: { xs: 6, md: 10 },
           minHeight: { xs: 300, md: 350 },
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
           position: 'relative',
           overflow: 'hidden',
         }}
       >
-        <Box sx={{ position: 'absolute', right: 0, top: 0, opacity: 0.1, zIndex: 0 }}>
-          <Image src="/flashcards.webp" alt="Flashcards Hero" width={320} height={220} style={{ objectFit: 'contain' }} />
-        </Box>
-        <Box sx={{ zIndex: 1, textAlign: 'center', maxWidth: 650 }}>
-          <Typography variant="h3" fontWeight="bold" color="primary.main" gutterBottom>
-            Torne seu aprendizado mais inteligente
-          </Typography>
-          <Typography variant="h6" color="text.secondary" mb={3}>
-            Organize, memorize e revise com o Flashcards Inteligentes
-          </Typography>
+        <Grid container spacing={2} alignItems="center" sx={{ maxWidth: 1200, width: '100%', mx: 'auto', px: 2 }}>
+          <Grid item xs={12} md={8}>
+            <Box sx={{ 
+              textAlign: 'left',
+              maxWidth: '100%',
+              width: '100%',
+              padding: '0 1rem',
+              margin: '0 auto'
+            }}>
+              <Typography variant="h2" fontWeight="bold" color="primary.main" sx={{ fontSize: { xs: '2.5rem', md: '3.5rem' }, lineHeight: 1.2 }}>
+                Torne seu aprendizado mais inteligente
+              </Typography>
+              <Typography variant="h6" color="text.secondary" mb={4} sx={{ fontSize: '2.4rem', lineHeight: 1.4 }}>
+                Organize, memorize e revise com o Flashcards Inteligentes
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', maxWidth: '400px' }}>
+              <Image 
+                src="/images/mascote.png" 
+                alt="Bem-vindo ao Flashcard" 
+                width={350} 
+                height={220} 
+                style={{ objectFit: 'contain' }} 
+                priority 
+              />
+            </Box>
+          </Grid>
+        </Grid>
+        <Box sx={{ textAlign: 'center', mt: 4 }}>
           <Button
             component={Link}
             href="/estudar"
             variant="contained"
             color="success"
             size="large"
-            sx={{ mt: 3, px: 6, py: 1.5, fontWeight: 600, fontSize: 20, boxShadow: 3, borderRadius: 3 }}
+            sx={{ px: 6, py: 1.5, fontWeight: 600, fontSize: 20, boxShadow: 3, borderRadius: 3 }}
           >
             Comece a Estudar
           </Button>

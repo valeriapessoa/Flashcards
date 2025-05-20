@@ -8,9 +8,9 @@ import { usePathname, useRouter } from 'next/navigation';
 
 const navItems = [
   { label: 'Home', href: '/' },
-  { label: 'Criar Flashcard', href: '/criar-flashcard' },
-  { label: 'Estudar', href: '/estudar' },
+  { label: 'Criar', href: '/criar-flashcard' },
   { label: 'Flashcards', href: '/flashcards' },
+  { label: 'Estudar', href: '/estudar' },
   { label: 'Revisão Inteligente', href: '/revisao-inteligente' },
 ];
 
