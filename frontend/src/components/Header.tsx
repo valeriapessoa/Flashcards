@@ -39,8 +39,8 @@ const Header: React.FC = () => {
           <img 
             src="/images/logo.png" 
             alt="Flashcards App" 
-            width={120} 
-            height={40} 
+            width={80} 
+            height={27} 
             style={{ objectFit: 'contain' }}
           />
         </Box>

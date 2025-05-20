@@ -1,11 +1,30 @@
 "use client";
 import LoginForm from '../../components/LoginForm';
-import { Box, Typography, Card, CardContent, useTheme, Link as MuiLink } from '@mui/material';
+import { Box, Typography, Card, CardContent, useTheme, Link as MuiLink, Button } from '@mui/material';
+import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
+import Link from 'next/link';
 
 const LoginPage = () => {
   const theme = useTheme();
   return (
     <Box minHeight="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center" bgcolor="#F6F8FC">
+      <Link href="/" passHref>
+        <Button
+          variant="text"
+          startIcon={<ArrowBackIcon />}
+          sx={{
+            position: 'absolute',
+            top: 20,
+            left: 20,
+            color: '#1976d2',
+            '&:hover': {
+              color: '#1557b0'
+            }
+          }}
+        >
+          Voltar
+        </Button>
+      </Link>
       <Card sx={{ maxWidth: 400, width: '100%', boxShadow: 4, borderRadius: 3 }}>
         <CardContent>
           <Typography variant="h4" component="h1" gutterBottom align="center">
