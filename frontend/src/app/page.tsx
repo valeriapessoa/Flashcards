@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Typography, Card, CardContent, Grid, Box, Tooltip, Divider, Avatar, Fade } from "@mui/material";
+import { Button, Typography, Card, CardContent, Grid, Box, Tooltip, Divider, Avatar, Fade, Rating } from "@mui/material";
 import Link from "next/link";
 import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
@@ -17,6 +17,9 @@ import TimelineIcon from '@mui/icons-material/Timeline';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import QuizIcon from '@mui/icons-material/Quiz';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import StarIcon from '@mui/icons-material/Star';
+import StarHalfIcon from '@mui/icons-material/StarHalf';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 export default function Home() {
   const { data: session } = useSession();
   const router = useRouter();
@@ -94,98 +97,165 @@ export default function Home() {
 
       {/* COMO FUNCIONA */}
       <Box mb={8} width="100%" px={2}>
-        <Box sx={{ borderRadius: 4, p: 4, bgcolor: '#e3f2fd' }}>
-          <Typography variant="h5" fontWeight="bold" color="primary.main" align="center" mb={3}>
-            Como funciona?
+        {/* DEPOIMENTOS */}
+        <Box mb={8} width="100%" px={2}>
+          <Typography variant="h5" fontWeight="bold" color="primary.main" align="center" mb={4}>
+            Depoimentos de Usuários
           </Typography>
           <Grid container spacing={4} justifyContent="center">
-            <Grid item xs={12} sm={4}>
-              <Box textAlign="center" sx={{ 
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 2
+            <Grid item xs={12} sm={6} md={4}>
+              <Card sx={{ 
+                height: '100%', 
+                borderRadius: 2,
+                bgcolor: '#fff',
+                boxShadow: 3
               }}>
-                <Box sx={{ 
-                  bgcolor: '#0066FF', 
-                  borderRadius: '50%', 
-                  width: 80, 
-                  height: 80, 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center',
-                  fontSize: 40
-                }}>
-                  <AddCircleOutlineIcon />
-                </Box>
-                <Typography variant="h5" fontWeight="bold" sx={{ mb: 1 }}>
-                  Crie seus flashcards
-                </Typography>
-                <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', maxWidth: 300 }}>
-                  Adicione perguntas e respostas dos conteúdos que deseja estudar.
-                </Typography>
-              </Box>
+                <CardContent sx={{ p: 4 }}>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    gap: 2 
+                  }}>
+                    <Box sx={{ 
+                      display: 'flex', 
+                      alignItems: 'flex-start', 
+                      gap: 2 
+                    }}>
+                      <Avatar 
+                        src="https://images.unsplash.com/photo-1529665253569-6d01c0eaf7b6?w=100&q=80"
+                        sx={{ 
+                          width: 60, 
+                          height: 60,
+                          bgcolor: 'transparent'
+                        }}
+                      />
+                      <Box>
+                        <Typography variant="h6" fontWeight="bold">
+                          Giovana Alves
+                        </Typography>
+                        <Typography variant="subtitle2" color="text.secondary">
+                          Estudante de Medicina
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Typography variant="body1" color="text.primary">
+                      "O Flashcards Inteligentes mudou minha forma de estudar. Antes eu gastava horas revisando conteúdo que já sabia. Agora, o sistema me mostra exatamente o que preciso focar, economizando meu tempo de estudo."
+                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                      <Rating 
+                        value={5} 
+                        readOnly 
+                        precision={0.5}
+                        sx={{ color: '#ffd700' }}
+                      />
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
             </Grid>
-            <Grid item xs={12} sm={4}>
-              <Box textAlign="center" sx={{ 
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 2
+            <Grid item xs={12} sm={6} md={4}>
+              <Card sx={{ 
+                height: '100%', 
+                borderRadius: 2,
+                bgcolor: '#fff',
+                boxShadow: 3
               }}>
-                <Box sx={{ 
-                  bgcolor: '#0066FF', 
-                  borderRadius: '50%', 
-                  width: 80, 
-                  height: 80, 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center',
-                  fontSize: 40
-                }}>
-                  <QuizIcon />
-                </Box>
-                <Typography variant="h5" fontWeight="bold" sx={{ mb: 1 }}>
-                  Estude de forma inteligente
-                </Typography>
-                <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', maxWidth: 300 }}>
-                  O sistema prioriza os cards que você mais erra.
-                </Typography>
-              </Box>
+                <CardContent sx={{ p: 4 }}>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    gap: 2 
+                  }}>
+                    <Box sx={{ 
+                      display: 'flex', 
+                      alignItems: 'flex-start', 
+                      gap: 2 
+                    }}>
+                      <Avatar 
+                        src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&q=80"
+                        sx={{ 
+                          width: 60, 
+                          height: 60,
+                          bgcolor: 'transparent'
+                        }}
+                      />
+                      <Box>
+                        <Typography variant="h6" fontWeight="bold">
+                          Camila Santos
+                        </Typography>
+                        <Typography variant="subtitle2" color="text.secondary">
+                          Analista de Dados
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Typography variant="body1" color="text.primary">
+                      "O sistema de flashcards inteligente me ajudou a organizar melhor meus estudos e identificar áreas que precisavam de mais atenção. Agora consigo revisar de forma mais eficiente."
+                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                      <Rating 
+                        value={4.5} 
+                        readOnly 
+                        precision={0.5}
+                        sx={{ color: '#ffd700' }}
+                      />
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
             </Grid>
-            <Grid item xs={12} sm={4}>
-              <Box textAlign="center" sx={{ 
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 2
+            <Grid item xs={12} sm={6} md={4}>
+              <Card sx={{ 
+                height: '100%', 
+                borderRadius: 2,
+                bgcolor: '#fff',
+                boxShadow: 3
               }}>
-                <Box sx={{ 
-                  bgcolor: 'success.main', 
-                  borderRadius: '50%', 
-                  width: 80, 
-                  height: 80, 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center',
-                  fontSize: 40
-                }}>
-                  <AccessTimeIcon />
-                </Box>
-                <Typography variant="h5" fontWeight="bold" sx={{ mb: 1 }}>
-                  Revise quando quiser
-                </Typography>
-                <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', maxWidth: 300 }}>
-                  Acesse seus flashcards de qualquer dispositivo, a qualquer hora.
-                </Typography>
-              </Box>
+                <CardContent sx={{ p: 4 }}>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    gap: 2 
+                  }}>
+                    <Box sx={{ 
+                      display: 'flex', 
+                      alignItems: 'flex-start', 
+                      gap: 2 
+                    }}>
+                      <Avatar 
+                        src="https://images.unsplash.com/photo-1529665253569-6d01c0eaf7b6?w=100&q=80"
+                        sx={{ 
+                          width: 60, 
+                          height: 60,
+                          bgcolor: 'transparent'
+                        }}
+                      />
+                      <Box>
+                        <Typography variant="h6" fontWeight="bold">
+                          Lucas Silva
+                        </Typography>
+                        <Typography variant="subtitle2" color="text.secondary">
+                          Desenvolvedor
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Typography variant="body1" color="text.primary">
+                      "O sistema de flashcards inteligente me ajudou a organizar meus estudos de programação e melhorar minha produtividade. Agora consigo revisar conceitos complexos de forma mais eficiente."
+                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                      <Rating 
+                        value={5} 
+                        readOnly 
+                        precision={0.5}
+                        sx={{ color: '#ffd700' }}
+                      />
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
             </Grid>
           </Grid>
         </Box>
-      </Box>
 
-      {/* ESTATÍSTICAS */}
-      <Box mb={8} width="100%" maxWidth={900} mx="auto" px={4}>
         <Box sx={{ 
           display: 'flex',
           flexDirection: 'column',
