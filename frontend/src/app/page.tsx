@@ -29,9 +29,9 @@ export default function Home() {
         sx={{
           width: '100%',
           bgcolor: 'linear-gradient(135deg, #e3f2fd 60%, #fff 100%)',
-          pt: { xs: 6, md: 10 },
-          pb: { xs: 4, md: 8 },
-          minHeight: { xs: 250, md: 320 },
+          pt: { xs: 8, md: 12 },
+          pb: { xs: 6, md: 10 },
+          minHeight: { xs: 300, md: 350 },
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -46,7 +46,7 @@ export default function Home() {
           <Typography variant="h3" fontWeight="bold" color="primary.main" gutterBottom>
             Torne seu aprendizado mais inteligente
           </Typography>
-          <Typography variant="h6" color="text.secondary" mb={2}>
+          <Typography variant="h6" color="text.secondary" mb={3}>
             Organize, memorize e revise com o Flashcards Inteligentes
           </Typography>
           <Button
@@ -55,7 +55,7 @@ export default function Home() {
             variant="contained"
             color="success"
             size="large"
-            sx={{ mt: 2, px: 6, py: 1.5, fontWeight: 600, fontSize: 20, boxShadow: 3, borderRadius: 3 }}
+            sx={{ mt: 3, px: 6, py: 1.5, fontWeight: 600, fontSize: 20, boxShadow: 3, borderRadius: 3 }}
           >
             Comece a Estudar
           </Button>
@@ -63,28 +63,28 @@ export default function Home() {
       </Box>
 
       {/* BENEFÍCIOS */}
-      <Box mb={4} width="100%" px={2}>
-        <Typography variant="h5" fontWeight="bold" color="primary.main" align="center" mb={2}>
+      <Box mb={8} width="100%" px={2}>
+        <Typography variant="h5" fontWeight="bold" color="primary.main" align="center" mb={3}>
           Por que usar o Flashcards Inteligentes?
         </Typography>
-        <Grid container spacing={3} justifyContent="center">
+        <Grid container spacing={4} justifyContent="center">
           <Grid item xs={12} sm={4}>
-            <Box sx={{ borderRadius: 4, textAlign: 'center', py: 3, bgcolor: 'transparent' }}>
-              <EmojiObjectsIcon color="primary" sx={{ fontSize: 40, mb: 1 }} />
+            <Box sx={{ borderRadius: 4, textAlign: 'center', py: 4, bgcolor: 'transparent' }}>
+              <EmojiObjectsIcon color="primary" sx={{ fontSize: 40, mb: 2 }} />
               <Typography variant="subtitle1" fontWeight="bold">Memorização Eficiente</Typography>
               <Typography variant="body2" color="text.secondary">Otimize seu tempo focando nos conteúdos que mais precisa revisar.</Typography>
             </Box>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Box sx={{ borderRadius: 4, textAlign: 'center', py: 3, bgcolor: 'transparent' }}>
-              <DevicesIcon color="secondary" sx={{ fontSize: 40, mb: 1 }} />
+            <Box sx={{ borderRadius: 4, textAlign: 'center', py: 4, bgcolor: 'transparent' }}>
+              <DevicesIcon color="secondary" sx={{ fontSize: 40, mb: 2 }} />
               <Typography variant="subtitle1" fontWeight="bold">Acesse de Qualquer Lugar</Typography>
               <Typography variant="body2" color="text.secondary">Estude no computador, tablet ou celular, onde quiser.</Typography>
             </Box>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Box sx={{ borderRadius: 4, textAlign: 'center', py: 3, bgcolor: 'transparent' }}>
-              <FlashOnIcon color="warning" sx={{ fontSize: 40, mb: 1 }} />
+            <Box sx={{ borderRadius: 4, textAlign: 'center', py: 4, bgcolor: 'transparent' }}>
+              <FlashOnIcon color="warning" sx={{ fontSize: 40, mb: 2 }} />
               <Typography variant="subtitle1" fontWeight="bold">Revisão Inteligente</Typography>
               <Typography variant="body2" color="text.secondary">O sistema prioriza os flashcards que você mais erra, otimizando seu tempo de estudo.</Typography>
             </Box>
@@ -93,12 +93,12 @@ export default function Home() {
       </Box>
 
       {/* COMO FUNCIONA */}
-      <Box mb={6} width="100%" px={2}>
-        <Box sx={{ borderRadius: 4, p: 3, bgcolor: '#e3f2fd' }}>
-          <Typography variant="h5" fontWeight="bold" color="primary.main" align="center" mb={2}>
+      <Box mb={8} width="100%" px={2}>
+        <Box sx={{ borderRadius: 4, p: 4, bgcolor: '#e3f2fd' }}>
+          <Typography variant="h5" fontWeight="bold" color="primary.main" align="center" mb={3}>
             Como funciona?
           </Typography>
-          <Grid container spacing={3} justifyContent="center">
+          <Grid container spacing={4} justifyContent="center">
             <Grid item xs={12} sm={4}>
               <Box textAlign="center" sx={{ 
                 display: 'flex',
@@ -107,7 +107,7 @@ export default function Home() {
                 gap: 2
               }}>
                 <Box sx={{ 
-                  bgcolor: 'primary.main', 
+                  bgcolor: '#0066FF', 
                   borderRadius: '50%', 
                   width: 80, 
                   height: 80, 
@@ -134,7 +134,7 @@ export default function Home() {
                 gap: 2
               }}>
                 <Box sx={{ 
-                  bgcolor: 'secondary.main', 
+                  bgcolor: '#0066FF', 
                   borderRadius: '50%', 
                   width: 80, 
                   height: 80, 
@@ -254,6 +254,8 @@ export default function Home() {
           </Box>
         </Box>
       </Box>
+
+      <Box sx={{ height: '100px', width: '100%' }} />
 
       <Footer />
     </>
