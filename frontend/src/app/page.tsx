@@ -131,7 +131,7 @@ export default function Home() {
                       />
                       <Box>
                         <Typography variant="h6" fontWeight="bold">
-                          Giovana Alves
+                          Giovana Almeida
                         </Typography>
                         <Typography variant="subtitle2" color="text.secondary">
                           Estudante de Medicina
