@@ -63,7 +63,7 @@ export default function Home() {
       </Box>
 
       {/* BENEFÍCIOS */}
-      <Box mb={4} width="100%" maxWidth={900} mx="auto" px={2}>
+      <Box mb={4} width="100%" px={2}>
         <Typography variant="h5" fontWeight="bold" color="primary.main" align="center" mb={2}>
           Por que usar o Flashcards Inteligentes?
         </Typography>
@@ -93,40 +93,165 @@ export default function Home() {
       </Box>
 
       {/* COMO FUNCIONA */}
-      <Box mb={6} width="100%" maxWidth={900} mx="auto" px={2}>
+      <Box mb={6} width="100%" px={2}>
         <Box sx={{ borderRadius: 4, p: 3, bgcolor: '#e3f2fd' }}>
           <Typography variant="h5" fontWeight="bold" color="primary.main" align="center" mb={2}>
             Como funciona?
           </Typography>
           <Grid container spacing={3} justifyContent="center">
             <Grid item xs={12} sm={4}>
-              <Box textAlign="center">
-                <Box sx={{ bgcolor: 'primary.main', mx: 'auto', mb: 1, borderRadius: '50%', width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Box textAlign="center" sx={{ 
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 2
+              }}>
+                <Box sx={{ 
+                  bgcolor: 'primary.main', 
+                  borderRadius: '50%', 
+                  width: 80, 
+                  height: 80, 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  fontSize: 40
+                }}>
                   <AddCircleOutlineIcon />
                 </Box>
-                <Typography variant="subtitle1" fontWeight="bold">Crie seus flashcards</Typography>
-                <Typography variant="body2" color="text.secondary">Adicione perguntas e respostas dos conteúdos que deseja estudar.</Typography>
+                <Typography variant="h5" fontWeight="bold" sx={{ mb: 1 }}>
+                  Crie seus flashcards
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', maxWidth: 300 }}>
+                  Adicione perguntas e respostas dos conteúdos que deseja estudar.
+                </Typography>
               </Box>
             </Grid>
             <Grid item xs={12} sm={4}>
-              <Box textAlign="center">
-                <Box sx={{ bgcolor: 'secondary.main', mx: 'auto', mb: 1, borderRadius: '50%', width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Box textAlign="center" sx={{ 
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 2
+              }}>
+                <Box sx={{ 
+                  bgcolor: 'secondary.main', 
+                  borderRadius: '50%', 
+                  width: 80, 
+                  height: 80, 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  fontSize: 40
+                }}>
                   <QuizIcon />
                 </Box>
-                <Typography variant="subtitle1" fontWeight="bold">Estude de forma inteligente</Typography>
-                <Typography variant="body2" color="text.secondary">O sistema prioriza os cards que você mais erra.</Typography>
+                <Typography variant="h5" fontWeight="bold" sx={{ mb: 1 }}>
+                  Estude de forma inteligente
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', maxWidth: 300 }}>
+                  O sistema prioriza os cards que você mais erra.
+                </Typography>
               </Box>
             </Grid>
             <Grid item xs={12} sm={4}>
-              <Box textAlign="center">
-                <Box sx={{ bgcolor: 'success.main', mx: 'auto', mb: 1, borderRadius: '50%', width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Box textAlign="center" sx={{ 
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 2
+              }}>
+                <Box sx={{ 
+                  bgcolor: 'success.main', 
+                  borderRadius: '50%', 
+                  width: 80, 
+                  height: 80, 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  fontSize: 40
+                }}>
                   <AccessTimeIcon />
                 </Box>
-                <Typography variant="subtitle1" fontWeight="bold">Revise quando quiser</Typography>
-                <Typography variant="body2" color="text.secondary">Acesse seus flashcards de qualquer dispositivo, a qualquer hora.</Typography>
+                <Typography variant="h5" fontWeight="bold" sx={{ mb: 1 }}>
+                  Revise quando quiser
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', maxWidth: 300 }}>
+                  Acesse seus flashcards de qualquer dispositivo, a qualquer hora.
+                </Typography>
               </Box>
             </Grid>
           </Grid>
+        </Box>
+      </Box>
+
+      {/* ESTATÍSTICAS */}
+      <Box mb={8} width="100%" maxWidth={900} mx="auto" px={4}>
+        <Box sx={{ 
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 4,
+          pt: 4
+        }}>
+          <Box sx={{ 
+            display: 'flex',
+            gap: 4,
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+            <Box sx={{ 
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 2,
+              transition: 'transform 0.3s ease',
+              '&:hover': {
+                transform: 'scale(1.05)'
+              }
+            }}>
+              <Typography variant="h3" fontWeight="bold" color="primary.main">
+                1M+
+              </Typography>
+              <Typography variant="h6" color="text.secondary">
+                Usuários Ativos
+              </Typography>
+            </Box>
+            <Box sx={{ 
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 2,
+              transition: 'transform 0.3s ease',
+              '&:hover': {
+                transform: 'scale(1.05)'
+              }
+            }}>
+              <Typography variant="h3" fontWeight="bold" color="primary.main">
+                10M+
+              </Typography>
+              <Typography variant="h6" color="text.secondary">
+                Flashcards Criados
+              </Typography>
+            </Box>
+            <Box sx={{ 
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 2,
+              transition: 'transform 0.3s ease',
+              '&:hover': {
+                transform: 'scale(1.05)'
+              }
+            }}>
+              <Typography variant="h3" fontWeight="bold" color="primary.main">
+                98%
+              </Typography>
+              <Typography variant="h6" color="text.secondary">
+                Taxa de Aprovação
+              </Typography>
+            </Box>
+          </Box>
         </Box>
       </Box>
 

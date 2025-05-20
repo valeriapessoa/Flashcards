@@ -9,32 +9,33 @@ const Footer: React.FC = () => {
     <Box component="footer" sx={{
       background: 'linear-gradient(90deg, #f5f7fa 0%, #e3e9f0 100%)',
       mt: 4,
-      pt: 3,
-      pb: 2,
-      borderTop: '1.5px solid #ececec',
+      pt: 4,
+      pb: 4,
+      borderTop: '1px solid rgba(0,0,0,0.1)',
+      boxShadow: '0 -2px 10px rgba(0,0,0,0.05)',
     }}>
       <Container maxWidth="lg">
-        <Grid container spacing={4} justifyContent="center" alignItems="center" sx={{ pt: 2 }}>
+        <Grid container spacing={6} justifyContent="center" alignItems="center">
           <Grid item xs={12} sm={6}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="h6" fontWeight={700} gutterBottom sx={{ mb: 1 }}>
+            <Box sx={{ textAlign: 'center', mb: 4 }}>
+              <Typography variant="h6" fontWeight={700} gutterBottom sx={{ mb: 2 }}>
                 Flashcards App
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
                 Aprenda de forma inteligente e divertida. Organize, crie e revise seus flashcards em qualquer lugar!
               </Typography>
             </Box>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="subtitle1" fontWeight={700} gutterBottom sx={{ mb: 1 }}>
+            <Box sx={{ textAlign: 'center', mb: 4 }}>
+              <Typography variant="subtitle1" fontWeight={700} gutterBottom sx={{ mb: 2 }}>
                 Siga-nos
               </Typography>
-              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mt: 1 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 4, mt: 2 }}>
                 <IconButton 
                   href="https://facebook.com/flashcards-app" 
                   target="_blank" 
-                  color="primary" 
+                  color="inherit" 
                   size="medium" 
                   aria-label="Facebook"
                   sx={{ 
@@ -51,7 +52,7 @@ const Footer: React.FC = () => {
                 <IconButton 
                   href="https://instagram.com/flashcards-app" 
                   target="_blank" 
-                  color="primary" 
+                  color="inherit" 
                   size="medium" 
                   aria-label="Instagram"
                   sx={{ 
@@ -68,7 +69,7 @@ const Footer: React.FC = () => {
                 <IconButton 
                   href="https://twitter.com/flashcards-app" 
                   target="_blank" 
-                  color="primary" 
+                  color="inherit" 
                   size="medium" 
                   aria-label="Twitter"
                   sx={{ 
@@ -85,7 +86,7 @@ const Footer: React.FC = () => {
                 <IconButton 
                   href="https://tiktok.com/@flashcards-app" 
                   target="_blank" 
-                  color="primary" 
+                  color="inherit" 
                   size="medium" 
                   aria-label="TikTok"
                   sx={{ 
@@ -103,14 +104,10 @@ const Footer: React.FC = () => {
             </Box>
           </Grid>
         </Grid>
-        <Divider sx={{ my: 2 }} />
-        <Box sx={{ textAlign: 'center', py: 2 }}>
-          <Typography variant="body2" color="text.secondary">
-            {'© '}
-            {new Date().getFullYear()}
-            {' - Flashcards App - Todos os direitos reservados - Termos de Uso e Política de Privacidade - Desenvolvido por Valéria Pessoa'}
-          </Typography>
-        </Box>
+        <Divider sx={{ my: 4 }} />
+        <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 2 }}>
+          © {new Date().getFullYear()} Flashcards App – Todos os direitos reservados – Desenvolvido por Valéria Pessoa
+        </Typography>
       </Container>
     </Box>
   );
