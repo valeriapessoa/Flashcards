@@ -1,93 +1,116 @@
 import React from 'react';
 import { Box, Container, Typography, Link, Grid, Divider, IconButton } from '@mui/material';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import EmailIcon from '@mui/icons-material/Email';
-import InfoIcon from '@mui/icons-material/Info';
+import { FaFacebook, FaInstagram, FaTwitter, FaTiktok } from 'react-icons/fa';
 import { usePathname } from 'next/navigation';
 
-const Footer: React.FC = () => {
-  const pathname = usePathname();
-  const links = [
-    { label: 'Home', href: '/' },
-    { label: 'Criar Flashcard', href: '/criar-flashcard' },
-    { label: 'Estudar', href: '/estudar' },
-    { label: 'Flashcards', href: '/flashcards' },
-    { label: 'Revisão Inteligente', href: '/revisao-inteligente' },
-  ];
 
+const Footer: React.FC = () => {
   return (
     <Box component="footer" sx={{
       background: 'linear-gradient(90deg, #f5f7fa 0%, #e3e9f0 100%)',
-      mt: 8,
-      pt: 4,
+      mt: 4,
+      pt: 3,
       pb: 2,
       borderTop: '1.5px solid #ececec',
     }}>
       <Container maxWidth="lg">
-        <Grid container spacing={4} justifyContent="center">
-          <Grid item xs={12} sm={4}>
-            <Typography variant="subtitle1" fontWeight={700} gutterBottom>Flashcards App</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Aprenda de forma inteligente e divertida. Organize, crie e revise seus flashcards em qualquer lugar!
-            </Typography>
-          </Grid>
-          <Grid item xs={6} sm={4}>
-            <Typography variant="subtitle2" fontWeight={700} gutterBottom>Links úteis</Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-              {links.map(link => {
-                const isActive = link.href === '/' ? pathname === '/' : pathname.startsWith(link.href);
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    style={{ textDecoration: 'none' }}
-                    sx={{
-                      color: isActive ? '#1976d2' : '#222',
-                      fontWeight: 400,
-                      px: 0,
-                      py: 0.5,
-                      borderRadius: 0,
-                      background: 'none',
-                      transition: 'color 0.15s',
-                      '&:hover': {
-                        color: '#1565c0',
-                        textDecoration: 'underline',
-                      },
-                    }}
-                  >
-                    {link.label}
-                  </Link>
-                );
-              })}
+        <Grid container spacing={4} justifyContent="center" alignItems="center" sx={{ pt: 2 }}>
+          <Grid item xs={12} sm={6}>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="h6" fontWeight={700} gutterBottom sx={{ mb: 1 }}>
+                Flashcards App
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Aprenda de forma inteligente e divertida. Organize, crie e revise seus flashcards em qualquer lugar!
+              </Typography>
             </Box>
           </Grid>
-          <Grid item xs={6} sm={4}>
-            <Typography variant="subtitle2" fontWeight={700} gutterBottom>Contato</Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <IconButton href="mailto:contato@flashcards-app.com" color="primary" size="small" aria-label="Email">
-                <EmailIcon fontSize="small" />
-              </IconButton>
-              <IconButton href="https://github.com/valeriapessoa/Flashcards" target="_blank" color="primary" size="small" aria-label="GitHub">
-                <GitHubIcon fontSize="small" />
-              </IconButton>
-              <IconButton href="/sobre" color="primary" size="small" aria-label="Sobre">
-                <InfoIcon fontSize="small" />
-              </IconButton>
+          <Grid item xs={12} sm={6}>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="subtitle1" fontWeight={700} gutterBottom sx={{ mb: 1 }}>
+                Siga-nos
+              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mt: 1 }}>
+                <IconButton 
+                  href="https://facebook.com/flashcards-app" 
+                  target="_blank" 
+                  color="primary" 
+                  size="medium" 
+                  aria-label="Facebook"
+                  sx={{ 
+                    borderRadius: '50%',
+                    transition: 'transform 0.2s',
+                    '&:hover': { 
+                      transform: 'scale(1.1)',
+                      boxShadow: '0 4px 15px rgba(0,0,0,0.15)'
+                    }
+                  }}
+                >
+                  <FaFacebook style={{ fontSize: '1.5rem' }} />
+                </IconButton>
+                <IconButton 
+                  href="https://instagram.com/flashcards-app" 
+                  target="_blank" 
+                  color="primary" 
+                  size="medium" 
+                  aria-label="Instagram"
+                  sx={{ 
+                    borderRadius: '50%',
+                    transition: 'transform 0.2s',
+                    '&:hover': { 
+                      transform: 'scale(1.1)',
+                      boxShadow: '0 4px 15px rgba(0,0,0,0.15)'
+                    }
+                  }}
+                >
+                  <FaInstagram style={{ fontSize: '1.5rem' }} />
+                </IconButton>
+                <IconButton 
+                  href="https://twitter.com/flashcards-app" 
+                  target="_blank" 
+                  color="primary" 
+                  size="medium" 
+                  aria-label="Twitter"
+                  sx={{ 
+                    borderRadius: '50%',
+                    transition: 'transform 0.2s',
+                    '&:hover': { 
+                      transform: 'scale(1.1)',
+                      boxShadow: '0 4px 15px rgba(0,0,0,0.15)'
+                    }
+                  }}
+                >
+                  <FaTwitter style={{ fontSize: '1.5rem' }} />
+                </IconButton>
+                <IconButton 
+                  href="https://tiktok.com/@flashcards-app" 
+                  target="_blank" 
+                  color="primary" 
+                  size="medium" 
+                  aria-label="TikTok"
+                  sx={{ 
+                    borderRadius: '50%',
+                    transition: 'transform 0.2s',
+                    '&:hover': { 
+                      transform: 'scale(1.1)',
+                      boxShadow: '0 4px 15px rgba(0,0,0,0.15)'
+                    }
+                  }}
+                >
+                  <FaTiktok style={{ fontSize: '1.5rem' }} />
+                </IconButton>
+              </Box>
             </Box>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              contato@flashcards-app.com
-            </Typography>
           </Grid>
         </Grid>
-        <Divider sx={{ my: 3 }} />
-        <Typography variant="body2" color="text.secondary" align="center">
-          {'Copyright '}
-          <Link color="inherit" href="https://flashcards-app.com/" style={{ textDecoration: 'underline' }}>
-            Flashcards App
-          </Link>{' '}
-          {new Date().getFullYear()}
-          {'.'}
-        </Typography>
+        <Divider sx={{ my: 2 }} />
+        <Box sx={{ textAlign: 'center', py: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            {'© '}
+            {new Date().getFullYear()}
+            {' - Flashcards App - Todos os direitos reservados - Termos de Uso e Política de Privacidade - Desenvolvido por Valéria Pessoa'}
+          </Typography>
+        </Box>
       </Container>
     </Box>
   );

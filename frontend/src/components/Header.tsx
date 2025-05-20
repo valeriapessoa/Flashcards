@@ -45,57 +45,61 @@ const Header: React.FC = () => {
           />
         </Box>
         {/* Menu centralizado */}
-        <Box sx={{ display: 'flex', flexGrow: 1, justifyContent: 'center', gap: 2.5 }}>
-          {navItems.map((item) => {
-            const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
-            return (
-              <Button
-                key={item.label}
-                component={Link}
-                href={item.href}
-                sx={{
-                  position: 'relative',
-                  color: isActive ? '#1976d2' : '#444',
-                  fontWeight: isActive ? 800 : 500,
-                  fontSize: 16,
-                  textTransform: 'none',
-                  letterSpacing: 0.5,
-                  px: 1.5,
-                  py: 0.5,
-                  minWidth: 80,
-                  background: isActive ? 'rgba(25, 118, 210, 0.08)' : 'none',
-                  borderRadius: 1,
-                  boxShadow: 'none',
-                  overflow: 'hidden',
-                  transition: 'color 0.18s',
-                  '&:after': {
-                    content: '""',
-                    display: 'block',
-                    position: 'absolute',
-                    left: 16,
-                    right: 16,
-                    bottom: 4,
-                    height: 3,
-                    borderRadius: 2,
-                    background: isActive ? '#1976d2' : 'transparent',
-                    transition: 'background 0.25s, width 0.25s',
-                    width: isActive ? 'calc(100% - 32px)' : 0,
-                  },
-                  '&:hover': {
-                    color: '#1976d2',
-                    background: 'rgba(25, 118, 210, 0.13)',
-                  },
-                  '&:hover:after': {
-                    background: '#90caf9',
-                    width: 'calc(100% - 32px)',
-                  },
-                }}
-              >
-                {item.label}
-              </Button>
-            );
-          })}
-        </Box>
+        {session && session.user ? (
+          <Box sx={{ display: 'flex', flexGrow: 1, justifyContent: 'center', gap: 2.5 }}>
+            {navItems.map((item) => {
+              const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+              return (
+                <Button
+                  key={item.label}
+                  component={Link}
+                  href={item.href}
+                  sx={{
+                    position: 'relative',
+                    color: isActive ? '#1976d2' : '#444',
+                    fontWeight: isActive ? 800 : 500,
+                    fontSize: 16,
+                    textTransform: 'none',
+                    letterSpacing: 0.5,
+                    px: 1.5,
+                    py: 0.5,
+                    minWidth: 80,
+                    background: isActive ? 'rgba(25, 118, 210, 0.08)' : 'none',
+                    borderRadius: 1,
+                    boxShadow: 'none',
+                    overflow: 'hidden',
+                    transition: 'color 0.18s',
+                    '&:after': {
+                      content: '""',
+                      display: 'block',
+                      position: 'absolute',
+                      left: 16,
+                      right: 16,
+                      bottom: 4,
+                      height: 3,
+                      borderRadius: 2,
+                      background: isActive ? '#1976d2' : 'transparent',
+                      transition: 'background 0.25s, width 0.25s',
+                      width: isActive ? 'calc(100% - 32px)' : 0,
+                    },
+                    '&:hover': {
+                      color: '#1976d2',
+                      background: 'rgba(25, 118, 210, 0.13)',
+                    },
+                    '&:hover:after': {
+                      background: '#90caf9',
+                      width: 'calc(100% - 32px)',
+                    },
+                  }}
+                >
+                  {item.label}
+                </Button>
+              );
+            })}
+          </Box>
+        ) : (
+          <Box sx={{ flexGrow: 1 }} />
+        )}
         {/* Login/Logout à direita */}
         {session && session.user ? (
           <Button
