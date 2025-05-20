@@ -34,12 +34,15 @@ const Header: React.FC = () => {
       }}
     >
       <Toolbar sx={{ maxWidth: 1200, width: '100%', mx: 'auto', px: 2, minHeight: 54 }}>
-        {/* Logo minimalista */}
-        <Box sx={{ display: 'flex', alignItems: 'center', mr: 5, cursor: 'pointer', gap: 1 }} onClick={() => router.push('/') }>
-          <FlashOnIcon sx={{ fontSize: 28, color: '#FFD600', mr: 0.8 }} />
-          <Typography variant="h6" sx={{ fontWeight: 800, color: '#222', fontFamily: 'Montserrat, Arial', letterSpacing: 0.5 }}>
-            Flashcards
-          </Typography>
+        {/* Logo */}
+        <Box sx={{ display: 'flex', alignItems: 'center', mr: 5, cursor: 'pointer' }} onClick={() => router.push('/') }>
+          <img 
+            src="/images/logo.png" 
+            alt="Flashcards App" 
+            width={120} 
+            height={40} 
+            style={{ objectFit: 'contain' }}
+          />
         </Box>
         {/* Menu centralizado */}
         <Box sx={{ display: 'flex', flexGrow: 1, justifyContent: 'center', gap: 2.5 }}>
