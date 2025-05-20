@@ -122,7 +122,7 @@ export default function Home() {
                       gap: 2 
                     }}>
                       <Avatar 
-                        src="https://images.unsplash.com/photo-1529665253569-6d01c0eaf7b6?w=100&q=80"
+                        src="/images/testimonials/img1.jpg"
                         sx={{ 
                           width: 60, 
                           height: 60,
@@ -172,7 +172,7 @@ export default function Home() {
                       gap: 2 
                     }}>
                       <Avatar 
-                        src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&q=80"
+                        src="/images/testimonials/img2.jpg"
                         sx={{ 
                           width: 60, 
                           height: 60,
@@ -181,7 +181,7 @@ export default function Home() {
                       />
                       <Box>
                         <Typography variant="h6" fontWeight="bold">
-                          Camila Santos
+                          Camila Ferreira
                         </Typography>
                         <Typography variant="subtitle2" color="text.secondary">
                           Analista de Dados
@@ -222,7 +222,7 @@ export default function Home() {
                       gap: 2 
                     }}>
                       <Avatar 
-                        src="https://images.unsplash.com/photo-1529665253569-6d01c0eaf7b6?w=100&q=80"
+                        src="/images/testimonials/img3.jpg"
                         sx={{ 
                           width: 60, 
                           height: 60,
@@ -231,7 +231,7 @@ export default function Home() {
                       />
                       <Box>
                         <Typography variant="h6" fontWeight="bold">
-                          Lucas Silva
+                          Liam Fernandes
                         </Typography>
                         <Typography variant="subtitle2" color="text.secondary">
                           Desenvolvedor
