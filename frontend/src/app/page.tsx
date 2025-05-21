@@ -32,7 +32,7 @@ export default function Home() {
         sx={{
           width: '100%',
           bgcolor: 'linear-gradient(135deg, #e3f2fd 60%, #fff 100%)',
-          pt: { xs: 4, md: 8 },
+          pt: { xs: 6, md: 10 },
           pb: { xs: 6, md: 10 },
           minHeight: { xs: 300, md: 350 },
           position: 'relative',
@@ -49,10 +49,10 @@ export default function Home() {
               margin: '0 auto'
             }}>
               <Typography variant="h2" fontWeight="bold" color="primary.main" sx={{ fontSize: { xs: '2.5rem', md: '3.5rem' }, lineHeight: 1.2 }}>
-                Torne seu aprendizado mais inteligente
+                Torne seu aprendizado mais eficiente
               </Typography>
-              <Typography variant="h6" color="text.secondary" mb={4} sx={{ fontSize: '2.4rem', lineHeight: 1.4 }}>
-                Organize, memorize e revise com o Flashcards Inteligentes
+              <Typography variant="h5" color="text.secondary" mb={4} sx={{ mt: 2 }}>
+                Organize, memorize e revise com Flashcards modernos
               </Typography>
             </Box>
           </Grid>
@@ -69,7 +69,7 @@ export default function Home() {
             </Box>
           </Grid>
         </Grid>
-        <Box sx={{ textAlign: 'center', mt: 4 }}>
+        <Box sx={{ textAlign: 'center', mt: 2 }}>
           <Button
             component={Link}
             href="/estudar"
@@ -83,12 +83,128 @@ export default function Home() {
         </Box>
       </Box>
 
+      {/* COMO FUNCIONA */}
+      <Box sx={{ bgcolor: '#f8f9fa', py: 8, px: 2 }}>
+        <Typography variant="h4" fontWeight="bold" color="primary.main" align="center" mb={6}>
+          Como Funciona
+        </Typography>
+        <Grid container spacing={4} justifyContent="center" sx={{ maxWidth: 1200, mx: 'auto' }}>
+          <Grid item xs={12} md={3}>
+            <Card 
+              sx={{ 
+                height: '100%', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                p: 4, 
+                bgcolor: 'background.paper',
+                boxShadow: 3,
+                transition: 'transform 0.3s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-5px)',
+                  boxShadow: 6
+                }
+              }}
+            >
+              <SchoolIcon color="primary" sx={{ fontSize: 70, mb: 2 }} />
+              <Typography variant="h5" fontWeight="bold" mb={2}>
+                1. Registre-se
+              </Typography>
+              <Typography variant="body1" color="text.secondary" mb={2}>
+                Crie sua conta e comece a usar o Flashcards Inteligentes.
+              </Typography>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Card 
+              sx={{ 
+                height: '100%', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                p: 4, 
+                bgcolor: 'background.paper',
+                boxShadow: 3,
+                transition: 'transform 0.3s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-5px)',
+                  boxShadow: 6
+                }
+              }}
+            >
+              <FlashOnIcon color="primary" sx={{ fontSize: 70, mb: 2 }} />
+              <Typography variant="h5" fontWeight="bold" mb={2}>
+                2. Crie Flashcards
+              </Typography>
+              <Typography variant="body1" color="text.secondary" mb={2}>
+                Adicione perguntas e respostas em seus próprios flashcards personalizados.
+                Organize-os em categorias para facilitar seu estudo.
+              </Typography>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Card 
+              sx={{ 
+                height: '100%', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                p: 4, 
+                bgcolor: 'background.paper',
+                boxShadow: 3,
+                transition: 'transform 0.3s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-5px)',
+                  boxShadow: 6
+                }
+              }}
+            >
+              <QuizIcon color="primary" sx={{ fontSize: 70, mb: 2 }} />
+              <Typography variant="h5" fontWeight="bold" mb={2}>
+                3. Estude Interativamente
+              </Typography>
+              <Typography variant="body1" color="text.secondary" mb={2}>
+                Revise seus flashcards em modo de estudo interativo.
+                Responda perguntas e obtenha feedback imediato.
+              </Typography>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Card 
+              sx={{ 
+                height: '100%', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                p: 4, 
+                bgcolor: 'background.paper',
+                boxShadow: 3,
+                transition: 'transform 0.3s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-5px)',
+                  boxShadow: 6
+                }
+              }}
+            >
+              <TimelineIcon color="primary" sx={{ fontSize: 70, mb: 2 }} />
+              <Typography variant="h5" fontWeight="bold" mb={2}>
+                4. Revisão Inteligente
+              </Typography>
+              <Typography variant="body1" color="text.secondary" mb={2}>
+                O sistema identifica seus pontos fracos e prioriza a revisão dos conteúdos
+                que você mais precisa revisar.
+              </Typography>
+            </Card>
+          </Grid>
+        </Grid>
+      </Box>
+
       {/* BENEFÍCIOS */}
       <Box mb={8} width="100%" px={2}>
         <Typography variant="h5" fontWeight="bold" color="primary.main" align="center" mb={3}>
           Por que usar o Flashcards Inteligentes?
         </Typography>
-        <Grid container spacing={4} justifyContent="center">
+        <Grid container spacing={4} justifyContent="center" sx={{ mt: 2 }}>
           <Grid item xs={12} sm={4}>
             <Box sx={{ borderRadius: 4, textAlign: 'center', py: 4, bgcolor: 'transparent' }}>
               <EmojiObjectsIcon color="primary" sx={{ fontSize: 40, mb: 2 }} />
@@ -106,14 +222,14 @@ export default function Home() {
           <Grid item xs={12} sm={4}>
             <Box sx={{ borderRadius: 4, textAlign: 'center', py: 4, bgcolor: 'transparent' }}>
               <FlashOnIcon color="warning" sx={{ fontSize: 40, mb: 2 }} />
-              <Typography variant="subtitle1" fontWeight="bold">Revisão Inteligente</Typography>
-              <Typography variant="body2" color="text.secondary">O sistema prioriza os flashcards que você mais erra, otimizando seu tempo de estudo.</Typography>
+              <Typography variant="subtitle1" fontWeight="bold">Revisão Adaptativa</Typography>
+              <Typography variant="body2" color="text.secondary">O sistema se adapta ao seu ritmo de aprendizado, focando nos conteúdos que mais precisa.</Typography>
             </Box>
           </Grid>
         </Grid>
       </Box>
 
-      {/* COMO FUNCIONA */}
+      {/* BENEFÍCIOS */}
       <Box mb={8} width="100%" px={2}>
         {/* DEPOIMENTOS */}
         <Box mb={8} width="100%" px={2}>
