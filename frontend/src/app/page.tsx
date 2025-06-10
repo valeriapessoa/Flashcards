@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import TestimonialsSection from "../components/TestimonialsSection";
 import EmojiObjectsIcon from '@mui/icons-material/EmojiObjects';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import DevicesIcon from '@mui/icons-material/Devices';
@@ -18,6 +19,8 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import QuizIcon from '@mui/icons-material/Quiz';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import StarIcon from '@mui/icons-material/Star';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
 import StarHalfIcon from '@mui/icons-material/StarHalf';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 export default function Home() {
@@ -31,63 +34,166 @@ export default function Home() {
       <Box
         sx={{
           width: '100%',
+          minHeight: 'calc(100vh - 64px)',
           bgcolor: 'linear-gradient(135deg, #e3f2fd 60%, #fff 100%)',
-          pt: { xs: 6, md: 10 },
-          pb: { xs: 6, md: 10 },
-          minHeight: { xs: 300, md: 350 },
+          py: { xs: 8, md: 12 },
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
           position: 'relative',
-          overflow: 'hidden',
+          overflow: 'hidden'
         }}
       >
-        <Grid container spacing={2} alignItems="center" sx={{ maxWidth: 1200, width: '100%', mx: 'auto', px: 2 }}>
-          <Grid item xs={12} md={8}>
+        <Grid 
+          container 
+          spacing={6} 
+          alignItems="center" 
+          justifyContent="center"
+          sx={{ 
+            maxWidth: '1400px', 
+            width: '100%', 
+            mx: 'auto', 
+            px: { xs: 4, md: 6 },
+            py: { xs: 4, md: 8 }
+          }}
+        >
+          <Grid item xs={12} md={6} lg={6}>
             <Box sx={{ 
-              textAlign: 'left',
-              maxWidth: '100%',
-              width: '100%',
-              padding: '0 1rem',
-              margin: '0 auto'
+              maxWidth: '600px',
+              mx: 'auto',
+              textAlign: { xs: 'center', md: 'left' },
+              px: { xs: 0, md: 4 }
             }}>
-              <Typography variant="h2" fontWeight="bold" color="primary.main" sx={{ fontSize: { xs: '2.5rem', md: '3.5rem' }, lineHeight: 1.2 }}>
+              <Typography 
+                variant="h1" 
+                component="h1"
+                sx={{ 
+                  fontSize: { xs: '2.8rem', sm: '3.5rem', md: '4rem' },
+                  fontWeight: 800,
+                  lineHeight: 1.1,
+                  mb: 3,
+                  color: 'primary.main'
+                }}
+              >
                 Torne seu aprendizado mais eficiente
               </Typography>
-              <Typography variant="h5" color="text.secondary" mb={4} sx={{ mt: 2 }}>
+              <Box
+                sx={{
+                  width: { xs: 80, md: 100 },
+                  height: { xs: 3, md: 4 },
+                  bgcolor: '#ff7043',
+                  mb: 4,
+                  mx: { xs: 'auto', md: 0 }
+                }}
+              />
+              <Typography 
+                variant="h4" 
+                component="h2"
+                sx={{ 
+                  fontSize: { xs: '1.5rem', md: '1.75rem' },
+                  fontWeight: 400,
+                  color: 'text.secondary',
+                  mb: 3,
+                  lineHeight: 1.4
+                }}
+              >
                 Organize, memorize e revise com Flashcards modernos
               </Typography>
+              <Box sx={{ display: 'flex', gap: 3, justifyContent: { xs: 'center', md: 'flex-start' }, mt: 4 }}>
+                <Button
+                  component={Link}
+                  href="/estudar"
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  sx={{ 
+                    px: 4,
+                    py: 1.5,
+                    fontSize: '1.1rem',
+                    fontWeight: 600,
+                    borderRadius: '8px',
+                    textTransform: 'none'
+                  }}
+                >
+                  Começar Agora
+                </Button>
+                <Button
+                  component={Link}
+                  href="/sobre"
+                  variant="outlined"
+                  color="primary"
+                  size="large"
+                  sx={{ 
+                    px: 4,
+                    py: 1.5,
+                    fontSize: '1.1rem',
+                    fontWeight: 600,
+                    borderRadius: '8px',
+                    textTransform: 'none'
+                  }}
+                >
+                  Saiba Mais
+                </Button>
+              </Box>
             </Box>
           </Grid>
-          <Grid item xs={12} md={4}>
-            <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', maxWidth: '400px' }}>
+          <Grid item xs={12} md={6} lg={6} sx={{ position: 'relative', height: '100%' }}>
+            <Box sx={{ 
+              width: '100%', 
+              height: '100%',
+              display: 'flex', 
+              justifyContent: 'center', 
+              alignItems: 'center',
+              position: 'relative',
+              zIndex: 1
+            }}>
               <Image 
-                src="/images/mascote.png" 
+                src="/images/mascote3.png" 
                 alt="Bem-vindo ao Flashcard" 
-                width={350} 
-                height={220} 
-                style={{ objectFit: 'contain' }} 
-                priority 
+                width={800}
+                height={800}
+                priority
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  maxWidth: '100%',
+                  maxHeight: '70vh',
+                  objectFit: 'contain',
+                  filter: 'drop-shadow(0 10px 30px rgba(0, 0, 0, 0.1))'
+                }} 
               />
             </Box>
           </Grid>
         </Grid>
-        <Box sx={{ textAlign: 'center', mt: 2 }}>
-          <Button
-            component={Link}
-            href="/estudar"
-            variant="contained"
-            color="success"
-            size="large"
-            sx={{ px: 6, py: 1.5, fontWeight: 600, fontSize: 20, boxShadow: 3, borderRadius: 3 }}
-          >
-            Comece a Estudar
-          </Button>
-        </Box>
       </Box>
 
       {/* COMO FUNCIONA */}
       <Box sx={{ bgcolor: '#f8f9fa', py: 8, px: 2 }}>
-        <Typography variant="h4" fontWeight="bold" color="primary.main" align="center" mb={6}>
-          Como Funciona
-        </Typography>
+        <Box sx={{ textAlign: 'center', mb: 6 }}>
+          <Typography 
+            variant="h4" 
+            component="h2"
+            color="primary"
+            sx={{
+              fontSize: { xs: '1.75rem', md: '2.25rem', lg: '2.5rem' },
+              letterSpacing: '0.05em',
+              mb: 2,
+              fontWeight: 700,
+              textTransform: 'capitalize'
+            }}
+          >
+            Como Funciona
+          </Typography>
+          <Box
+            sx={{
+              width: 80,
+              height: 4,
+              bgcolor: '#ff7043',
+              mx: 'auto',
+              mb: 4
+            }}
+          />
+        </Box>
         <Grid container spacing={4} justifyContent="center" sx={{ maxWidth: 1200, mx: 'auto' }}>
           <Grid item xs={12} md={3}>
             <Card 
@@ -106,7 +212,7 @@ export default function Home() {
                 }
               }}
             >
-              <SchoolIcon color="primary" sx={{ fontSize: 70, mb: 2 }} />
+              <HowToRegIcon color="primary" sx={{ fontSize: 70, mb: 2 }} />
               <Typography variant="h5" fontWeight="bold" mb={2}>
                 1. Registre-se
               </Typography>
@@ -200,267 +306,81 @@ export default function Home() {
       </Box>
 
       {/* BENEFÍCIOS */}
-      <Box mb={8} width="100%" px={2}>
-        <Typography variant="h5" fontWeight="bold" color="primary.main" align="center" mb={3}>
+      <Box sx={{ py: 8, px: 2 }}>
+        <Box sx={{ textAlign: 'center', mb: 6 }}>
+          <Typography 
+            variant="h4" 
+            component="h2"
+            color="primary"
+            sx={{
+              fontSize: { xs: '1.75rem', md: '2.25rem', lg: '2.5rem' },
+              letterSpacing: '0.05em',
+              mb: 2,
+              fontWeight: 700,
+              textTransform: 'capitalize'
+            }}
+          >
+            Benefícios
+          </Typography>
+          <Box
+            sx={{
+              width: 80,
+              height: 4,
+              bgcolor: '#ff0000',
+              mx: 'auto',
+              mb: 4
+            }}
+          />
+        </Box>
+        <Typography variant="h4" component="h3" color="primary.main" align="center" mb={6} sx={{ fontWeight: 600, fontSize: { xs: '1.5rem', md: '1.75rem' } }}>
           Por que usar o Flashcards Inteligentes?
         </Typography>
         <Grid container spacing={4} justifyContent="center" sx={{ mt: 2 }}>
           <Grid item xs={12} sm={4}>
-            <Box sx={{ borderRadius: 4, textAlign: 'center', py: 4, bgcolor: 'transparent' }}>
-              <EmojiObjectsIcon color="primary" sx={{ fontSize: 40, mb: 2 }} />
-              <Typography variant="subtitle1" fontWeight="bold">Memorização Eficiente</Typography>
-              <Typography variant="body2" color="text.secondary">Otimize seu tempo focando nos conteúdos que mais precisa revisar.</Typography>
+            <Box sx={{ borderRadius: 4, textAlign: 'center', py: 4, bgcolor: 'transparent', height: '100%' }}>
+              <EmojiObjectsIcon color="primary" sx={{ fontSize: 48, mb: 3 }} />
+              <Typography variant="h6" component="h4" fontWeight={600} gutterBottom>Memorização Eficiente</Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1.1rem' }}>Otimize seu tempo focando nos conteúdos que mais precisa revisar.</Typography>
             </Box>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Box sx={{ borderRadius: 4, textAlign: 'center', py: 4, bgcolor: 'transparent' }}>
-              <DevicesIcon color="secondary" sx={{ fontSize: 40, mb: 2 }} />
-              <Typography variant="subtitle1" fontWeight="bold">Acesse de Qualquer Lugar</Typography>
-              <Typography variant="body2" color="text.secondary">Estude no computador, tablet ou celular, onde quiser.</Typography>
+            <Box sx={{ borderRadius: 4, textAlign: 'center', py: 4, bgcolor: 'transparent', height: '100%' }}>
+              <DevicesIcon color="secondary" sx={{ fontSize: 48, mb: 3 }} />
+              <Typography variant="h6" component="h4" fontWeight={600} gutterBottom>Acesse de Qualquer Lugar</Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1.1rem' }}>Estude no computador, tablet ou celular, mesmo offline.</Typography>
             </Box>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Box sx={{ borderRadius: 4, textAlign: 'center', py: 4, bgcolor: 'transparent' }}>
-              <FlashOnIcon color="warning" sx={{ fontSize: 40, mb: 2 }} />
-              <Typography variant="subtitle1" fontWeight="bold">Revisão Adaptativa</Typography>
-              <Typography variant="body2" color="text.secondary">O sistema se adapta ao seu ritmo de aprendizado, focando nos conteúdos que mais precisa.</Typography>
+            <Box sx={{ borderRadius: 4, textAlign: 'center', py: 4, bgcolor: 'transparent', height: '100%' }}>
+              <FlashOnIcon color="warning" sx={{ fontSize: 48, mb: 3 }} />
+              <Typography variant="h6" component="h4" fontWeight={600} gutterBottom>Revisão Inteligente</Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1.1rem' }}>Sistema que prioriza os flashcards que você mais erra para melhorar a retenção.</Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Box sx={{ borderRadius: 4, textAlign: 'center', py: 4, bgcolor: 'transparent', height: '100%' }}>
+              <AddCircleOutlineIcon color="success" sx={{ fontSize: 48, mb: 3 }} />
+              <Typography variant="h6" component="h4" fontWeight={600} gutterBottom>Crie Seus Próprios Cards</Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1.1rem' }}>Personalize seus estudos criando flashcards com o conteúdo que você precisa aprender.</Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Box sx={{ borderRadius: 4, textAlign: 'center', py: 4, bgcolor: 'transparent', height: '100%' }}>
+              <AutoAwesomeIcon color="warning" sx={{ fontSize: 48, mb: 3 }} />
+              <Typography variant="h6" component="h4" fontWeight={600} gutterBottom>Interface Intuitiva</Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1.1rem' }}>Design limpo e fácil de usar, para que você possa focar apenas nos estudos.</Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Box sx={{ borderRadius: 4, textAlign: 'center', py: 4, bgcolor: 'transparent', height: '100%' }}>
+              <SchoolIcon color="info" sx={{ fontSize: 48, mb: 3 }} />
+              <Typography variant="h6" component="h4" fontWeight={600} gutterBottom>Aprendizado Eficaz</Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1.1rem' }}>Método comprovado para melhorar sua retenção de conteúdo de forma eficiente.</Typography>
             </Box>
           </Grid>
         </Grid>
       </Box>
-
-      {/* BENEFÍCIOS */}
-      <Box mb={8} width="100%" px={2}>
-        {/* DEPOIMENTOS */}
-        <Box mb={8} width="100%" px={2}>
-          <Typography variant="h5" fontWeight="bold" color="primary.main" align="center" mb={4}>
-            Depoimentos de Usuários
-          </Typography>
-          <Grid container spacing={4} justifyContent="center">
-            <Grid item xs={12} sm={6} md={4}>
-              <Card sx={{ 
-                height: '100%', 
-                borderRadius: 2,
-                bgcolor: '#fff',
-                boxShadow: 3
-              }}>
-                <CardContent sx={{ p: 4 }}>
-                  <Box sx={{ 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    gap: 2 
-                  }}>
-                    <Box sx={{ 
-                      display: 'flex', 
-                      alignItems: 'flex-start', 
-                      gap: 2 
-                    }}>
-                      <Avatar 
-                        src="/images/testimonials/img1.jpg"
-                        sx={{ 
-                          width: 60, 
-                          height: 60,
-                          bgcolor: 'transparent'
-                        }}
-                      />
-                      <Box>
-                        <Typography variant="h6" fontWeight="bold">
-                          Giovana Almeida
-                        </Typography>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          Estudante de Medicina
-                        </Typography>
-                      </Box>
-                    </Box>
-                    <Typography variant="body1" color="text.primary">
-                      "O Flashcards Inteligentes mudou minha forma de estudar. Antes eu gastava horas revisando conteúdo que já sabia. Agora, o sistema me mostra exatamente o que preciso focar, economizando meu tempo de estudo."
-                    </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                      <Rating 
-                        value={5} 
-                        readOnly 
-                        precision={0.5}
-                        sx={{ color: '#ffd700' }}
-                      />
-                    </Box>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Card sx={{ 
-                height: '100%', 
-                borderRadius: 2,
-                bgcolor: '#fff',
-                boxShadow: 3
-              }}>
-                <CardContent sx={{ p: 4 }}>
-                  <Box sx={{ 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    gap: 2 
-                  }}>
-                    <Box sx={{ 
-                      display: 'flex', 
-                      alignItems: 'flex-start', 
-                      gap: 2 
-                    }}>
-                      <Avatar 
-                        src="/images/testimonials/img2.jpg"
-                        sx={{ 
-                          width: 60, 
-                          height: 60,
-                          bgcolor: 'transparent'
-                        }}
-                      />
-                      <Box>
-                        <Typography variant="h6" fontWeight="bold">
-                          Camila Ferreira
-                        </Typography>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          Analista de Dados
-                        </Typography>
-                      </Box>
-                    </Box>
-                    <Typography variant="body1" color="text.primary">
-                      "O sistema de flashcards inteligente me ajudou a organizar melhor meus estudos e identificar áreas que precisavam de mais atenção. Agora consigo revisar de forma mais eficiente."
-                    </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                      <Rating 
-                        value={4.5} 
-                        readOnly 
-                        precision={0.5}
-                        sx={{ color: '#ffd700' }}
-                      />
-                    </Box>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Card sx={{ 
-                height: '100%', 
-                borderRadius: 2,
-                bgcolor: '#fff',
-                boxShadow: 3
-              }}>
-                <CardContent sx={{ p: 4 }}>
-                  <Box sx={{ 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    gap: 2 
-                  }}>
-                    <Box sx={{ 
-                      display: 'flex', 
-                      alignItems: 'flex-start', 
-                      gap: 2 
-                    }}>
-                      <Avatar 
-                        src="/images/testimonials/img3.jpg"
-                        sx={{ 
-                          width: 60, 
-                          height: 60,
-                          bgcolor: 'transparent'
-                        }}
-                      />
-                      <Box>
-                        <Typography variant="h6" fontWeight="bold">
-                          Liam Fernandes
-                        </Typography>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          Desenvolvedor
-                        </Typography>
-                      </Box>
-                    </Box>
-                    <Typography variant="body1" color="text.primary">
-                      "O sistema de flashcards inteligente me ajudou a organizar meus estudos de programação e melhorar minha produtividade. Agora consigo revisar conceitos complexos de forma mais eficiente."
-                    </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                      <Rating 
-                        value={5} 
-                        readOnly 
-                        precision={0.5}
-                        sx={{ color: '#ffd700' }}
-                      />
-                    </Box>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        </Box>
-
-        <Box sx={{ 
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: 4,
-          pt: 4
-        }}>
-          <Box sx={{ 
-            display: 'flex',
-            gap: 4,
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}>
-            <Box sx={{ 
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 2,
-              transition: 'transform 0.3s ease',
-              '&:hover': {
-                transform: 'scale(1.05)'
-              }
-            }}>
-              <Typography variant="h3" fontWeight="bold" color="primary.main">
-                1M+
-              </Typography>
-              <Typography variant="h6" color="text.secondary">
-                Usuários Ativos
-              </Typography>
-            </Box>
-            <Box sx={{ 
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 2,
-              transition: 'transform 0.3s ease',
-              '&:hover': {
-                transform: 'scale(1.05)'
-              }
-            }}>
-              <Typography variant="h3" fontWeight="bold" color="primary.main">
-                10M+
-              </Typography>
-              <Typography variant="h6" color="text.secondary">
-                Flashcards Criados
-              </Typography>
-            </Box>
-            <Box sx={{ 
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 2,
-              transition: 'transform 0.3s ease',
-              '&:hover': {
-                transform: 'scale(1.05)'
-              }
-            }}>
-              <Typography variant="h3" fontWeight="bold" color="primary.main">
-                98%
-              </Typography>
-              <Typography variant="h6" color="text.secondary">
-                Taxa de Aprovação
-              </Typography>
-            </Box>
-          </Box>
-        </Box>
-      </Box>
-
-      <Box sx={{ height: '100px', width: '100%' }} />
-
+      <TestimonialsSection />
       <Footer />
     </>
   );
