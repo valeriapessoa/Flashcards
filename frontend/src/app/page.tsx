@@ -36,10 +36,11 @@ export default function Home() {
           width: '100%',
           minHeight: 'calc(100vh - 64px)',
           bgcolor: 'linear-gradient(135deg, #e3f2fd 60%, #fff 100%)',
-          py: { xs: 8, md: 12 },
+          pt: 0,
+          pb: { xs: 4, md: 6 },
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          alignItems: 'flex-start',
+          justifyContent: 'flex-start',
           position: 'relative',
           overflow: 'hidden'
         }}
@@ -57,12 +58,13 @@ export default function Home() {
             py: { xs: 4, md: 8 }
           }}
         >
-          <Grid item xs={12} md={6} lg={6}>
+          <Grid item xs={12} md={6} lg={6} sx={{ display: 'flex', alignItems: 'flex-start', pt: { xs: 2, md: 4 } }}>
             <Box sx={{ 
               maxWidth: '600px',
               mx: 'auto',
               textAlign: { xs: 'center', md: 'left' },
-              px: { xs: 0, md: 4 }
+              px: { xs: 0, md: 4 },
+              mt: { xs: 2, md: 0 }
             }}>
               <Typography 
                 variant="h1" 
@@ -118,8 +120,8 @@ export default function Home() {
                   Começar Agora
                 </Button>
                 <Button
-                  component={Link}
-                  href="/sobre"
+                  component="a"
+                  href="#beneficios"
                   variant="outlined"
                   color="primary"
                   size="large"
@@ -148,7 +150,7 @@ export default function Home() {
               zIndex: 1
             }}>
               <Image 
-                src="/images/mascote3.png" 
+                src="/images/mascote33.png" 
                 alt="Bem-vindo ao Flashcard" 
                 width={800}
                 height={800}
@@ -306,7 +308,7 @@ export default function Home() {
       </Box>
 
       {/* BENEFÍCIOS */}
-      <Box sx={{ py: 8, px: 2 }}>
+      <Box id="beneficios" sx={{ py: 8, px: 2 }}>
         <Box sx={{ textAlign: 'center', mb: 6 }}>
           <Typography 
             variant="h4" 
@@ -380,6 +382,86 @@ export default function Home() {
           </Grid>
         </Grid>
       </Box>
+
+      {/* SEÇÃO DE IMAGEM COM TÍTULO */}
+      <Box sx={{ 
+        py: 10, 
+        px: 2, 
+        background: 'linear-gradient(135deg, rgb(255 235 235) 0%, rgba(255, 248, 240, 0.9) 100%)',
+        position: 'relative',
+        width: '100%',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: '5%',
+          right: '5%',
+          height: '1px',
+          background: 'linear-gradient(90deg, transparent, rgba(255, 152, 0, 0.3), transparent)'
+        },
+        '&::after': {
+          content: '""',
+          position: 'absolute',
+          bottom: 0,
+          left: '5%',
+          right: '5%',
+          height: '1px',
+          background: 'linear-gradient(90deg, transparent, rgba(255, 152, 0, 0.3), transparent)'
+        }
+      }}>
+        <Grid container spacing={4} alignItems="center" justifyContent="center" sx={{ maxWidth: 1400, mx: 'auto' }}>
+          <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Box
+              sx={{
+                position: 'relative',
+                width: '100%',
+                maxWidth: 700,
+                height: { xs: 300, md: 500 },
+                mx: 'auto',
+                '& img': {
+                  objectFit: 'contain !important',
+                }
+              }}
+            >
+              <Image
+                src="/images/estudar.png"
+                alt="Estudar com Flashcards"
+                layout="fill"
+                priority
+              />
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={6} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <Typography 
+              variant="h3" 
+              component="h2"
+              sx={{
+                fontSize: { xs: '2.2rem', md: '2.8rem' },
+                fontWeight: 800,
+                mb: 3,
+                color: 'primary.main',
+                lineHeight: 1.1
+              }}
+            >
+              Transforme sua forma de estudar
+            </Typography>
+            <Typography 
+              variant="h5" 
+              component="p"
+              sx={{
+                fontSize: { xs: '1.3rem', md: '1.7rem' },
+                color: 'text.secondary',
+                lineHeight: 1.4,
+                maxWidth: '90%'
+              }}
+            >
+              Aprenda de forma mais eficiente e divertida com nossa plataforma de flashcards interativos
+            </Typography>
+          </Grid>
+        </Grid>
+      </Box>
+
       <TestimonialsSection />
       <Footer />
     </>

@@ -36,13 +36,22 @@ const Header: React.FC = () => {
       <Toolbar sx={{ maxWidth: 1200, width: '100%', mx: 'auto', px: 2, minHeight: 54 }}>
         {/* Logo */}
         <Box sx={{ display: 'flex', alignItems: 'center', mr: 5, cursor: 'pointer' }} onClick={() => router.push('/') }>
-          <img 
-            src="/images/logo.png" 
-            alt="Flashcards App" 
-            width={80} 
-            height={27} 
-            style={{ objectFit: 'contain' }}
-          />
+          <Box sx={{ 
+            width: { xs: 100, sm: 120, md: 140 },
+            height: 'auto',
+            position: 'relative',
+            '& img': {
+              width: '100%',
+              height: 'auto',
+              objectFit: 'contain',
+              display: 'block'
+            }
+          }}>
+            <img 
+              src="/images/logo.png" 
+              alt="Flashcards App" 
+            />
+          </Box>
         </Box>
         {/* Menu centralizado */}
         {session && session.user ? (
