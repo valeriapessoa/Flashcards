@@ -8,6 +8,14 @@ import Image from "next/image"
 
 const testimonials = [
     {
+      id: 3,
+      name: "Liam Fernandes",
+      role: "Desenvolvedor",
+      content: "O sistema de flashcards inteligente me ajudou a organizar meus estudos de programação e melhorar minha produtividade. Agora consigo revisar conceitos complexos de forma mais eficiente.",
+      image: "/images/testimonials/img3.jpg",
+      rating: 5,
+    },
+    {
       id: 1,
       name: "Giovana Almeida",
       role: "Estudante de Medicina",
@@ -22,15 +30,7 @@ const testimonials = [
       content: "O sistema de flashcards inteligente me ajudou a organizar melhor meus estudos e identificar áreas que precisavam de mais atenção. Agora consigo revisar de forma mais eficiente.",
       image: "/images/testimonials/img2.jpg",
       rating: 5,
-    },
-    {
-      id: 3,
-      name: "Liam Fernandes",
-      role: "Desenvolvedor",
-      content: "O sistema de flashcards inteligente me ajudou a organizar meus estudos de programação e melhorar minha produtividade. Agora consigo revisar conceitos complexos de forma mais eficiente.",
-      image: "/images/testimonials/img3.jpg",
-      rating: 5,
-    },
+    }
   ]
 // Avatar maior como no screenshot
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
