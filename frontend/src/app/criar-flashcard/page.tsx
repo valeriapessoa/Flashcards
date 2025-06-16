@@ -9,6 +9,7 @@ import axios from "axios";
 import { Flashcard } from "../../types";
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import { Box, Container, Typography } from '@mui/material';
 
 const CreateFlashcard: React.FC = () => {
   const router = useRouter();
@@ -55,17 +56,59 @@ const CreateFlashcard: React.FC = () => {
   }
 
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header />
-      <div className="py-8 px-6 md:px-24">
-        <h1 className="text-3xl font-bold text-center mb-4">Criar Flashcard</h1>
-        <p className="text-center text-gray-600 mb-8">Preencha os campos abaixo para adicionar um novo flashcard à sua coleção.</p>
-        <FlashcardForm onSubmit={handleSubmit} onCreated={() => {
-          queryClient.invalidateQueries({ queryKey: ['studySessionFlashcards'] });
-        }} />
-      </div>
+      <Container 
+        component="main" 
+        maxWidth={false}
+        disableGutters
+        sx={{ 
+          py: 8, 
+          px: { xs: 2, sm: 4, md: 6, lg: 8 },
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          width: '100%',
+          maxWidth: '1600px',
+          mx: 'auto'
+        }}
+      >
+        <Typography 
+          variant="h3" 
+          component="h1" 
+          align="center" 
+          gutterBottom
+          sx={{ 
+            fontWeight: 'bold',
+            mb: 2
+          }}
+        >
+          Criar Flashcard
+        </Typography>
+        <Typography 
+          variant="subtitle1" 
+          align="center" 
+          color="text.secondary"
+          sx={{ 
+            mb: 8,
+            maxWidth: '800px',
+            mx: 'auto'
+          }}
+        >
+          Preencha os campos abaixo para adicionar um novo flashcard à sua coleção.
+        </Typography>
+        <Box sx={{ width: '100%', maxWidth: '1400px', px: { xs: 0, sm: 2 } }}>
+          <FlashcardForm 
+            onSubmit={handleSubmit} 
+            onCreated={() => {
+              queryClient.invalidateQueries({ queryKey: ['studySessionFlashcards'] });
+            }} 
+          />
+        </Box>
+      </Container>
       <Footer />
-    </>
+    </Box>
   );
 };
 
