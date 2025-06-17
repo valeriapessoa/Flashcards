@@ -109,9 +109,9 @@ const HeroSection = () => {
                 color="primary"
                 size="large"
                 sx={{
-                  px: { xs: 3, md: 4 },
-                  py: { xs: 1, md: 1.5 },
-                  fontSize: { xs: "0.9rem", md: "1.1rem" },
+                  px: { xs: 2, sm: 3, md: 4 },
+                  py: { xs: 0.75, sm: 1, md: 1.5 },
+                  fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1.1rem" },
                   fontWeight: 600,
                   borderRadius: "8px",
                   textTransform: "none",
@@ -126,9 +126,9 @@ const HeroSection = () => {
                 color="primary"
                 size="large"
                 sx={{
-                  px: { xs: 3, md: 4 },
-                  py: { xs: 1, md: 1.5 },
-                  fontSize: { xs: "0.9rem", md: "1.1rem" },
+                  px: { xs: 2, sm: 3, md: 4 },
+                  py: { xs: 0.75, sm: 1, md: 1.5 },
+                  fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1.1rem" },
                   fontWeight: 600,
                   borderRadius: "8px",
                   textTransform: "none",
