@@ -44,10 +44,16 @@ interface Flashcard {
 }
 
 const Flashcards: React.FC = () => {
+  // Todos os hooks devem vir primeiro, antes de qualquer lógica condicional
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data: session, status } = useSession();
   const theme = useTheme();
+  
+  // Estados
+  const [deleteId, setDeleteId] = React.useState<number | null>(null);
+  const [imageDialogOpen, setImageDialogOpen] = React.useState(false);
+  const [dialogImageUrl, setDialogImageUrl] = React.useState<string | null>(null);
 
   // useQuery sempre chamado, só habilita se autenticado
   const { data: flashcards = [], isLoading, error } = useQuery<Flashcard[], Error>({
@@ -55,12 +61,6 @@ const Flashcards: React.FC = () => {
     queryFn: () => fetchFlashcards(),
     enabled: !!session,
   });
-
-  const [deleteId, setDeleteId] = React.useState<number | null>(null);
-
-  const handleEdit = (id: number) => {
-    router.push(`/editar-flashcard?id=${id}`);
-  };
 
   const mutation = useMutation<unknown, Error, number>({
     mutationFn: (id: number) => deleteFlashcard(id.toString()),
@@ -71,43 +71,41 @@ const Flashcards: React.FC = () => {
     },
   });
 
+  // Handlers
+  const handleEdit = (id: number) => {
+    router.push(`/editar-flashcard?id=${id}`);
+  };
+
   const handleDelete = () => {
     if (deleteId !== null) {
       mutation.mutate(deleteId);
     }
   };
 
-  // Estado para modal de imagem ampliada
-  const [imageDialogOpen, setImageDialogOpen] = React.useState(false);
-  const [dialogImageUrl, setDialogImageUrl] = React.useState<string | null>(null);
-
   const handleImageClick = (url: string) => {
     setDialogImageUrl(url);
     setImageDialogOpen(true);
   };
+
   const handleDialogClose = () => {
     setImageDialogOpen(false);
     setDialogImageUrl(null);
   };
 
-  // Correção: renderização condicional após hooks
-  if (status === "loading") {
-    return (
-      <Box minHeight="75vh" display="flex" alignItems="center" justifyContent="center">
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  // Efeito para redirecionar para login quando não autenticado
+  // Redirecionamento para login quando não autenticado
   React.useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
     }
   }, [status, router]);
 
-  if (status === "unauthenticated") {
-    return null;
+  // Renderização condicional após todos os hooks
+  if (status === "loading" || status === "unauthenticated") {
+    return (
+      <Box minHeight="75vh" display="flex" alignItems="center" justifyContent="center">
+        <CircularProgress />
+      </Box>
+    );
   }
 
   return (
