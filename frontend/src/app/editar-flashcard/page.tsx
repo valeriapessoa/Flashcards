@@ -1,14 +1,14 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQuery, QueryClient, QueryClientProvider } from "react-query";
 import { Flashcard } from "../../types";
 import { fetchFlashcard, updateFlashcard } from "../../lib/api";
 import FlashcardForm from "../../components/FlashcardForm";
-import { useSession } from "next-auth/react";
+import { useSession, getSession } from "next-auth/react";
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import { Box, Typography, Card, CardContent, Button, CircularProgress, useTheme } from '@mui/material';
+import { Box, Typography, Button, CircularProgress, useTheme, Container } from '@mui/material';
 
 const queryClient = new QueryClient();
 
@@ -24,13 +24,22 @@ const EditFlashcardPage = () => {
   // useQuery sempre chamado, só habilita se houver id e sessão
   const { data, isLoading, isError } = useQuery(
     ["flashcard", id],
-    () => fetchFlashcard(id as string),
+    async () => {
+      // Garante que temos uma sessão antes de fazer a requisição
+      const currentSession = await getSession();
+      if (!currentSession) {
+        router.push("/login");
+        throw new Error("Não autenticado");
+      }
+      return fetchFlashcard(id as string);
+    },
     {
-      enabled: !!id && !!session,
+      enabled: !!id,
       onSuccess: (data) => {
         setFlashcard(data);
         setOriginalFlashcard(data);
       },
+      retry: 1,
     }
   );
 
@@ -87,40 +96,90 @@ const EditFlashcardPage = () => {
   }
 
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header />
-      <div className="py-8 px-6 md:px-24">
-        <h1 className="text-3xl font-bold text-center mb-4">Editar Flashcard</h1>
-        <p className="text-center text-gray-600 mb-8">Faça alterações nos campos abaixo para atualizar seu flashcard.</p>
-        {isLoading ? (
-          <div className="flex justify-center mt-4">
-            <CircularProgress />
-          </div>
-        ) : isError ? (
-          <p className="text-center text-red-500">Erro ao carregar o flashcard. Tente novamente.</p>
-        ) : !flashcard ? (
-          <p className="text-center text-gray-600">Flashcard não encontrado.</p>
-        ) : (
-          <>
-            <FlashcardForm
-              flashcard={flashcard}
-              onSubmit={handleSubmit}
-              isEditing={true}
-            />
-            <div className="mt-4">
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={() => router.push("/flashcards")}
-              >
-                Voltar
-              </Button>
-            </div>
-          </>
-        )}
-      </div>
+      <Container 
+        component="main" 
+        maxWidth={false}
+        disableGutters
+        sx={{ 
+          py: { xs: 4, sm: 6, md: 8 }, 
+          px: { xs: 1.5, sm: 3, md: 6, lg: 8 },
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          width: '100%',
+          maxWidth: '1600px',
+          mx: 'auto',
+          overflowX: 'hidden'
+        }}
+      >
+        <Typography 
+          variant="h4" 
+          component="h1" 
+          align="center" 
+          gutterBottom
+          sx={{
+            fontWeight: 'bold',
+            mb: 2,
+            fontSize: '1.75rem',
+            lineHeight: 1.3,
+            px: 1
+          }}
+        >
+          Editar Flashcard
+        </Typography>
+        <Typography 
+          variant="subtitle1" 
+          align="center" 
+          color="text.secondary"
+          sx={{ 
+            mb: { xs: 4, sm: 6, md: 8 },
+            maxWidth: '800px',
+            mx: 'auto',
+            px: { xs: 1, sm: 2 },
+            fontSize: { xs: '0.875rem', sm: '0.9375rem', md: '1rem' },
+            lineHeight: { xs: 1.4, sm: 1.5 }
+          }}
+        >
+          Faça alterações nos campos abaixo para atualizar seu flashcard.
+        </Typography>
+        <Box sx={{ width: '100%', maxWidth: '1400px', px: { xs: 0, sm: 2 } }}>
+          {isLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : isError ? (
+            <Typography align="center" color="error" sx={{ mt: 4 }}>
+              Erro ao carregar o flashcard. Tente novamente.
+            </Typography>
+          ) : !flashcard ? (
+            <Typography align="center" color="text.secondary" sx={{ mt: 4 }}>
+              Flashcard não encontrado.
+            </Typography>
+          ) : (
+            <>
+              <FlashcardForm
+                flashcard={flashcard}
+                onSubmit={handleSubmit}
+                isEditing={true}
+              />
+              <div className="mt-4">
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={() => router.push("/flashcards")}
+                >
+                  Voltar
+                </Button>
+              </div>
+            </>
+          )}
+        </Box>
+      </Container>
       <Footer />
-    </>
+    </Box>
   );
 };
 
@@ -128,9 +187,15 @@ export default function Page() {
   const { status } = useSession();
   const router = useRouter();
 
+  // Efeito para redirecionar para login quando não autenticado
+  React.useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
+
   if (status === "loading") return null;
   if (status === "unauthenticated") {
-    router.push("/login");
     return null;
   }
 
