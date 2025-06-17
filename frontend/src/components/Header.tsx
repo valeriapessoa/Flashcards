@@ -88,29 +88,6 @@ const Header: React.FC = () => {
           );
         })}
       </List>
-      <Box sx={{ mt: 4, p: 2 }}>
-        <Button
-          fullWidth
-          variant="outlined"
-          onClick={() => signOut({ callbackUrl: '/login' })}
-          sx={{
-            borderRadius: 2,
-            textTransform: 'none',
-            fontWeight: 700,
-            fontSize: 16,
-            border: '2px solid #1976d2',
-            color: '#1976d2',
-            background: 'none',
-            py: 1,
-            '&:hover': {
-              background: '#e3f2fd',
-              border: '2.5px solid #1976d2',
-            },
-          }}
-        >
-          Sair
-        </Button>
-      </Box>
     </Box>
   );
 
