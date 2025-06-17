@@ -52,10 +52,34 @@ const RevisaoInteligentePage = () => {
         <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
           {session ? (
             <>
-              <Typography variant="h4" gutterBottom textAlign="center">
-Revisão Inteligente
+              <Typography 
+                variant="h4" 
+                component="h1"
+                align="center" 
+                gutterBottom
+                sx={{
+                  fontWeight: 'bold',
+                  mb: 2,
+                  fontSize: '1.75rem',
+                  lineHeight: 1.3,
+                  px: 1
+                }}
+              >
+                Revisão Inteligente
               </Typography>
-              <Typography variant="body1" paragraph textAlign="center">
+              <Typography 
+                variant="subtitle1" 
+                align="center" 
+                color="text.secondary"
+                sx={{ 
+                  mb: { xs: 4, sm: 6, md: 8 },
+                  maxWidth: '800px',
+                  mx: 'auto',
+                  px: { xs: 1, sm: 2 },
+                  fontSize: { xs: '0.875rem', sm: '0.9375rem', md: '1rem' },
+                  lineHeight: { xs: 1.4, sm: 1.5 }
+                }}
+              >
                 Aqui estão os flashcards que você mais errou e precisa revisar. Foco total! 🚀
               </Typography>
               <Box sx={{ mt: 4 }}>
