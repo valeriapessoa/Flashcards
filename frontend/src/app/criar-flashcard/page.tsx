@@ -63,25 +63,29 @@ const CreateFlashcard: React.FC = () => {
         maxWidth={false}
         disableGutters
         sx={{ 
-          py: 8, 
-          px: { xs: 2, sm: 4, md: 6, lg: 8 },
+          py: { xs: 4, sm: 6, md: 8 }, 
+          px: { xs: 1.5, sm: 3, md: 6, lg: 8 },
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           width: '100%',
           maxWidth: '1600px',
-          mx: 'auto'
+          mx: 'auto',
+          overflowX: 'hidden'
         }}
       >
         <Typography 
-          variant="h3" 
+          variant="h4" 
           component="h1" 
           align="center" 
           gutterBottom
-          sx={{ 
+          sx={{
             fontWeight: 'bold',
-            mb: 2
+            mb: 2,
+            fontSize: '1.75rem',
+            lineHeight: 1.3,
+            px: 1
           }}
         >
           Criar Flashcard
@@ -91,14 +95,17 @@ const CreateFlashcard: React.FC = () => {
           align="center" 
           color="text.secondary"
           sx={{ 
-            mb: 8,
+            mb: { xs: 4, sm: 6, md: 8 },
             maxWidth: '800px',
-            mx: 'auto'
+            mx: 'auto',
+            px: { xs: 1, sm: 2 },
+            fontSize: { xs: '0.875rem', sm: '0.9375rem', md: '1rem' },
+            lineHeight: { xs: 1.4, sm: 1.5 }
           }}
         >
           Preencha os campos abaixo para adicionar um novo flashcard à sua coleção.
         </Typography>
-        <Box sx={{ width: '100%', maxWidth: '1400px', px: { xs: 0, sm: 2 } }}>
+        <Box sx={{ width: '100%', maxWidth: '1400px', px: { xs: 0, sm: 2 }, '& .react-tagsinput': { mx: { xs: 0.5, sm: 0 } } }}>
           <FlashcardForm 
             onSubmit={handleSubmit} 
             onCreated={() => {

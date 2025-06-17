@@ -235,73 +235,87 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
   };
 
   return (
-    <div className="space-y-4">
-      <form onSubmit={handleSubmit}>
-        <div className="flex flex-col md:flex-row gap-6">
+    <div className="space-y-4 w-full">
+      <form onSubmit={handleSubmit} className="w-full">
+        <div className="flex flex-col md:flex-row gap-3 md:gap-6 w-full">
           {/* Card Frente */}
-          <div className="flex-1 border rounded-lg p-4 shadow bg-white">
-            <h2 className="text-lg font-bold mb-2">Frente</h2>
+          <div className="flex-1 border rounded-lg p-3 sm:p-4 shadow bg-white w-full">
+            <h2 className="text-base sm:text-lg font-bold mb-2">Frente</h2>
             <textarea
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Digite o conteúdo da frente do flashcard"
               required
-              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-24"
+              className="w-full p-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-24"
             />
             {errors.front && <p className="text-red-600 text-sm">{errors.front}</p>}
             <label className="block mt-3 font-medium">Imagem</label>
             <div
               {...getRootPropsFront()}
-              className={`p-4 border-2 border-dashed rounded-lg text-center cursor-pointer ${isDragActiveFront ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}`}
+              className={`p-3 sm:p-4 border-2 border-dashed rounded-lg text-center cursor-pointer ${isDragActiveFront ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}`}
             >
-              <input {...getInputPropsFront()} />
+              <input {...getInputPropsFront()} className="hidden" />
               {isDragActiveFront ? (
-                <p className="text-blue-500">Solte a imagem aqui...</p>
+                <p className="text-blue-500 text-sm sm:text-base">Solte a imagem aqui...</p>
               ) : (
-                <p className="text-gray-500">Arraste e solte uma imagem aqui ou clique para selecionar (opcional)</p>
+                <p className="text-gray-500 text-xs sm:text-sm">Arraste e solte uma imagem aqui ou toque para selecionar (opcional)</p>
               )}
             </div>
             {frontImagePreview && (
               <div className="mt-2 relative">
-                <img src={frontImagePreview} alt="Preview Frente" className="w-full h-32 object-cover rounded-lg shadow-md" />
-                <button type="button" onClick={handleRemoveFrontImage} className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600">✖</button>
+                <img src={frontImagePreview} alt="Preview Frente" className="w-full h-28 sm:h-32 object-cover rounded-lg shadow-md" />
+                <button 
+                  type="button" 
+                  onClick={handleRemoveFrontImage} 
+                  className="absolute top-1 right-1 sm:top-2 sm:right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 text-sm sm:text-base w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center"
+                  aria-label="Remover imagem"
+                >
+                  ✖
+                </button>
               </div>
             )}
           </div>
           {/* Card Verso */}
-          <div className="flex-1 border rounded-lg p-4 shadow bg-white">
-            <h2 className="text-lg font-bold mb-2">Verso</h2>
+          <div className="flex-1 border rounded-lg p-3 sm:p-4 shadow bg-white w-full">
+            <h2 className="text-base sm:text-lg font-bold mb-2">Verso</h2>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Digite o conteúdo do verso do flashcard"
               required
-              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-24"
+              className="w-full p-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-24"
             />
             {errors.back && <p className="text-red-600 text-sm">{errors.back}</p>}
             <label className="block mt-3 font-medium">Imagem do Verso</label>
             <div
               {...getRootPropsBack()}
-              className={`p-4 border-2 border-dashed rounded-lg text-center cursor-pointer ${isDragActiveBack ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}`}
+              className={`p-3 sm:p-4 border-2 border-dashed rounded-lg text-center cursor-pointer ${isDragActiveBack ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}`}
             >
-              <input {...getInputPropsBack()} />
+              <input {...getInputPropsBack()} className="hidden" />
               {isDragActiveBack ? (
-                <p className="text-blue-500">Solte a imagem aqui...</p>
+                <p className="text-blue-500 text-sm sm:text-base">Solte a imagem aqui...</p>
               ) : (
-                <p className="text-gray-500">Arraste e solte uma imagem aqui ou clique para selecionar (opcional)</p>
+                <p className="text-gray-500 text-xs sm:text-sm">Arraste e solte uma imagem aqui ou toque para selecionar (opcional)</p>
               )}
             </div>
             {backImagePreview && (
               <div className="mt-2 relative">
-                <img src={backImagePreview} alt="Preview Verso" className="w-full h-32 object-cover rounded-lg shadow-md" />
-                <button type="button" onClick={handleRemoveBackImage} className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600">✖</button>
+                <img src={backImagePreview} alt="Preview Verso" className="w-full h-28 sm:h-32 object-cover rounded-lg shadow-md" />
+                <button 
+                  type="button" 
+                  onClick={handleRemoveBackImage} 
+                  className="absolute top-1 right-1 sm:top-2 sm:right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 text-sm sm:text-base w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center"
+                  aria-label="Remover imagem"
+                >
+                  ✖
+                </button>
               </div>
             )}
           </div>
         </div>
         {/* Campo de Tags e botão (inalterados) */}
-        <div className="flex flex-col mt-6">
-          <label className="text-gray-700 font-medium mb-1">Tags</label>
+        <div className="flex flex-col mt-4 sm:mt-6">
+          <label className="text-sm sm:text-base text-gray-700 font-medium mb-1">Tags</label>
           <ReactTags
             tags={tags}
             handleDelete={handleDelete}
@@ -313,7 +327,7 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
             classNames={{
               tags: 'flex flex-wrap gap-2',
               tagInput: 'flex-1',
-              tagInputField: 'p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full',
+              tagInputField: 'p-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full',
               selected: 'flex flex-wrap gap-2',
               // Estilos aplicados pelo componente CustomTag
               tag: 'bg-blue-100 text-blue-800 px-3 py-1 rounded-md text-sm flex items-center gap-1',
@@ -328,7 +342,7 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
         </div>
         <button
           type="submit"
-          className={`mt-4 px-4 py-2 rounded-lg text-white ${isSubmitting ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+          className={`mt-4 w-full sm:w-auto px-4 py-3 sm:py-2 text-sm sm:text-base rounded-lg text-white ${isSubmitting ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} transition-colors duration-200`}
           disabled={isSubmitting}
         >
           {isSubmitting ? (isEditing ? 'Salvando...' : 'Criando...') : (isEditing ? 'Salvar Alterações' : 'Criar Flashcard')}
