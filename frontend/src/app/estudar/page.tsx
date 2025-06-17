@@ -38,10 +38,34 @@ const StudyPage = () => {
         <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
           {session ? (
             <>
-              <Typography variant="h4" gutterBottom textAlign="center">
+              <Typography 
+                variant="h4" 
+                component="h1"
+                align="center" 
+                gutterBottom
+                sx={{
+                  fontWeight: 'bold',
+                  mb: 2,
+                  fontSize: '1.75rem',
+                  lineHeight: 1.3,
+                  px: 1
+                }}
+              >
                 Modo de Estudo
               </Typography>
-              <Typography variant="body1" textAlign="center">
+              <Typography 
+                variant="subtitle1" 
+                align="center" 
+                color="text.secondary"
+                sx={{ 
+                  mb: { xs: 4, sm: 6, md: 8 },
+                  maxWidth: '800px',
+                  mx: 'auto',
+                  px: { xs: 1, sm: 2 },
+                  fontSize: { xs: '0.875rem', sm: '0.9375rem', md: '1rem' },
+                  lineHeight: { xs: 1.4, sm: 1.5 }
+                }}
+              >
                 Pratique seus flashcards aqui! 🚀
               </Typography>
               <Box sx={{ mt: 4 }}>

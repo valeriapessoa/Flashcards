@@ -118,7 +118,7 @@ const Flashcard: React.FC<FlashcardProps> = ({
         {tags && tags.length > 0 && (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>
              <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5, alignSelf: 'center' }}>
-               🔖 Tags:
+                Tags:
              </Typography>
             {tags.map((tag, idx) => (
               <Chip key={idx} label={tag} size="small" color="primary" variant="outlined" />
@@ -128,9 +128,15 @@ const Flashcard: React.FC<FlashcardProps> = ({
       </CardContent>
 
       {/* Ações */}
-      <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', borderTop: `1px solid ${theme.palette.divider}` }}>
-        <Button
-          variant="outlined"
+      <Box sx={{ 
+        p: { xs: 1, sm: 2 }, 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        gap: { xs: 0.5, sm: 1 },
+        borderTop: `1px solid ${theme.palette.divider}` 
+      }}>
+        <IconButton
           onClick={() => {
             if (currentCardIndex > 0) {
               onPrevious();
@@ -138,17 +144,60 @@ const Flashcard: React.FC<FlashcardProps> = ({
             }
           }}
           disabled={currentCardIndex === 0}
-          startIcon={<ArrowBackIcon />}
+          sx={{
+            width: 40,
+            height: 40,
+            border: `1px solid ${theme.palette.primary.main}`,
+            color: theme.palette.primary.main,
+            '&:hover': {
+              backgroundColor: 'rgba(25, 118, 210, 0.04)'
+            },
+            '&:disabled': {
+              borderColor: theme.palette.action.disabled,
+              color: theme.palette.action.disabled
+            }
+          }}
         >
-          Anterior
-        </Button>
-        <Box sx={{ display: 'flex', gap: 1 }}>
+          <ArrowBackIcon />
+        </IconButton>
+        <Box sx={{ 
+          display: 'flex', 
+          gap: { xs: 0.5, sm: 1 },
+          '& .MuiButton-root': {
+            minWidth: { xs: 40, sm: 'auto' },
+            height: { xs: 36, sm: 'auto' },
+            padding: { xs: '6px 8px', sm: '6px 16px' },
+            '& .MuiButton-startIcon': {
+              margin: { xs: 0, sm: '0 8px 0 -4px' },
+              '& > *:nth-of-type(1)': {
+                fontSize: { xs: '1.25rem', sm: '1.5rem' }
+              }
+            },
+            '& span': {
+              display: { xs: 'none', sm: 'inline' }
+            }
+          }
+        }}>
           {!isFlipped ? (
             <Button
               variant="contained"
               onClick={handleFlip}
-              startIcon={<FlipIcon />}
-              fullWidth
+              size="small"
+              startIcon={<FlipIcon fontSize="small" />}
+              sx={{
+                minWidth: { xs: 40, sm: 'auto' },
+                height: { xs: 36, sm: 'auto' },
+                padding: { xs: '6px 8px', sm: '6px 16px' },
+                '& .MuiButton-startIcon': {
+                  margin: { xs: 0, sm: '0 8px 0 -4px' },
+                  '& > *:nth-of-type(1)': {
+                    fontSize: { xs: '1.25rem', sm: '1.5rem' }
+                  }
+                },
+                '& span': {
+                  display: { xs: 'none', sm: 'inline' }
+                }
+              }}
             >
               Ver Resposta
             </Button>
@@ -157,24 +206,53 @@ const Flashcard: React.FC<FlashcardProps> = ({
               <Button
                 variant="contained"
                 color="error"
+                size="small"
                 onClick={handleIncorrect}
-                startIcon={<HighlightOffIcon />}
+                startIcon={<HighlightOffIcon fontSize="small" />}
+                sx={{
+                  minWidth: { xs: 40, sm: 'auto' },
+                  height: { xs: 36, sm: 'auto' },
+                  padding: { xs: '6px 8px', sm: '6px 16px' },
+                  '& .MuiButton-startIcon': {
+                    margin: { xs: 0, sm: '0 8px 0 -4px' },
+                    '& > *:nth-of-type(1)': {
+                      fontSize: { xs: '1.25rem', sm: '1.5rem' }
+                    }
+                  },
+                  '& span': {
+                    display: { xs: 'none', sm: 'inline' }
+                  }
+                }}
               >
                 Errei
               </Button>
               <Button
                 variant="contained"
                 color="success"
+                size="small"
                 onClick={handleCorrect}
-                startIcon={<CheckCircleOutlineIcon />}
+                startIcon={<CheckCircleOutlineIcon fontSize="small" />}
+                sx={{
+                  minWidth: { xs: 40, sm: 'auto' },
+                  height: { xs: 36, sm: 'auto' },
+                  padding: { xs: '6px 8px', sm: '6px 16px' },
+                  '& .MuiButton-startIcon': {
+                    margin: { xs: 0, sm: '0 8px 0 -4px' },
+                    '& > *:nth-of-type(1)': {
+                      fontSize: { xs: '1.25rem', sm: '1.5rem' }
+                    }
+                  },
+                  '& span': {
+                    display: { xs: 'none', sm: 'inline' }
+                  }
+                }}
               >
                 Acertei
               </Button>
             </>
           )}
         </Box>
-        <Button
-          variant="outlined"
+        <IconButton
           onClick={() => {
             if (currentCardIndex < totalCards - 1) {
               onNext();
@@ -182,10 +260,22 @@ const Flashcard: React.FC<FlashcardProps> = ({
             }
           }}
           disabled={currentCardIndex === totalCards - 1}
-          startIcon={<ArrowForwardIcon />}
+          sx={{
+            width: 40,
+            height: 40,
+            border: `1px solid ${theme.palette.primary.main}`,
+            color: theme.palette.primary.main,
+            '&:hover': {
+              backgroundColor: 'rgba(25, 118, 210, 0.04)'
+            },
+            '&:disabled': {
+              borderColor: theme.palette.action.disabled,
+              color: theme.palette.action.disabled
+            }
+          }}
         >
-          Próximo
-        </Button>
+          <ArrowForwardIcon />
+        </IconButton>
       </Box>
 
       {/* Modal de imagem ampliada */}
