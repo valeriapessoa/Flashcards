@@ -104,7 +104,7 @@ const HeroSection = () => {
             >
               <Button
                 component={Link}
-                href="/estudar"
+                href="/criar-flashcard"
                 variant="contained"
                 color="primary"
                 size="large"
@@ -155,7 +155,7 @@ const HeroSection = () => {
             }}
           >
             <Image
-              src="/images/mascote33.png"
+              src="/images/home/img-1.png"
               alt="Bem-vindo ao Flashcard"
               width={800}
               height={800}

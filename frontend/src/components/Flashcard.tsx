@@ -10,13 +10,13 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 export interface FlashcardProps {
   id: number;
-  title: string; // Frente do card
-  description: string; // Verso do card
-  imageUrl?: string; // Imagem da frente
-  backImageUrl?: string; // Imagem do verso
+  title: string; 
+  description: string; 
+  imageUrl?: string; 
+  backImageUrl?: string; 
   tags?: string[];
-  onCorrect: (id: number) => void; // Callback para acerto
-  onIncorrect: (id: number) => void; // Callback para erro
+  onCorrect: (id: number) => void; 
+  onIncorrect: (id: number) => void; 
   currentCardIndex: number;
   totalCards: number;
   onPrevious: () => void;
@@ -58,12 +58,12 @@ const Flashcard: React.FC<FlashcardProps> = ({
 
   const handleCorrect = () => {
     onCorrect(id);
-    setIsFlipped(false); // Reseta o card para a próxima vez
+    setIsFlipped(false); 
   };
 
   const handleIncorrect = () => {
     onIncorrect(id);
-    setIsFlipped(false); // Reseta o card para a próxima vez
+    setIsFlipped(false); 
   };
 
   return (

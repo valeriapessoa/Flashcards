@@ -19,7 +19,7 @@ const StudyPage = () => {
   }, [status, router]);
 
   if (status !== 'authenticated') {
-    return null; // ou um componente de carregamento
+    return null; 
   }
 
   return (

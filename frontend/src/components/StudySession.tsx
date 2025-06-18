@@ -52,7 +52,6 @@ interface StudySessionProps {
   emptyStateButtonHref?: string;
 }
 
-// Exportar o componente Card para uso externo
 export const Card = Flashcard;
 
 export default function StudySession({
@@ -140,7 +139,6 @@ export default function StudySession({
     const currentCard = localFlashcards[currentCardIndex];
     if (!currentCard) return;
     
-    // Incrementa o contador de erros no servidor
     await incrementErrorMutation.mutateAsync(currentCard.id);
     
     // Atualiza o estado local das respostas
@@ -158,7 +156,7 @@ export default function StudySession({
       setCurrentCardIndex((prev) => prev + 1);
     } else if (currentCardIndex === localFlashcards.length - 1) {
       // Só marca como completo após exibir o último cartão
-      setCurrentCardIndex((prev) => prev + 1); // Avança para além do último
+      setCurrentCardIndex((prev) => prev + 1); 
     }
   };
 

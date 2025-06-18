@@ -19,7 +19,6 @@ const RevisaoInteligentePage = () => {
   const markAsReviewedMutation = useMutation({
     mutationFn: markFlashcardAsReviewed,
     onSuccess: () => {
-      // Atualizar a lista de flashcards após marcar como revisado
       router.refresh();
     },
     onError: (error) => {
@@ -34,7 +33,7 @@ const RevisaoInteligentePage = () => {
   }, [status, router]);
 
   if (status !== 'authenticated') {
-    return null; // ou um componente de carregamento
+    return null; 
   }
 
   return (

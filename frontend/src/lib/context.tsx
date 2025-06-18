@@ -4,7 +4,6 @@ interface User {
   id: string;
   name: string;
   email: string;
-  // Adicione outros campos do usuário conforme necessário
 }
 
 interface AppContextProps {

@@ -30,7 +30,6 @@ export async function GET(
     const res = await fetch(backendUrl, {
       headers: {
         'Content-Type': 'application/json',
-        // Adicione aqui headers de autenticação, se necessário
       },
       cache: 'no-store',
     });

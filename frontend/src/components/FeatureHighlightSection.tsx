@@ -51,7 +51,7 @@ const FeatureHighlightSection = () => {
               },
             }}
           >
-            <Image src="/images/estudar.png" alt="Estudar com Flashcards" layout="fill" priority />
+            <Image src="/images/home/img-2.png" alt="Estudar com Flashcards" layout="fill" priority />
           </Box>
         </Grid>
         <Grid

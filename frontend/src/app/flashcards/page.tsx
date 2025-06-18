@@ -37,18 +37,15 @@ interface Flashcard {
 }
 
 const Flashcards: React.FC = () => {
-  // Todos os hooks devem vir primeiro, antes de qualquer lógica condicional
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data: session, status } = useSession();
   const theme = useTheme();
   
-  // Estados
   const [deleteId, setDeleteId] = React.useState<number | null>(null);
   const [imageDialogOpen, setImageDialogOpen] = React.useState(false);
   const [dialogImageUrl, setDialogImageUrl] = React.useState<string | null>(null);
 
-  // useQuery sempre chamado, só habilita se autenticado
   const { data: flashcards = [], isLoading, error } = useQuery<Flashcard[], Error>({
     queryKey: ["flashcards"],
     queryFn: () => fetchFlashcards(),
@@ -64,7 +61,6 @@ const Flashcards: React.FC = () => {
     },
   });
 
-  // Handlers
   const handleEdit = (id: number) => {
     router.push(`/editar-flashcard?id=${id}`);
   };
@@ -92,7 +88,6 @@ const Flashcards: React.FC = () => {
     }
   }, [status, router]);
 
-  // Renderização condicional após todos os hooks
   if (status === "loading" || status === "unauthenticated") {
     return (
       <Box minHeight="75vh" display="flex" alignItems="center" justifyContent="center">
@@ -130,13 +125,6 @@ const Flashcards: React.FC = () => {
             Meus Flashcards
           </Typography>
           <Box sx={{ display: 'flex', justifyContent: { xs: 'center', sm: 'flex-end' }, mb: { xs: 2, sm: 3 } }}>
-            {/* <Button
-              variant="contained"
-              color="primary"
-              onClick={() => router.push("/criar-flashcard")}
-            >
-              ➕ Criar Novo Flashcard
-            </Button> */}
           </Box>
           {isLoading ? (
             <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', py: 4 }}>
