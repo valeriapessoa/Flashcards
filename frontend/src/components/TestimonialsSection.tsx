@@ -13,7 +13,7 @@ const testimonials = [
     role: "Desenvolvedor",
     content:
       "O sistema de flashcards inteligente me ajudou a organizar meus estudos de programação e melhorar minha produtividade. Agora consigo revisar conceitos complexos de forma mais eficiente.",
-    image: "/images/testimonials/img3.jpg",
+    image: "/images/home/img-3.jpg",
     rating: 5,
   },
   {
@@ -22,7 +22,7 @@ const testimonials = [
     role: "Estudante de Medicina",
     content:
       "O Flashcards Inteligentes mudou minha forma de estudar. Antes eu gastava horas revisando conteúdo que já sabia. Agora, o sistema me mostra exatamente o que preciso focar, economizando meu tempo de estudo.",
-    image: "/images/testimonials/img1.jpg",
+    image: "/images/home/img-4.jpg",
     rating: 5,
   },
   {
@@ -31,7 +31,7 @@ const testimonials = [
     role: "Analista de Dados",
     content:
       "O sistema de flashcards inteligente me ajudou a organizar melhor meus estudos e identificar áreas que precisavam de mais atenção. Agora consigo revisar de forma mais eficiente.",
-    image: "/images/testimonials/img2.jpg",
+    image: "/images/home/img-5.jpg",
     rating: 5,
   },
 ]
