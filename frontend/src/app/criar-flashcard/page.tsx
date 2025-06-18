@@ -6,7 +6,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import FlashcardForm from "../../components/FlashcardForm";
 import axios from "axios";
-import { Flashcard } from "../../types";
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { Box, Container, Typography } from '@mui/material';

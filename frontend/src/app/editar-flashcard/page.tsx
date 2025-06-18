@@ -8,7 +8,7 @@ import FlashcardForm from "../../components/FlashcardForm";
 import { useSession, getSession } from "next-auth/react";
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import { Box, Typography, Button, CircularProgress, useTheme, Container } from '@mui/material';
+import { Box, Typography, Button, CircularProgress, Container } from '@mui/material';
 
 const queryClient = new QueryClient();
 
@@ -22,7 +22,7 @@ const EditFlashcardPage = () => {
   const [originalFlashcard, setOriginalFlashcard] = useState<Flashcard | null>(null);
 
   // useQuery sempre chamado, só habilita se houver id e sessão
-  const { data, isLoading, isError } = useQuery(
+  const { isLoading, isError } = useQuery(
     ["flashcard", id],
     async () => {
       // Garante que temos uma sessão antes de fazer a requisição
@@ -83,7 +83,6 @@ const EditFlashcardPage = () => {
     }
   };
 
-  const theme = useTheme();
 
   useEffect(() => {
     if (!session) {

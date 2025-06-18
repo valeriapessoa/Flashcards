@@ -6,8 +6,6 @@ import {
   Container,
   Typography,
   Card,
-  CardContent,
-  CardActions,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -16,7 +14,6 @@ import {
   Box,
   useTheme,
   IconButton,
-  CardMedia,
   Chip
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
@@ -28,10 +25,6 @@ import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import EmptyState from '../../components/EmptyState';
 
-interface Tag {
-  id: number;
-  text: string;
-}
 
 interface Flashcard {
   id: number;

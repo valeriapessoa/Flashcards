@@ -1,7 +1,6 @@
 import React from 'react';
-import { Box, Container, Typography, Link, Grid, Divider, IconButton } from '@mui/material';
+import { Box, Container, Typography, Grid, Divider, IconButton } from '@mui/material';
 import { FaFacebook, FaInstagram, FaTwitter, FaTiktok } from 'react-icons/fa';
-import { usePathname } from 'next/navigation';
 
 
 const Footer: React.FC = () => {

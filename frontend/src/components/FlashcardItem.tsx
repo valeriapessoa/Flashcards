@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Card, CardActions, CardContent, Typography } from '@mui/material';
+import Image from 'next/image';
 import { Flashcard } from '../types';
 
 interface FlashcardItemProps {
@@ -19,7 +20,15 @@ const FlashcardItem: React.FC<FlashcardItemProps> = ({ flashcard, onEdit, onDele
           {flashcard.description}
         </Typography>
         {flashcard.imageUrl && (
-          <img src={flashcard.imageUrl} alt={flashcard.title} style={{ width: '100%', marginTop: '10px' }} />
+          <div style={{ position: 'relative', width: '100%', height: '200px', marginTop: '10px' }}>
+            <Image 
+              src={flashcard.imageUrl} 
+              alt={flashcard.title} 
+              fill
+              style={{ objectFit: 'contain' }}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+          </div>
         )}
         <Typography variant="body2" color="text.secondary">
           Tags: {flashcard.tags.join(', ')}

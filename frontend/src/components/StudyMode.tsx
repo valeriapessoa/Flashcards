@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Button, Card, CardContent, Typography, Dialog, DialogContent, IconButton, Box } from '@mui/material';
+import Image from 'next/image';
 import { useMutation, useQueryClient } from '@tanstack/react-query'; 
 import { incrementErrorCount } from '../lib/api'; 
 import { Flashcard } from '../types';
@@ -116,11 +117,14 @@ const StudyMode: React.FC<StudyModeProps> = ({ flashcards }) => {
                   mb: 2,
                 }}
               >
-                <img
+                <Image
                   src={currentFlashcard.imageUrl}
                   alt="Imagem da frente"
+                  width={600}
+                  height={300}
                   style={{
                     width: '100%',
+                    height: 'auto',
                     maxHeight: 300,
                     objectFit: 'contain',
                     borderRadius: 8,
@@ -144,11 +148,14 @@ const StudyMode: React.FC<StudyModeProps> = ({ flashcards }) => {
                   mb: 2,
                 }}
               >
-                <img
+                <Image
                   src={currentFlashcard.backImageUrl}
                   alt="Imagem da resposta"
+                  width={600}
+                  height={300}
                   style={{
                     width: '100%',
+                    height: 'auto',
                     maxHeight: 300,
                     objectFit: 'contain',
                     borderRadius: 8,
@@ -220,11 +227,13 @@ const StudyMode: React.FC<StudyModeProps> = ({ flashcards }) => {
                   <CloseIcon />
                 </IconButton>
                 {dialogImageUrl && (
-                  <img
+                  <Image
                     src={dialogImageUrl}
                     alt="Imagem ampliada"
+                    width={1920}
+                    height={1080}
                     style={{
-                      width: '100vw',
+                      width: '100%',
                       height: '100vh',
                       objectFit: 'contain',
                       display: 'block',

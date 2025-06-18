@@ -1,11 +1,12 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { userId: string } }
 ) {
+  const { userId } = params;
   try {
     // Verificar autenticação
     const session = await getServerSession(authOptions);
@@ -17,7 +18,7 @@ export async function GET(
     }
 
     // Verificar se o usuário está tentando acessar seus próprios flashcards
-    if (session.user.id !== params.userId) {
+    if (session.user.id !== userId) {
       return NextResponse.json(
         { error: 'Você só pode acessar seus próprios flashcards.' },
         { status: 403 }
@@ -25,7 +26,7 @@ export async function GET(
     }
 
     // Encaminha a requisição para o backend
-    const backendUrl = `${process.env.BACKEND_URL || 'http://localhost:5000'}/flashcards/revisao-inteligente/${params.userId}`;
+    const backendUrl = `${process.env.BACKEND_URL || 'http://localhost:5000'}/flashcards/revisao-inteligente/${userId}`;
     const res = await fetch(backendUrl, {
       headers: {
         'Content-Type': 'application/json',

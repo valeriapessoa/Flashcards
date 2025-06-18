@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { 
   AppBar, 
   Toolbar, 
-  Typography, 
   Button, 
   Box, 
   IconButton, 
@@ -14,13 +13,13 @@ import {
   ListItemButton, 
   ListItemText, 
   useMediaQuery, 
-  useTheme,
-  Divider
+  useTheme
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import { useSession, signOut } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 const navItems = [
   { label: 'Home', href: '/' },
@@ -156,9 +155,16 @@ const Header: React.FC = () => {
               display: 'block'
             }
           }}>
-            <img 
+            <Image 
               src="/images/logo.png" 
-              alt="Flashcards App" 
+              alt="Flashcards App"
+              width={140}
+              height={40}
+              priority
+              style={{
+                width: '100%',
+                height: 'auto',
+              }}
             />
           </Box>
         </Box>

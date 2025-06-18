@@ -12,7 +12,7 @@ interface UserStatsCardProps {
 }
 
 const UserStatsCard: React.FC<UserStatsCardProps> = ({ stats }) => {
-  const { score, correctAnswers, incorrectAnswers, totalReviews } = stats;
+  const { score, correctAnswers, incorrectAnswers } = stats;
   return (
     <div className="user-stats-card">
       <ScoreCard score={score} />

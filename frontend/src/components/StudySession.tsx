@@ -14,7 +14,6 @@ import { useSession } from 'next-auth/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchFlashcards, incrementErrorCount } from '../lib/api';
 import {
-  CheckCircle as CheckCircleIcon,
   Replay as ReplayIcon,
   Assessment as AssessmentIcon,
 } from '@mui/icons-material';
@@ -58,14 +57,13 @@ export const Card = Flashcard;
 
 export default function StudySession({
   fetchPath = '/api/flashcards',
-  cardComponent = Flashcard,
+  cardComponent: CardComponent = Flashcard,
   emptyStateTitle,
   emptyStateSubtitle,
   emptyStateButtonText,
   emptyStateButtonHref,
-  ...props
 }: StudySessionProps) {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const isAuthenticated = status === 'authenticated';
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -187,7 +185,7 @@ export default function StudySession({
   }
 
   if (isError) {
-    const errorMessage = (error as any)?.response?.data?.message || error.message || "Erro desconhecido.";
+    const errorMessage = (error as { response?: { data?: { message?: string } }, message?: string })?.response?.data?.message || error.message || "Erro desconhecido.";
     return <Alert severity="error">Erro ao carregar flashcards para revisão: {errorMessage}</Alert>;
   }
 
@@ -260,7 +258,8 @@ export default function StudySession({
     );
   }
 
-  const CurrentCardComponent = cardComponent;
+  // Renderização do cartão atual
+  const CurrentCard = CardComponent || Flashcard;
   const currentCard = localFlashcards[currentCardIndex];
 
   return (
@@ -272,7 +271,7 @@ export default function StudySession({
         <LinearProgress variant="determinate" value={((currentCardIndex + 1) / localFlashcards.length) * 100} />
       </Box>
       {currentCard && (
-        <CurrentCardComponent
+        <CurrentCard
           id={currentCard.id}
           title={currentCard.title}
           description={currentCard.description}

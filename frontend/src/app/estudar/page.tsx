@@ -1,17 +1,15 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { Typography, Container, Box, useTheme } from '@mui/material';
+import { Typography, Container, Box } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { useRouter } from 'next/navigation';
 import StudySession from '../../components/StudySession';
-import { useQuery } from '@tanstack/react-query';
 
 const StudyPage = () => {
   const { status, data: session } = useSession();
-  const theme = useTheme();
   const router = useRouter();
 
   useEffect(() => {

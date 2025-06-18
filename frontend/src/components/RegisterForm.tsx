@@ -1,15 +1,13 @@
 "use client";
 import { useState } from 'react';
-import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { TextField, Button, Typography, Box } from '@mui/material';
+import { TextField, Button } from '@mui/material';
 
 const RegisterForm = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
   const [nameError, setNameError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -30,7 +28,6 @@ const RegisterForm = () => {
     setEmailError('');
     setPasswordError('');
     setConfirmPasswordError('');
-    setError('');
 
     if (!name) {
       setNameError('Nome é obrigatório');
@@ -72,7 +69,7 @@ const RegisterForm = () => {
 
       if (!res.ok) {
         const errorData = await res.json();
-        setError(errorData.message || 'Erro ao registrar usuário');
+        console.error('Erro ao registrar usuário:', errorData.message || 'Erro desconhecido');
         setIsSubmitting(false);
         return;
       }
@@ -81,11 +78,11 @@ const RegisterForm = () => {
       if (userData.id) { 
         router.push('/auth');
       } else {
-        setError('Erro ao registrar usuário');
+        console.error('Erro ao registrar usuário: Resposta inválida do servidor');
       }
       setIsSubmitting(false);
     } catch (error) {
-      setError('Erro ao registrar usuário');
+      console.error('Erro ao registrar usuário:', error);
       setIsSubmitting(false);
     }
   };
@@ -139,11 +136,6 @@ const RegisterForm = () => {
       <Button type="submit" variant="contained" color="primary" fullWidth disabled={isSubmitting}>
         {isSubmitting ? 'Registrando...' : 'Registrar'}
       </Button>
-      {error && (
-        <Typography color="error" mt={2}>
-          {error}
-        </Typography>
-      )}
     </form>
   );
 };

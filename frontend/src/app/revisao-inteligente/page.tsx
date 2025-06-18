@@ -1,20 +1,19 @@
 'use client';
 
 import React from 'react';
-import { Typography, Container, Box, useTheme, Button, IconButton } from '@mui/material';
+import { Typography, Container, Box, Button } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useSession } from 'next-auth/react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { useRouter } from 'next/navigation';
 import StudySession from '../../components/StudySession';
 import { Card } from '../../components/StudySession';
-import { CheckCircle as CheckCircleIcon } from '@mui/icons-material';
 import { useMutation } from '@tanstack/react-query';
 import { markFlashcardAsReviewed } from '../../lib/api';
 
 const RevisaoInteligentePage = () => {
   const { status, data: session } = useSession();
-  const theme = useTheme();
   const router = useRouter();
 
   const markAsReviewedMutation = useMutation({
