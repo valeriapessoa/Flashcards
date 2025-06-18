@@ -2,6 +2,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import multer from 'multer';
 import * as streamifier from 'streamifier';
 import { Request, Response, NextFunction } from 'express';
+import { Express } from 'express-serve-static-core';
 import path from 'path';
 
 cloudinary.config({
@@ -46,10 +47,13 @@ const newUploadMiddleware = (req: Request, res: Response, next: NextFunction) =>
     // Se um arquivo foi enviado, processa e faz upload para o Cloudinary
     if (req.files) {
       try {
-        const files = req.files;
+        const files = req.files as { 
+          image?: Express.Multer.File[];
+          backImage?: Express.Multer.File[];
+        };
 
-        const image = files.image && files.image[0];
-        const backImage = files.backImage && files.backImage[0];
+        const image = files?.image?.[0];
+        const backImage = files?.backImage?.[0];
 
         if (image) {
           console.log("Arquivo recebido. Enviando imagem para o Cloudinary...");
@@ -109,15 +113,13 @@ const newUploadMiddleware = (req: Request, res: Response, next: NextFunction) =>
           console.log("Upload para Cloudinary finalizado. URL da imagem:", req.body.backImage);
         }
 
-        next(); // Prossegue para a rota APÓS o upload bem-sucedido
+        next(); 
 
       } catch (error) {
         console.error('Erro ao enviar imagem para o Cloudinary:', error);
-        // Retorna um erro 500 se o upload falhar
         return res.status(500).json({ message: 'Erro ao fazer upload da imagem.' });
       }
     } else {
-      // Se NENHUM arquivo foi enviado, apenas prossegue para a rota
       console.log("Nenhum arquivo de imagem enviado, prosseguindo para a rota.");
       next();
     }
