@@ -23,10 +23,8 @@ const CreateFlashcard: React.FC = () => {
         return;
       }
 
-      // Adiciona o userId ao formData
       formData.append("userId", session.user.id);
 
-      // Usa a variável de ambiente para a base URL da API
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
       await axios.post(`${apiBaseUrl}/api/flashcards/create`, formData, {
         headers: {
@@ -34,7 +32,6 @@ const CreateFlashcard: React.FC = () => {
           Authorization: `Bearer ${session?.accessToken}`,
         },
       });
-      // Invalida as queries relacionadas aos flashcards para atualizar os dados
       queryClient.invalidateQueries({ queryKey: ['studySessionFlashcards'] });
       router.push("/flashcards");
     } catch (error) {
@@ -42,17 +39,6 @@ const CreateFlashcard: React.FC = () => {
       alert("Erro ao criar o flashcard. Tente novamente.");
     }
   };
-
-  // Efeito para redirecionar para login quando não autenticado
-  React.useEffect(() => {
-    if (!session) {
-      router.push("/login");
-    }
-  }, [session, router]);
-
-  if (!session) {
-    return null;
-  }
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>

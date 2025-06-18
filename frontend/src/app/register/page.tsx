@@ -1,4 +1,5 @@
 "use client";
+
 import RegisterForm from '../../components/RegisterForm';
 import { Box, Typography, Button, Card, CardContent } from '@mui/material';
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';

@@ -2,7 +2,6 @@ import React from 'react';
 import { Box, Container, Typography, Grid, Divider, IconButton } from '@mui/material';
 import { FaFacebook, FaInstagram, FaTwitter, FaTiktok } from 'react-icons/fa';
 
-
 const Footer: React.FC = () => {
   return (
     <Box component="footer" sx={{

@@ -167,7 +167,7 @@ const StudyMode: React.FC<StudyModeProps> = ({ flashcards }) => {
                 />
               </Box>
             )}
-            {/* Exibe as tags do flashcard DEPOIS da imagem */}
+            {/* Exibe as tags do flashcard depois da imagem */}
             {currentFlashcard.tags && currentFlashcard.tags.length > 0 && (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2, mb: 2 }}>
                 {(currentFlashcard.tags as (string | { id: string | number; text: string })[]).map((tagObjOrStr, idx) => {

@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState } from 'react'; // Removido useEffect
-import { Grid, CircularProgress, Alert } from '@mui/material'; // Componentes necessários
-// Removido axios
+import React, { useState } from 'react'; 
+import { Grid, CircularProgress, Alert } from '@mui/material'; 
 import { useSession } from 'next-auth/react';
-import { useQuery } from '@tanstack/react-query'; // Importado useQuery
-import { fetchFlashcards, markFlashcardAsReviewed } from '../lib/api'; // Importado markFlashcardAsReviewed
+import { useQuery } from '@tanstack/react-query'; 
+import { fetchFlashcards, markFlashcardAsReviewed } from '../lib/api'; 
 import Flashcard from './Flashcard';
-import EmptyState from './EmptyState'; // Import do EmptyState
+import EmptyState from './EmptyState'; 
+
 interface FlashcardData {
   id: number;
   title: string;
@@ -18,23 +18,20 @@ interface FlashcardData {
 }
 
 interface FlashcardListProps {
-  fetchPath?: string; // Caminho da API para buscar os flashcards
+  fetchPath?: string; 
 }
 
 const FlashcardList: React.FC<FlashcardListProps> = ({ fetchPath = '/api/flashcards' }) => {
   const { status } = useSession();
   const isAuthenticated = status === 'authenticated';
 
-  // Usar useQuery para buscar os flashcards
   const {
-    data: flashcards = [], // Valor padrão como array vazio
+    data: flashcards = [], 
     isLoading,
     isError,
     error,
-  } = useQuery<FlashcardData[], Error>({ // Tipagem explícita para data e error
-    // Chave da query inclui o path para diferenciar caches
+  } = useQuery<FlashcardData[], Error>({ 
     queryKey: ['flashcards', fetchPath],
-    // Passa o path para a função fetchFlashcards corretamente dentro de uma arrow function
     queryFn: async () => {
       console.log('🔍 Chamando fetchFlashcards com path:', fetchPath);
       try {
@@ -46,31 +43,24 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ fetchPath = '/api/flashca
         throw error;
       }
     },
-    enabled: isAuthenticated, // Só executa a query se o usuário estiver autenticado
-    retry: 3, // Tentar no máximo 3 vezes em caso de erro
-    retryDelay: 1000, // Esperar 1 segundo entre as tentativas
+    enabled: isAuthenticated, 
+    retry: 3, 
+    retryDelay: 1000, 
   });
 
-  // Estado local para gerenciar quais flashcards foram "revisados" (removidos da lista visualmente)
   const [reviewedFlashcardIds, setReviewedFlashcardIds] = useState<Set<number>>(new Set());
 
-  // Atualiza o estado local para esconder o flashcard revisado
   const handleMarkAsReviewed = async (id: number) => {
     try {
-      // Chama a API para marcar o flashcard como revisado no banco de dados
       await markFlashcardAsReviewed(id);
-      // Atualiza o estado local para esconder o flashcard da interface
       setReviewedFlashcardIds((prevIds) => new Set(prevIds).add(id));
     } catch (error) {
       console.error("Erro ao marcar flashcard como revisado:", error);
-      // Opcionalmente, pode-se adicionar um alerta ou toast para informar o usuário sobre o erro
     }
   };
 
-  // Log para depuração
   console.log('💾 Flashcards recebidos:', flashcards);
 
-  // Renderização baseada nos estados do useQuery e status da sessão
   if (status === 'loading' || (isLoading && isAuthenticated)) {
     return <CircularProgress />;
   }
@@ -80,15 +70,12 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ fetchPath = '/api/flashca
   }
 
   if (isError) {
-    // Tenta extrair uma mensagem mais amigável do erro
     const errorMessage = (error as { response?: { data?: { message?: string } }, message?: string })?.response?.data?.message || error.message || "Erro desconhecido ao buscar flashcards.";
     return <Alert severity="error">Erro ao carregar flashcards: {errorMessage}</Alert>;
   }
 
-  // Filtra os flashcards que já foram marcados como revisados localmente
   const visibleFlashcards = flashcards.filter((fc: FlashcardData) => !reviewedFlashcardIds.has(fc.id));
   
-  // Log para depuração
   console.log('👁️ Flashcards visíveis após filtro:', visibleFlashcards);
 
   if (visibleFlashcards.length === 0 && !isLoading) {

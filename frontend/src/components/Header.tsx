@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { 
@@ -302,7 +303,7 @@ const Header: React.FC = () => {
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Melhor performance em mobile
+            keepMounted: true, 
           }}
           sx={{
             display: { xs: 'block', md: 'none' },

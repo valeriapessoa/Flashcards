@@ -8,12 +8,12 @@ interface FlashcardFormProps {
   flashcard?: Flashcard | null;
   onSubmit: (formData: FormData) => Promise<void>;
   isEditing?: boolean;
-  onCreated?: () => void; // Callback para quando o flashcard é criado
+  onCreated?: () => void; 
 }
 
 const KeyCodes = {
   comma: 'Comma',
-  enter: 'Enter', // Usar strings para representar as teclas
+  enter: 'Enter', 
 };
 
 const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEditing = false, onCreated }) => {
@@ -33,13 +33,11 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
   const formatTags = useCallback((tagsInput: unknown): Array<{id: string; text: string; className: string}> => {
     if (!tagsInput) return [];
 
-    // Se for array de objetos {id, text}
     if (Array.isArray(tagsInput)) {
       if (tagsInput.length === 0) return [];
       
       const firstItem = tagsInput[0];
       
-      // Se for array de objetos {id, text}
       if (typeof firstItem === 'object' && firstItem !== null && 'text' in firstItem) {
         return (tagsInput as TagInput[]).map((tag) => ({
           id: String(tag.id || Date.now() + Math.random().toString(36).substr(2, 9)),
@@ -48,7 +46,6 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
         }));
       }
       
-      // Se for array de strings
       return (tagsInput as string[]).map((tag, index) => ({
         id: `${index}`,
         text: String(tag),
@@ -56,7 +53,6 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
       }));
     }
 
-    // Se for um objeto único
     if (typeof tagsInput === 'object' && tagsInput !== null && 'text' in tagsInput) {
       const tagObj = tagsInput as TagInput;
       return [{
@@ -66,7 +62,6 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
       }];
     }
 
-    // Se for uma string única
     if (typeof tagsInput === 'string') {
       return [{
         id: '0',
@@ -76,21 +71,20 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
     }
 
     return [];
-  }, []); // Dependências vazias pois não depende de nada do componente
+  }, []); 
   const [tags, setTags] = useState<ReactTag[]>(
     flashcard?.tags ? formatTags(flashcard.tags) : []
   );
-  const [isSubmitting, setIsSubmitting] = useState(false); // NOVO estado para controle do botão
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleDelete = (index: number) => {
     setTags(tags.filter((_, i) => i !== index));
   };
 
   const handleAddition = (tag: ReactTag) => {
-    // Adiciona a tag apenas se o texto não estiver vazio
     if (tag.text && tag.text.trim()) {
       const newTag = {
-        id: String(Date.now()), // Gera um ID único
+        id: String(Date.now()), 
         text: tag.text.trim(),
         className: ''
       };
@@ -129,7 +123,7 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
       'image/gif': ['.gif'],
     },
     maxFiles: 1,
-    multiple: false, // Garante que apenas um arquivo seja aceito
+    multiple: false, 
   });
 
   const { getRootProps: getRootPropsBack, getInputProps: getInputPropsBack, isDragActive: isDragActiveBack } = useDropzone({
@@ -173,16 +167,15 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
       setBackImagePreview(null);
       setBackImageFile(null);
     }
-  }, [flashcard, formatTags]); // Adicionando formatTags como dependência
+  }, [flashcard, formatTags]); 
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === KeyCodes.enter) {
-        e.preventDefault(); // Impede a submissão do formulário
+        e.preventDefault(); 
       }
     };
 
-    // Removido a lógica de ref, usando apenas o handleKeyDown direto
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
@@ -209,19 +202,16 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
     const formData = new FormData();
     formData.append('title', title);
     formData.append('description', description);
-    // Envia apenas o texto das tags, que é o formato mais provável esperado pelo backend
     formData.append('tags', JSON.stringify(tags.map((t) => t.text)));
 
-    // Adiciona a imagem se existir
     if (frontImageFile) {
       formData.append('image', frontImageFile, frontImageFile.name);
     }
-    // Adiciona a imagem do verso se existir
+
     if (backImageFile) {
       formData.append('backImage', backImageFile, backImageFile.name);
     }
 
-    // Sinaliza remoção de imagem (se aplicável na edição)
     if (isEditing) {
       if (flashcard?.imageUrl && !frontImagePreview && !frontImageFile) {
         formData.append('removeFrontImage', 'true');
@@ -232,10 +222,8 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
     }
 
     try {
-      // Desabilita o botão durante o upload
       setIsSubmitting(true);
       await onSubmit(formData);
-      // Limpa o formulário após a submissão bem-sucedida
       setTitle('');
       setDescription('');
       setFrontImagePreview(null);
@@ -244,7 +232,6 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
       setBackImageFile(null);
       setTags([]);
       setErrors({});
-      // Chama o callback de criação se existir
       if (onCreated) {
         onCreated();
       }
@@ -351,7 +338,6 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
             )}
           </div>
         </div>
-        {/* Campo de Tags e botão (inalterados) */}
         <div className="flex flex-col mt-4 sm:mt-6">
           <label className="text-sm sm:text-base text-gray-700 font-medium mb-1">Tags</label>
           <ReactTags
@@ -367,15 +353,11 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
               tagInput: 'flex-1',
               tagInputField: 'p-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full',
               selected: 'flex flex-wrap gap-2',
-              // Estilos aplicados pelo componente CustomTag
               tag: 'bg-blue-100 text-blue-800 px-3 py-1 rounded-md text-sm flex items-center gap-1',
-              // tagLabel removido pois não é uma chave válida aqui
               remove: 'text-blue-500 hover:text-blue-700 cursor-pointer ps-1',
               suggestions: 'mt-1 border border-gray-300 rounded-lg bg-white shadow-lg',
               activeSuggestion: 'bg-blue-100 p-2 cursor-pointer',
             }}
-          // Removida a tentativa de customização via tagComponent/components/renderTag
-          // A biblioteca usará sua renderização padrão para as tags
           />
         </div>
         <button

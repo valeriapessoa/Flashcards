@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQuery, QueryClient, QueryClientProvider } from "react-query";
@@ -75,7 +76,6 @@ const EditFlashcardPage = () => {
     if (!originalFlashcard) return;
 
     try {
-      // Sempre envia o formulário, pois o FormData já contém todas as mudanças
       await mutation.mutate(formData);
     } catch (error) {
       console.error("Erro ao processar o formulário:", error);

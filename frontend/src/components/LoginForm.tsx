@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -98,7 +99,6 @@ const LoginForm = () => {
           {error}
         </Typography>
       )}
-      {/* Removido link duplicado para cadastro */}
       <Box mt={2} display="flex" justifyContent="center" gap={2}>
         <IconButton onClick={() => signIn('google')} color="primary">
           <GoogleIcon />

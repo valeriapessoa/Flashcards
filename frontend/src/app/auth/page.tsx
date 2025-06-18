@@ -5,12 +5,12 @@ const AuthPage = async () => {
   const session = await getSession();
 
   if (session) {
-    redirect('/'); // Redireciona para Home ao invés de /dashboard
+    redirect('/'); 
   } else {
     redirect('/login');
   }
 
-  return null; // Página AuthPage não renderiza nada visualmente
+  return null; 
 };
 
 export default AuthPage;

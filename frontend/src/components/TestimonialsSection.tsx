@@ -36,7 +36,6 @@ const testimonials = [
   },
 ]
 
-// Avatar maior sem borda
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
   boxShadow: theme.shadows[3],
   "&.MuiAvatar-root": {
@@ -61,7 +60,6 @@ const StyledAvatar = styled(Avatar)(({ theme }) => ({
   },
 }))
 
-// Botões de navegação maiores e mais distantes
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
   color: theme.palette.grey[600],
   padding: 16,
@@ -209,7 +207,6 @@ const TestimonialsSection = () => {
 
             {/* Right Column - Content */}
             <Box sx={{ width: "100%", px: { xs: 2, sm: 3, md: 0 } }}>
-              {/* Star Rating */}
               <Box
                 sx={{
                   display: "flex",
@@ -232,7 +229,6 @@ const TestimonialsSection = () => {
                 />
               </Box>
 
-              {/* Quote */}
               <Box sx={{ mb: { xs: 2, sm: 3, md: 4 }, position: "relative" }}>
                 <Typography
                   sx={{
@@ -276,7 +272,6 @@ const TestimonialsSection = () => {
                 </Typography>
               </Box>
 
-              {/* Linha vermelha abaixo do depoimento */}
               <Box
                 sx={{
                   width: { xs: 30, sm: 40, md: 48 },
@@ -287,7 +282,6 @@ const TestimonialsSection = () => {
                 }}
               />
 
-              {/* Attribution */}
               <Box>
                 <Typography
                   component="span"
@@ -330,7 +324,6 @@ const TestimonialsSection = () => {
             </StyledIconButton>
           </Box>
 
-          {/* Pagination Dots */}
           <Box
             sx={{
               display: "flex",
