@@ -14,13 +14,12 @@ interface AuthenticatedRequest extends Request {
   user?: { id: string };
 }
 
-// 📋 Listar flashcards do usuário autenticado
+// Listar flashcards do usuário autenticado
 router.get("/", protect, async (req: AuthenticatedRequest, res: Response) => {
   console.log("Buscando flashcards para usuário:", req.user?.id);
   const userId = req.user?.id;
 
   if (!userId) {
-    // Embora protect deva garantir isso, é uma boa prática verificar
     return res.status(401).json({ message: "Usuário não autenticado." });
   }
 
@@ -55,7 +54,7 @@ router.get("/", protect, async (req: AuthenticatedRequest, res: Response) => {
 });
 
 
-// 📌 Criar flashcard
+// Criar flashcard
 router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRequest, res: Response) => {
   try {
     console.log("📥 Requisição recebida - Criar Flashcard");
@@ -150,7 +149,7 @@ router.post("/create", protect, newUploadMiddleware, async (req: AuthenticatedRe
   }
 });
 
-// ✏️ Atualizar flashcard
+// Atualizar flashcard
 router.put("/:id", protect, newUploadMiddleware, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
@@ -308,7 +307,7 @@ router.delete("/:id", protect, async (req: AuthenticatedRequest, res: Response) 
   }
 });
 
-// 📊 Listar flashcards para o modo de estudo (requer autenticação)
+// Listar flashcards para o modo de estudo (requer autenticação)
 router.get('/estudar', protect, async (req: AuthenticatedRequest, res: Response) => {
  try {
    const userId = req.user?.id;
@@ -334,7 +333,7 @@ router.get('/estudar', protect, async (req: AuthenticatedRequest, res: Response)
      }
    });
 
-   console.log("🔢 Total de flashcards para o modo de estudo:", flashcards.length);
+   console.log("Total de flashcards para o modo de estudo:", flashcards.length);
    // Garantir que as URLs das imagens sejam strings válidas ou null
    const flashcardsWithValidUrls = flashcards.map(flashcard => ({
      ...flashcard,
@@ -351,7 +350,7 @@ router.get('/estudar', protect, async (req: AuthenticatedRequest, res: Response)
  }
 });
 
-// 📊 Listar flashcards para revisão inteligente (requer autenticação)
+// Listar flashcards para revisão inteligente (requer autenticação)
 router.get('/revisao-inteligente', protect, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user?.id;
@@ -386,7 +385,7 @@ router.get('/revisao-inteligente', protect, async (req: AuthenticatedRequest, re
       }
     });
 
-    console.log("🔢 Total de flashcards para revisão inteligente:", flashcards.length);
+    console.log("Total de flashcards para revisão inteligente:", flashcards.length);
     // Garantir que as URLs das imagens sejam strings válidas ou null
     const flashcardsWithValidUrls = flashcards.map(flashcard => ({
       ...flashcard,
@@ -409,7 +408,7 @@ router.get('/revisao-inteligente', protect, async (req: AuthenticatedRequest, re
   }
 });
 
-// 🔥 Incrementar contador de erro de um flashcard
+// Incrementar contador de erro de um flashcard
 router.post("/:id/error", protect, async (req: AuthenticatedRequest, res: Response) => {
   const userId = req.user?.id;
   const { id } = req.params;
@@ -450,7 +449,7 @@ router.post("/:id/error", protect, async (req: AuthenticatedRequest, res: Respon
   }
 });
 
-// 🔍 Marcar flashcard como revisado
+// Marcar flashcard como revisado
 router.post("/:id/reviewed", protect, async (req: AuthenticatedRequest, res: Response) => {
   const userId = req.user?.id;
   const { id } = req.params;
@@ -491,7 +490,7 @@ router.post("/:id/reviewed", protect, async (req: AuthenticatedRequest, res: Res
   }
 });
 
-// 🆔 Buscar flashcard por ID (apenas do usuário logado)
+// Buscar flashcard por ID (apenas do usuário logado)
 router.get("/:id", protect, async (req: AuthenticatedRequest, res: Response) => { // Adicionado protect e AuthenticatedRequest
   const userId = req.user?.id;
   const { id } = req.params;
