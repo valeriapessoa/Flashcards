@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react'; // Removido useEffect
-import { Grid, CircularProgress, Typography, Alert, Button, Box } from '@mui/material'; // Adicionado Alert, Button e Box
+import { Grid, CircularProgress, Alert } from '@mui/material'; // Componentes necessários
 // Removido axios
 import { useSession } from 'next-auth/react';
 import { useQuery } from '@tanstack/react-query'; // Importado useQuery
@@ -22,7 +22,7 @@ interface FlashcardListProps {
 }
 
 const FlashcardList: React.FC<FlashcardListProps> = ({ fetchPath = '/api/flashcards' }) => {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const isAuthenticated = status === 'authenticated';
 
   // Usar useQuery para buscar os flashcards
@@ -81,7 +81,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ fetchPath = '/api/flashca
 
   if (isError) {
     // Tenta extrair uma mensagem mais amigável do erro
-    const errorMessage = (error as any)?.response?.data?.message || error.message || "Erro desconhecido ao buscar flashcards.";
+    const errorMessage = (error as { response?: { data?: { message?: string } }, message?: string })?.response?.data?.message || error.message || "Erro desconhecido ao buscar flashcards.";
     return <Alert severity="error">Erro ao carregar flashcards: {errorMessage}</Alert>;
   }
 

@@ -62,10 +62,14 @@ export const fetchFlashcards = async (path: string | object = '/api/flashcards')
     console.log('Dados recebidos:', response.data);
     
     return response.data;
-  } catch (error: any) {
-    console.error('Erro ao buscar flashcards:', error.message);
-    console.error('Detalhes do erro:', error.response?.data || error);
-    throw error;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error('Erro ao buscar flashcards:', error.message);
+      console.error('Detalhes do erro:', error.response?.data || error);
+      throw error;
+    }
+    console.error('Erro desconhecido ao buscar flashcards:', error);
+    throw new Error('Ocorreu um erro desconhecido ao buscar os flashcards');
   }
 };
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardMedia, Typography, Button, Dialog, DialogContent, IconButton, useTheme, Box, Chip } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
@@ -289,12 +290,17 @@ const Flashcard: React.FC<FlashcardProps> = ({
              <CloseIcon fontSize="large" />
            </IconButton>
            {dialogImageUrl && (
-             <img
+             <Image
                src={dialogImageUrl}
                alt="Imagem ampliada"
+               width={0}
+               height={0}
+               sizes="95vw"
                style={{
-                 maxWidth: '95vw', // Max width
-                 maxHeight: '95vh', // Max height
+                 width: '100%',
+                 height: 'auto',
+                 maxWidth: '95vw',
+                 maxHeight: '95vh',
                  objectFit: 'contain',
                  display: 'block',
                }}

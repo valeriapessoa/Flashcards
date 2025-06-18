@@ -1,5 +1,4 @@
 import React from 'react';
-import { useRouter } from 'next/navigation';
 
 interface ActionButtonsProps {
   isLoading: boolean;
@@ -8,8 +7,6 @@ interface ActionButtonsProps {
 }
 
 const ActionButtons: React.FC<ActionButtonsProps> = ({ isLoading, onSave, onBack }) => {
-  const router = useRouter();
-
   return (
     <div className="flex justify-between mt-4">
       <button

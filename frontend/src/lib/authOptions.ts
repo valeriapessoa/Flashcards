@@ -1,6 +1,6 @@
 // src/lib/authOptions.ts
 
-import NextAuth, { NextAuthOptions, User } from 'next-auth';
+import { NextAuthOptions, User } from 'next-auth';
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
@@ -88,9 +88,10 @@ export const authOptions: NextAuthOptions = {
             accessToken: data.token,
           };
 
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error("Erro durante a autorização:", error);
-          throw new Error(error.message || "Erro durante a autenticação.");
+          const errorMessage = error instanceof Error ? error.message : 'Erro durante a autenticação.';
+          throw new Error(errorMessage);
         }
       },
     }),

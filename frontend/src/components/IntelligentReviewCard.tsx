@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardMedia, Typography, Button, Dialog, DialogContent, IconButton, useTheme, Box, Chip } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
@@ -182,10 +183,14 @@ const IntelligentReviewCard: React.FC<IntelligentReviewCardProps> = ({
             <CloseIcon fontSize="large" />
           </IconButton>
           {dialogImageUrl && (
-            <img
+            <Image
               src={dialogImageUrl}
               alt="Imagem ampliada"
+              width={1200}
+              height={800}
               style={{
+                width: 'auto',
+                height: 'auto',
                 maxWidth: '95vw',
                 maxHeight: '95vh',
                 objectFit: 'contain',

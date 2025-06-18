@@ -6,7 +6,6 @@ import { TextField, Button, Typography, Container, Box } from '@mui/material';
 const AuthForm = () => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
-  const [isLogin, setIsLogin] = useState(true);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,27 +18,6 @@ const AuthForm = () => {
     const res = await signIn('email', { redirect: false, email, password });
     if (res?.error) {
       setError(res.error);
-      setIsSubmitting(false);
-    } else {
-      router.push('/'); 
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isSubmitting) return;
-    setIsSubmitting(true);
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
-    const data = await res.json();
-    if (data.error) {
-      setError(data.error);
       setIsSubmitting(false);
     } else {
       router.push('/'); 

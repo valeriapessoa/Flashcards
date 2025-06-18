@@ -256,7 +256,7 @@ const TestimonialsSection = () => {
                       lineHeight: 1,
                     }}
                   >
-                    "
+                    &ldquo;
                   </Box>
                   {currentTestimonial.content}
                   <Box
@@ -271,7 +271,7 @@ const TestimonialsSection = () => {
                       lineHeight: 1,
                     }}
                   >
-                    "
+                    &rdquo;
                   </Box>
                 </Typography>
               </Box>

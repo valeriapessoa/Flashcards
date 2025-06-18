@@ -1,14 +1,21 @@
 import React, { createContext, useContext, ReactNode, useState } from 'react';
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  // Adicione outros campos do usuário conforme necessário
+}
+
 interface AppContextProps {
-  user: any;
-  setUser: React.Dispatch<React.SetStateAction<any>>;
+  user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   return (
     <AppContext.Provider value={{ user, setUser }}>

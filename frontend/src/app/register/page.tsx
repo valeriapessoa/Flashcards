@@ -1,12 +1,11 @@
 "use client";
 import RegisterForm from '../../components/RegisterForm';
-import { Box, Typography, Button, Card, CardContent, useTheme, Container } from '@mui/material';
+import { Box, Typography, Button, Card, CardContent } from '@mui/material';
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import Link from 'next/link';
 import { Link as MuiLink } from '@mui/material';
 
 const RegisterPage = () => {
-  const theme = useTheme();
   return (
     <Box minHeight="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center" bgcolor="#F6F8FC">
       <MuiLink component={Link} href="/" passHref>

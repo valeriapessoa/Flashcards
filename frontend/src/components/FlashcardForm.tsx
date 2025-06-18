@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Flashcard } from '../types';
-import { WithContext as ReactTags, SEPARATORS, Tag as ReactTag } from 'react-tag-input';
+import { WithContext as ReactTags, Tag as ReactTag } from 'react-tag-input';
+import Image from 'next/image';
 
 interface FlashcardFormProps {
   flashcard?: Flashcard | null;
@@ -23,38 +24,59 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
   const [frontImageFile, setFrontImageFile] = useState<File | null>(null);
   const [backImagePreview, setBackImagePreview] = useState<string | null>(flashcard?.backImageUrl || null);
   const [backImageFile, setBackImageFile] = useState<File | null>(null);
-  const formatTags = (tagsInput: any) => {
+  interface TagInput {
+    id?: number | string;
+    text: string;
+    className?: string;
+  }
+
+  const formatTags = useCallback((tagsInput: unknown): Array<{id: string; text: string; className: string}> => {
     if (!tagsInput) return [];
 
     // Se for array de objetos {id, text}
-    if (Array.isArray(tagsInput) && tagsInput.length > 0 && typeof tagsInput[0] === 'object' && 'text' in tagsInput[0]) {
-      return tagsInput.map((tag: { id: number; text: string }) => ({
-        id: String(tag.id),
-        text: tag.text,
-        className: ''
-      }));
-    }
-
-    // Se for array de strings
     if (Array.isArray(tagsInput)) {
-      return tagsInput.map((tag: string, index: number) => ({
+      if (tagsInput.length === 0) return [];
+      
+      const firstItem = tagsInput[0];
+      
+      // Se for array de objetos {id, text}
+      if (typeof firstItem === 'object' && firstItem !== null && 'text' in firstItem) {
+        return (tagsInput as TagInput[]).map((tag) => ({
+          id: String(tag.id || Date.now() + Math.random().toString(36).substr(2, 9)),
+          text: tag.text,
+          className: tag.className || ''
+        }));
+      }
+      
+      // Se for array de strings
+      return (tagsInput as string[]).map((tag, index) => ({
         id: `${index}`,
-        text: tag,
+        text: String(tag),
         className: ''
       }));
     }
 
     // Se for um objeto único
-    if (typeof tagsInput === 'object' && 'text' in tagsInput) {
+    if (typeof tagsInput === 'object' && tagsInput !== null && 'text' in tagsInput) {
+      const tagObj = tagsInput as TagInput;
+      return [{
+        id: String(tagObj.id || '0'),
+        text: tagObj.text,
+        className: tagObj.className || ''
+      }];
+    }
+
+    // Se for uma string única
+    if (typeof tagsInput === 'string') {
       return [{
         id: '0',
-        text: tagsInput.text,
+        text: tagsInput,
         className: ''
       }];
     }
 
     return [];
-  };
+  }, []); // Dependências vazias pois não depende de nada do componente
   const [tags, setTags] = useState<ReactTag[]>(
     flashcard?.tags ? formatTags(flashcard.tags) : []
   );
@@ -151,7 +173,7 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
       setBackImagePreview(null);
       setBackImageFile(null);
     }
-  }, [flashcard]);
+  }, [flashcard, formatTags]); // Adicionando formatTags como dependência
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -263,7 +285,15 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
             </div>
             {frontImagePreview && (
               <div className="mt-2 relative">
-                <img src={frontImagePreview} alt="Preview Frente" className="w-full h-28 sm:h-32 object-cover rounded-lg shadow-md" />
+                <div className="relative w-full h-28 sm:h-32">
+                  <Image 
+                    src={frontImagePreview} 
+                    alt="Preview Frente" 
+                    fill
+                    className="object-cover rounded-lg shadow-md"
+                    priority
+                  />
+                </div>
                 <button 
                   type="button" 
                   onClick={handleRemoveFrontImage} 
@@ -300,7 +330,15 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ flashcard, onSubmit, isEd
             </div>
             {backImagePreview && (
               <div className="mt-2 relative">
-                <img src={backImagePreview} alt="Preview Verso" className="w-full h-28 sm:h-32 object-cover rounded-lg shadow-md" />
+                <div className="relative w-full h-28 sm:h-32">
+                  <Image 
+                    src={backImagePreview} 
+                    alt="Preview Verso" 
+                    fill
+                    className="object-cover rounded-lg shadow-md"
+                    priority
+                  />
+                </div>
                 <button 
                   type="button" 
                   onClick={handleRemoveBackImage} 

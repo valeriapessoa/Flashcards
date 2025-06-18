@@ -7,8 +7,6 @@ import GoogleIcon from '@mui/icons-material/Google';
 import FacebookIcon from '@mui/icons-material/Facebook';
 
 const LoginForm = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [welcomeMessage, setWelcomeMessage] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -63,8 +61,6 @@ const LoginForm = () => {
       setError("Falha no login. Tente novamente mais tarde.");
       setIsSubmitting(false);
     } else {
-      setIsLoggedIn(true);
-      setWelcomeMessage('Bem-vindo!');
       router.push('/');
       setIsSubmitting(false);
     }
