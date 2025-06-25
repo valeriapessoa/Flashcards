@@ -7,13 +7,16 @@ import { Session } from 'next-auth';
 import { AdapterUser } from 'next-auth/adapters';
 
 declare module 'next-auth' {
+  interface User {
+    id: string;
+    name: string | null;
+    email: string | null;
+    image?: string | null;
+    accessToken?: string;
+  }
+
   interface Session {
-    user: {
-      id: string;
-      name: string;
-      email: string;
-      image?: string;
-    };
+    user: User;
     accessToken?: string;
   }
 }
@@ -30,6 +33,21 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID ?? "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
+        }
+      },
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name || profile.login,
+          email: profile.email,
+          image: profile.picture
+        };
+      }
     }),
     FacebookProvider({
       clientId: process.env.FACEBOOK_CLIENT_ID ?? "",
@@ -101,6 +119,40 @@ export const authOptions: NextAuthOptions = {
   },
   pages: { signIn: '/login' },
   callbacks: {
+    async signIn({ user, account, profile, email, credentials }) {
+      if (account?.provider === 'google') {
+        try {
+          const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+          const response = await fetch(`${apiBaseUrl}/api/auth/oauth/callback/google`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              token: account.id_token,
+              name: user.name,
+              email: user.email,
+              image: user.image
+            }),
+          });
+
+          if (!response.ok) {
+            console.error('Erro ao autenticar com Google:', await response.text());
+            return false;
+          }
+
+          const data = await response.json();
+          if (data.token && data.user) {
+            user.id = data.user.id;
+            user.accessToken = data.token;
+            return true;
+          }
+          return false;
+        } catch (error) {
+          console.error('Erro na autenticação com Google:', error);
+          return false;
+        }
+      }
+      return true;
+    },
     async jwt({ token, user }: { token: JWT; user?: (User | AdapterUser) & { accessToken?: string } | null }) {
       if (user) {
         token.id = user.id;

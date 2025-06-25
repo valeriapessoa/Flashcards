@@ -3,8 +3,8 @@ import bcrypt from "bcryptjs";
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import prisma from '../libs/prismaClient';
-import axios from "axios";
 import { body, validationResult } from 'express-validator';
+import { googleCallback } from '../controllers/authController';
 
 // TODO: Mover para variáveis de ambiente (.env)
 const JWT_SECRET = process.env.JWT_SECRET || 'YOUR_SECRET_KEY';
@@ -91,6 +91,10 @@ router.post("/login", loginValidationRules, (req: Request, res: Response, next: 
   })(req, res, next);
 });
 
+// Rota de callback para o Google OAuth
+router.post('/oauth/callback/google', googleCallback);
+
+// Rota OAuth antiga (mantida para compatibilidade)
 router.post("/oauth", async (req: Request, res: Response) => {
   const { code, provider } = req.body;
 
