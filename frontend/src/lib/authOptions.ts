@@ -150,44 +150,75 @@ export const authOptions: NextAuthOptions = {
     },
   },
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
-      // Log para depuração
+    async signIn({ user, account, profile }) {
       console.log('SignIn Attempt:', { user, account, profile });
-      if (account?.provider === 'google' || account?.provider === 'facebook') {
-        try {
-          const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-          const endpoint = account.provider === 'google' ? 'google' : 'facebook';
-          
-          const response = await fetch(`${apiBaseUrl}/api/auth/oauth/callback/${endpoint}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              token: account.id_token || account.access_token,
-              name: user.name,
-              email: user.email,
-              image: user.image,
-              provider: account.provider
-            }),
-          });
+      
+      // Se não for provedor OAuth, permite o login
+      if (!account || !['google', 'facebook'].includes(account.provider)) {
+        return true;
+      }
 
-          if (!response.ok) {
-            console.error(`Erro ao autenticar com ${account.provider}:`, await response.text());
-            return false;
-          }
-
-          const data = await response.json();
-          if (data.token && data.user) {
-            user.id = data.user.id;
-            user.accessToken = data.token;
-            return true;
-          }
-          return false;
-        } catch (error) {
-          console.error(`Erro na autenticação com ${account?.provider}:`, error);
+      try {
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+        if (!apiBaseUrl) {
+          console.error('NEXT_PUBLIC_API_BASE_URL não está definido');
           return false;
         }
+
+        const endpoint = account.provider;
+        const token = account.id_token || account.access_token;
+        
+        if (!token) {
+          console.error('Token não encontrado na conta');
+          return false;
+        }
+
+        console.log('Enviando requisição para o backend:', `${apiBaseUrl}/api/auth/oauth/callback/${endpoint}`);
+        
+        const response = await fetch(`${apiBaseUrl}/api/auth/oauth/callback/${endpoint}`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            token: token,
+            name: user.name,
+            email: user.email,
+            image: user.image,
+            provider: account.provider
+          }),
+        });
+
+        const responseData = await response.text();
+        console.log('Resposta do servidor:', response.status, responseData);
+
+        if (!response.ok) {
+          console.error(`Erro ao autenticar com ${account.provider}:`, responseData);
+          throw new Error(`Falha na autenticação: ${response.status} ${response.statusText}`);
+        }
+
+        let data;
+        try {
+          data = JSON.parse(responseData);
+        } catch (e) {
+          console.error('Erro ao fazer parse da resposta:', e);
+          return false;
+        }
+
+        if (data.token && data.user) {
+          user.id = data.user.id;
+          user.accessToken = data.token;
+          return true;
+        }
+        
+        console.error('Resposta do servidor inválida:', data);
+        return false;
+        
+      } catch (error) {
+        console.error(`Erro na autenticação com ${account?.provider}:`, error);
+        return false;
       }
-      return true;
     },
     async jwt({ token, user }: { token: JWT; user?: (User | AdapterUser) & { accessToken?: string } | null }) {
       if (user) {

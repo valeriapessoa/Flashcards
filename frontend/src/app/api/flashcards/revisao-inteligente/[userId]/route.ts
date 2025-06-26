@@ -4,9 +4,9 @@ import { authOptions } from '@/lib/authOptions';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  context: { params: { userId: string } }
 ) {
-  const { userId } = params;
+  const { userId } = context.params;
   try {
     // Verificar autenticação
     const session = await getServerSession(authOptions);

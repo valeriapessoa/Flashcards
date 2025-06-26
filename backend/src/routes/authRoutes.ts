@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
+import axios from 'axios';
 import prisma from '../libs/prismaClient';
 import { body, validationResult } from 'express-validator';
 import { googleCallback, facebookCallback } from '../controllers/authController';
