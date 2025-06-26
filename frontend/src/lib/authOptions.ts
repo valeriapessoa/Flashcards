@@ -52,6 +52,25 @@ export const authOptions: NextAuthOptions = {
     FacebookProvider({
       clientId: process.env.FACEBOOK_CLIENT_ID ?? "",
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET ?? "",
+      authorization: {
+        params: {
+          scope: 'email,public_profile',
+          display: 'popup',
+        },
+      },
+      userinfo: {
+        params: { 
+          fields: 'id,name,email,picture.width(400)' 
+        },
+      },
+      profile(profile) {
+        return {
+          id: profile.id,
+          name: profile.name || `user_${profile.id}`,
+          email: profile.email || `${profile.id}@facebook.com`,
+          image: profile.picture?.data?.url || `https://graph.facebook.com/${profile.id}/picture?width=400&height=400`,
+        };
+      },
     }),
     CredentialsProvider({
       credentials: {
@@ -118,24 +137,41 @@ export const authOptions: NextAuthOptions = {
     updateAge: 60 * 5, // Atualiza token a cada 5 minutos de uso
   },
   pages: { signIn: '/login' },
+  debug: process.env.NODE_ENV === 'development',
+  logger: {
+    error(code, metadata) {
+      console.error('Auth Error:', code, metadata);
+    },
+    warn(code) {
+      console.warn('Auth Warning:', code);
+    },
+    debug(code, metadata) {
+      console.log('Auth Debug:', code, metadata);
+    },
+  },
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
-      if (account?.provider === 'google') {
+      // Log para depuração
+      console.log('SignIn Attempt:', { user, account, profile });
+      if (account?.provider === 'google' || account?.provider === 'facebook') {
         try {
           const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-          const response = await fetch(`${apiBaseUrl}/api/auth/oauth/callback/google`, {
+          const endpoint = account.provider === 'google' ? 'google' : 'facebook';
+          
+          const response = await fetch(`${apiBaseUrl}/api/auth/oauth/callback/${endpoint}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              token: account.id_token,
+              token: account.id_token || account.access_token,
               name: user.name,
               email: user.email,
-              image: user.image
+              image: user.image,
+              provider: account.provider
             }),
           });
 
           if (!response.ok) {
-            console.error('Erro ao autenticar com Google:', await response.text());
+            console.error(`Erro ao autenticar com ${account.provider}:`, await response.text());
             return false;
           }
 
@@ -147,7 +183,7 @@ export const authOptions: NextAuthOptions = {
           }
           return false;
         } catch (error) {
-          console.error('Erro na autenticação com Google:', error);
+          console.error(`Erro na autenticação com ${account?.provider}:`, error);
           return false;
         }
       }

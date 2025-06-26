@@ -4,9 +4,8 @@ import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import prisma from '../libs/prismaClient';
 import { body, validationResult } from 'express-validator';
-import { googleCallback } from '../controllers/authController';
+import { googleCallback, facebookCallback } from '../controllers/authController';
 
-// TODO: Mover para variáveis de ambiente (.env)
 const JWT_SECRET = process.env.JWT_SECRET || 'YOUR_SECRET_KEY';
 type UserCreateInputWithPassword = {
   name: string;
@@ -91,8 +90,9 @@ router.post("/login", loginValidationRules, (req: Request, res: Response, next: 
   })(req, res, next);
 });
 
-// Rota de callback para o Google OAuth
+// Rotas de callback para OAuth
 router.post('/oauth/callback/google', googleCallback);
+router.post('/oauth/callback/facebook', facebookCallback);
 
 // Rota OAuth antiga (mantida para compatibilidade)
 router.post("/oauth", async (req: Request, res: Response) => {

@@ -99,13 +99,108 @@ const LoginForm = () => {
           {error}
         </Typography>
       )}
-      <Box mt={2} display="flex" justifyContent="center" gap={2}>
-        <IconButton onClick={() => signIn('google')} color="primary">
-          <GoogleIcon />
-        </IconButton>
-        <IconButton onClick={() => signIn('facebook')} color="primary">
-          <FacebookIcon />
-        </IconButton>
+      <Box 
+        mt={3} 
+        display="flex" 
+        flexDirection="column" 
+        alignItems="center" 
+        gap={2} 
+        width="100%"
+        sx={{
+          '& .MuiButton-root': {
+            width: { xs: '100%', sm: 'auto' },
+            maxWidth: { xs: '100%', sm: '200px' },
+            fontSize: { xs: '0.85rem', sm: '0.9rem' },
+            px: { xs: 2, sm: 3 },
+            py: { xs: 1.25, sm: 1.5 },
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          },
+          '& .MuiButton-startIcon': {
+            marginRight: { xs: 1, sm: 1.5 }
+          }
+        }}
+      >
+        <Typography variant="body2" color="text.secondary" mb={1}>
+          Ou entre com
+        </Typography>
+        <Box 
+          display="flex" 
+          flexDirection={{ xs: 'column', sm: 'row' }} 
+          gap={{ xs: 2, sm: 3 }} 
+          width="100%" 
+          maxWidth={{ xs: '100%', sm: 'fit-content' }}
+        >
+          <Button
+            onClick={() => signIn('google')}
+            variant="outlined"
+            startIcon={
+              <Box 
+                component="span" 
+                sx={{
+                  width: { xs: 20, sm: 24 },
+                  height: { xs: 20, sm: 24 },
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <GoogleIcon sx={{ color: '#DB4437', fontSize: { xs: 20, sm: 22 } }} />
+              </Box>
+            }
+            sx={{
+              borderRadius: 2,
+              textTransform: 'none',
+              borderColor: '#e0e0e0',
+              color: '#5f6368',
+              fontWeight: 500,
+              boxShadow: '0 1px 2px 0 rgba(60,64,67,.1), 0 1px 3px 1px rgba(60,64,67,.15)',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                boxShadow: '0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15)',
+                backgroundColor: 'rgba(66, 133, 244, 0.04)',
+                borderColor: '#d2e3fc'
+              }
+            }}
+          >
+            Google
+          </Button>
+          <Button
+            onClick={() => signIn('facebook')}
+            variant="outlined"
+            startIcon={
+              <Box 
+                component="span" 
+                sx={{
+                  width: { xs: 20, sm: 24 },
+                  height: { xs: 20, sm: 24 },
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <FacebookIcon sx={{ color: '#1877F2', fontSize: { xs: 20, sm: 24 } }} />
+              </Box>
+            }
+            sx={{
+              borderRadius: 2,
+              textTransform: 'none',
+              borderColor: '#e0e0e0',
+              color: '#1c1e21',
+              fontWeight: 500,
+              boxShadow: '0 1px 2px 0 rgba(60,64,67,.1), 0 1px 3px 1px rgba(60,64,67,.15)',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                boxShadow: '0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15)',
+                backgroundColor: 'rgba(24, 119, 242, 0.04)',
+                borderColor: '#d2e3fc'
+              }
+            }}
+          >
+            Facebook
+          </Button>
+        </Box>
       </Box>
     </form>
   );
