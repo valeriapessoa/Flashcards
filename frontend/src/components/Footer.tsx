@@ -30,8 +30,9 @@ const Footer: React.FC = () => {
               </Typography>
               <Box sx={{ display: 'flex', justifyContent: 'center', gap: 4, mt: 2 }}>
                 <IconButton 
-                  href="https://facebook.com/flashcards-app" 
+                  href="https://facebook.com" 
                   target="_blank" 
+                  rel="noopener noreferrer"
                   color="inherit" 
                   size="medium" 
                   aria-label="Facebook"
@@ -47,8 +48,9 @@ const Footer: React.FC = () => {
                   <FaFacebook style={{ fontSize: '1.5rem', color: 'white' }} />
                 </IconButton>
                 <IconButton 
-                  href="https://instagram.com/flashcards-app" 
+                  href="https://instagram.com" 
                   target="_blank" 
+                  rel="noopener noreferrer"
                   color="inherit" 
                   size="medium" 
                   aria-label="Instagram"
@@ -64,11 +66,12 @@ const Footer: React.FC = () => {
                   <FaInstagram style={{ fontSize: '1.5rem', color: 'white' }} />
                 </IconButton>
                 <IconButton 
-                  href="https://twitter.com/flashcards-app" 
+                  href="https://twitter.com" 
                   target="_blank" 
+                  rel="noopener noreferrer"
                   color="inherit" 
                   size="medium" 
-                  aria-label="Twitter"
+                  aria-label="X (Twitter)"
                   sx={{ 
                     borderRadius: '50%',
                     transition: 'transform 0.2s',
@@ -81,8 +84,9 @@ const Footer: React.FC = () => {
                   <FaTwitter style={{ fontSize: '1.5rem', color: 'white' }} />
                 </IconButton>
                 <IconButton 
-                  href="https://tiktok.com/@flashcards-app" 
+                  href="https://tiktok.com" 
                   target="_blank" 
+                  rel="noopener noreferrer"
                   color="inherit" 
                   size="medium" 
                   aria-label="TikTok"
