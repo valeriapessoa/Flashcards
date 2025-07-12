@@ -34,9 +34,11 @@
     "@types/streamifier": "^0.1.2",
     "express": "^4.21.2",
     "prisma": "^6.6.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "tsc": "^2.0.4"
   },
   "scripts": {
+    "build": "npm ci && tsc",
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts"
   },
