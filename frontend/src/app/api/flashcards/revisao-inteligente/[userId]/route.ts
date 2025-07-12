@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 
 export async function GET(
   request: NextRequest,
-  context: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
-  const { userId } = context.params;
+  const { userId } = await params;
   try {
     // Verificar autenticação
     const session = await getServerSession(authOptions);
