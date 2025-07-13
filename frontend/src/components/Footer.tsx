@@ -19,7 +19,7 @@ const Footer: React.FC = () => {
                 Flashcards App
               </Typography>
               <Typography variant="body2" sx={{ mb: 3, color: 'white' }}>
-                Aprenda de forma inteligente e divertida. Organize, crie e revise seus flashcards em qualquer lugar!
+                Aprenda de forma inteligente e divertida. Crie e revise seus flashcards em qualquer lugar!
               </Typography>
             </Box>
           </Grid>

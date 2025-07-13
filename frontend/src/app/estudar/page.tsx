@@ -64,7 +64,7 @@ const StudyPage = () => {
                   lineHeight: { xs: 1.4, sm: 1.5 }
                 }}
               >
-                Pratique seus flashcards aqui! 🚀
+                Pratique seus flashcards aqui!
               </Typography>
               <Box sx={{ mt: 4 }}>
                 <StudySession 

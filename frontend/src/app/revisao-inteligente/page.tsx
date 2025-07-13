@@ -78,7 +78,7 @@ const RevisaoInteligentePage = () => {
                   lineHeight: { xs: 1.4, sm: 1.5 }
                 }}
               >
-                Aqui estão os flashcards que você mais errou e precisa revisar. Foco total! 🚀
+                Aqui estão os flashcards que você mais errou e precisa revisar. Foco total!
               </Typography>
               <Box sx={{ mt: 4 }}>
                 <StudySession
