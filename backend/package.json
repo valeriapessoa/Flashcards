@@ -1,5 +1,6 @@
 {
   "name": "flashcard-backend",
+  "license": "MIT",
   "version": "1.0.0",
   "description": "Backend para o projeto de Flashcards",
   "main": "dist/server.js",
