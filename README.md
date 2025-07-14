@@ -1,6 +1,5 @@
 # 🚀 FlashCards - Plataforma de Estudo Inteligente
 
-
 [![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
@@ -8,9 +7,13 @@
 [![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)](https://www.prisma.io/)
 [![OAuth](https://img.shields.io/badge/OAuth-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://oauth.net/)
 
-## 📌 Visão Geral
 
-O **FlashCards** é uma plataforma inovadora de aprendizado baseada no método de repetição espaçada, projetada para ajudar estudantes e profissionais a maximizarem sua eficiência de estudo. Com um algoritmo de revisão inteligente, o sistema prioriza automaticamente os flashcards que precisam de mais atenção, baseando-se no desempenho individual de cada usuário.
+## 🌐 Link do Site
+🔗 **Acesse o site:** [Flashcards App](https://flashcards-vall-app.vercel.app/)
+
+## 📝 Descrição
+
+O **Flashcards** é uma plataforma inovadora de aprendizado baseada no método de repetição espaçada, projetada para ajudar estudantes e profissionais a maximizarem sua eficiência de estudo. Com um algoritmo de revisão inteligente, o sistema prioriza automaticamente os flashcards que precisam de mais atenção, baseando-se no desempenho individual de cada usuário.
 
 ## ✨ Destaques Técnicos
 
@@ -104,6 +107,38 @@ O banco de dados foi modelado com foco em escalabilidade e desempenho, utilizand
 ## 📄 Licença
 
 Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+## 📸 Demonstração
+
+### Página Inicial
+![Página Inicial](/frontend/public/images/%20screens/tela-1.png)
+
+### Criar
+![Criar Flashcard](/frontend/public/images/%20screens/tela-2.png)
+
+### Flashcards
+![Criar Flashcard](/frontend/public/images/%20screens/tela-3.png)
+
+### Editar Flashcard
+![Editar Flashcard](/frontend/public/images/%20screens/tela-4.png)
+
+### Estudar
+![Estudar](/frontend/public/images/%20screens/tela-5.png)
+
+### Estudar
+![Estudar](/frontend/public/images/%20screens/tela-6.png)
+
+### Estudar
+![Estudar](/frontend/public/images/%20screens/tela-7.png)
+
+### Revisão Inteligente
+![Revisão Inteligente](/frontend/public/images/%20screens/tela-8.png)
+
+### Login
+![Login](/frontend/public/images/%20screens/tela-9.png)
+
+### Registro
+![Registro](/frontend/public/images/%20screens/tela-10.png)
 
 ---
 
